@@ -13,6 +13,10 @@ var Combobiler;
             this.symbol = symbol;
             this.line = line;
         }
+        Token.prototype.toString = function () {
+            return this.symbol + ' on line ' + this.line;
+        };
+
         Token.makeNewToken = function (symbol, line) {
             if (symbol == 'while') {
                 return new While(line);

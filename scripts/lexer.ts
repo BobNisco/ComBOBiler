@@ -16,17 +16,28 @@ module Combobiler {
 			// Split the source code by spaces
 			var splitSource = this.source.split(' ');
 			LOGGER.headerInfo('Lexical Analysis Start');
-			console.log(splitSource);
+			// Our return (strongly-typed in TypeScript) array of Tokens
+			var tokenStream = new Array<Token>();
+
 			for (var i in splitSource) {
 				var current = splitSource[i];
 				if (current !== '') {
+					var needToAdvanceLine = false;
 					// Check if we need to advance the current line that we're on
 					if (regExForNewLine.exec(current)) {
+						needToAdvanceLine = true;
+						// Strip the newline character from the current node so that
+						// we can match it properly in the makeNewToken function
+						current = current.replace(regExForNewLine, '');
+					}
+					tokenStream.push(Combobiler.Token.makeNewToken(current, this.currentLine));
+					// Advance the line AFTER we're done lexing
+					if (needToAdvanceLine) {
 						this.currentLine += 1;
 					}
-					console.log(Combobiler.Token.makeNewToken(splitSource[i], this.currentLine));
 				}
 			}
+			return tokenStream;
 		}
 	}
 }

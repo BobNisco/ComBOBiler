@@ -6,6 +6,10 @@ module Combobiler {
 
 		}
 
+		public toString() {
+			return this.symbol + ' on line ' + this.line;
+		}
+
 		public static makeNewToken(symbol: string, line: number) {
 			if (symbol == 'while') {
 				return new While(line);
