@@ -20,6 +20,12 @@ var Combobiler;
         Logger.prototype.info = function (message) {
             this.textarea.append(message + '&#10;');
         };
+
+        Logger.prototype.headerInfo = function (message) {
+            this.info('------------------------');
+            this.info(message);
+            this.info('------------------------');
+        };
         return Logger;
     })();
     Combobiler.Logger = Logger;

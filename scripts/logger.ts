@@ -21,5 +21,11 @@ module Combobiler {
 		public info(message: string) {
 			this.textarea.append(message + '&#10;');
 		}
+
+		public headerInfo(message: string) {
+			this.info('------------------------');
+			this.info(message);
+			this.info('------------------------');
+		}
 	}
 }
