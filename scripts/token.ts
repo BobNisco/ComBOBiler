@@ -1,87 +1,87 @@
 module Combobiler {
 	export class Token {
-		public symbol: string;
+		// TypeScript (like JS) does not have a difference between
+		// an integer or a float/double.
+		constructor(public symbol: string, public line: number) {
 
-		constructor(s: string) {
-			this.symbol = s;
 		}
 	}
 
 	export class While extends Token {
-		constructor() {
-			super('while');
+		constructor(line) {
+			super('while', line);
 		}
 	}
 
 	export class LParen extends Token {
-		constructor() {
-			super('(');
+		constructor(line) {
+			super('(', line);
 		}
 	}
 
 	export class RParen extends Token {
-		constructor() {
-			super(')');
+		constructor(line) {
+			super(')', line);
 		}
 	}
 
 	export class LessThan extends Token {
-		constructor() {
-			super('<');
+		constructor(line) {
+			super('<', line);
 		}
 	}
 
 	export class GreaterThan extends Token {
-		constructor() {
-			super('>');
+		constructor(line) {
+			super('>', line);
 		}
 	}
 
 	export class OpenBrace extends Token {
-		constructor() {
-			super('{');
+		constructor(line) {
+			super('{', line);
 		}
 	}
 
 	export class CloseBrace extends Token {
-		constructor() {
-			super('}');
+		constructor(line) {
+			super('}', line);
 		}
 	}
 
 	export class Assignment extends Token {
-		constructor() {
-			super('=');
+		constructor(line) {
+			super('=', line);
 		}
 	}
 
 	export class Plus extends Token {
-		constructor() {
-			super('+');
+		constructor(line) {
+			super('+', line);
 		}
 	}
 
 	export class Minus extends Token {
-		constructor() {
-			super('-');
+		constructor(line) {
+			super('-', line);
 		}
 	}
 
 	export class Multiply extends Token {
-		constructor() {
-			super('*');
+		constructor(line) {
+			super('*', line);
 		}
 	}
 
 	export class Divide extends Token {
-		constructor() {
-			super('/');
+		constructor(line) {
+			super('/', line);
 		}
 	}
 
 	export class Semicolon extends Token {
-		constructor() {
-			super(';');
+		constructor(line) {
+			super(';', line);
 		}
 	}
 }

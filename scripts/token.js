@@ -7,8 +7,11 @@ var __extends = this.__extends || function (d, b) {
 var Combobiler;
 (function (Combobiler) {
     var Token = (function () {
-        function Token(s) {
-            this.symbol = s;
+        // TypeScript (like JS) does not have a difference between
+        // an integer or a float/double.
+        function Token(symbol, line) {
+            this.symbol = symbol;
+            this.line = line;
         }
         return Token;
     })();
@@ -16,8 +19,8 @@ var Combobiler;
 
     var While = (function (_super) {
         __extends(While, _super);
-        function While() {
-            _super.call(this, 'while');
+        function While(line) {
+            _super.call(this, 'while', line);
         }
         return While;
     })(Token);
@@ -25,8 +28,8 @@ var Combobiler;
 
     var LParen = (function (_super) {
         __extends(LParen, _super);
-        function LParen() {
-            _super.call(this, '(');
+        function LParen(line) {
+            _super.call(this, '(', line);
         }
         return LParen;
     })(Token);
@@ -34,8 +37,8 @@ var Combobiler;
 
     var RParen = (function (_super) {
         __extends(RParen, _super);
-        function RParen() {
-            _super.call(this, ')');
+        function RParen(line) {
+            _super.call(this, ')', line);
         }
         return RParen;
     })(Token);
@@ -43,8 +46,8 @@ var Combobiler;
 
     var LessThan = (function (_super) {
         __extends(LessThan, _super);
-        function LessThan() {
-            _super.call(this, '<');
+        function LessThan(line) {
+            _super.call(this, '<', line);
         }
         return LessThan;
     })(Token);
@@ -52,8 +55,8 @@ var Combobiler;
 
     var GreaterThan = (function (_super) {
         __extends(GreaterThan, _super);
-        function GreaterThan() {
-            _super.call(this, '>');
+        function GreaterThan(line) {
+            _super.call(this, '>', line);
         }
         return GreaterThan;
     })(Token);
@@ -61,8 +64,8 @@ var Combobiler;
 
     var OpenBrace = (function (_super) {
         __extends(OpenBrace, _super);
-        function OpenBrace() {
-            _super.call(this, '{');
+        function OpenBrace(line) {
+            _super.call(this, '{', line);
         }
         return OpenBrace;
     })(Token);
@@ -70,8 +73,8 @@ var Combobiler;
 
     var CloseBrace = (function (_super) {
         __extends(CloseBrace, _super);
-        function CloseBrace() {
-            _super.call(this, '}');
+        function CloseBrace(line) {
+            _super.call(this, '}', line);
         }
         return CloseBrace;
     })(Token);
@@ -79,8 +82,8 @@ var Combobiler;
 
     var Assignment = (function (_super) {
         __extends(Assignment, _super);
-        function Assignment() {
-            _super.call(this, '=');
+        function Assignment(line) {
+            _super.call(this, '=', line);
         }
         return Assignment;
     })(Token);
@@ -88,8 +91,8 @@ var Combobiler;
 
     var Plus = (function (_super) {
         __extends(Plus, _super);
-        function Plus() {
-            _super.call(this, '+');
+        function Plus(line) {
+            _super.call(this, '+', line);
         }
         return Plus;
     })(Token);
@@ -97,8 +100,8 @@ var Combobiler;
 
     var Minus = (function (_super) {
         __extends(Minus, _super);
-        function Minus() {
-            _super.call(this, '-');
+        function Minus(line) {
+            _super.call(this, '-', line);
         }
         return Minus;
     })(Token);
@@ -106,8 +109,8 @@ var Combobiler;
 
     var Multiply = (function (_super) {
         __extends(Multiply, _super);
-        function Multiply() {
-            _super.call(this, '*');
+        function Multiply(line) {
+            _super.call(this, '*', line);
         }
         return Multiply;
     })(Token);
@@ -115,8 +118,8 @@ var Combobiler;
 
     var Divide = (function (_super) {
         __extends(Divide, _super);
-        function Divide() {
-            _super.call(this, '/');
+        function Divide(line) {
+            _super.call(this, '/', line);
         }
         return Divide;
     })(Token);
@@ -124,8 +127,8 @@ var Combobiler;
 
     var Semicolon = (function (_super) {
         __extends(Semicolon, _super);
-        function Semicolon() {
-            _super.call(this, ';');
+        function Semicolon(line) {
+            _super.call(this, ';', line);
         }
         return Semicolon;
     })(Token);
