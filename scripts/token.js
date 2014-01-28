@@ -13,6 +13,38 @@ var Combobiler;
             this.symbol = symbol;
             this.line = line;
         }
+        Token.makeNewToken = function (symbol, line) {
+            if (symbol == 'while') {
+                return new While(line);
+            } else if (symbol == '(') {
+                return new LParen(line);
+            } else if (symbol == ')') {
+                return new RParen(line);
+            } else if (symbol == '<') {
+                return new LessThan(line);
+            } else if (symbol == '>') {
+                return new GreaterThan(line);
+            } else if (symbol == '{') {
+                return new OpenBrace(line);
+            } else if (symbol == '}') {
+                return new CloseBrace(line);
+            } else if (symbol == '=') {
+                return new Assignment(line);
+            } else if (symbol == '+') {
+                return new Plus(line);
+            } else if (symbol == '-') {
+                return new Minus(line);
+            } else if (symbol == ';') {
+                return new Semicolon(line);
+            } else if (symbol == 'true') {
+                return new True(line);
+            } else if (symbol == 'false') {
+                return new False(line);
+            } else {
+                // TODO: Handle errors better
+                return null;
+            }
+        };
         return Token;
     })();
     Combobiler.Token = Token;
@@ -107,24 +139,6 @@ var Combobiler;
     })(Token);
     Combobiler.Minus = Minus;
 
-    var Multiply = (function (_super) {
-        __extends(Multiply, _super);
-        function Multiply(line) {
-            _super.call(this, '*', line);
-        }
-        return Multiply;
-    })(Token);
-    Combobiler.Multiply = Multiply;
-
-    var Divide = (function (_super) {
-        __extends(Divide, _super);
-        function Divide(line) {
-            _super.call(this, '/', line);
-        }
-        return Divide;
-    })(Token);
-    Combobiler.Divide = Divide;
-
     var Semicolon = (function (_super) {
         __extends(Semicolon, _super);
         function Semicolon(line) {
@@ -133,4 +147,22 @@ var Combobiler;
         return Semicolon;
     })(Token);
     Combobiler.Semicolon = Semicolon;
+
+    var True = (function (_super) {
+        __extends(True, _super);
+        function True(line) {
+            _super.call(this, 'true', line);
+        }
+        return True;
+    })(Token);
+    Combobiler.True = True;
+
+    var False = (function (_super) {
+        __extends(False, _super);
+        function False(line) {
+            _super.call(this, 'false', line);
+        }
+        return False;
+    })(Token);
+    Combobiler.False = False;
 })(Combobiler || (Combobiler = {}));

@@ -14,6 +14,13 @@ module Combobiler {
 			// Split the source code by spaces
 			var splitSource = this.source.split(' ');
 			LOGGER.headerInfo('Lexical Analysis Start');
+			console.log(splitSource);
+			for (var i in splitSource) {
+				var current = splitSource[i];
+				if (current !== '') {
+					console.log(Combobiler.Token.makeNewToken(splitSource[i], 1));
+				}
+			}
 		}
 	}
 }

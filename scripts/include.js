@@ -13,7 +13,7 @@ $(document).ready(function () {
     compileButton.on('click', function (e) {
         e.preventDefault();
         LOGGER.clear();
-        LOGGER.info('Compilation started');
+        LOGGER.headerInfo('Compilation started');
         var lexer = new Combobiler.Lexer(taSourceCode.val());
         lexer.performLexicalAnalysis();
     });
