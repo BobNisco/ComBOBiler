@@ -5,6 +5,7 @@ $(document).ready(function(){
 	var compileButton = $('#compile-button');
 	var taSourceCode = $('#taSourceCode');
 	var taOutput = $('#taOutput');
+	var programTable = $('#program-table');
 	// Instantiate a new instance of our logger class by passing in
 	// the textarea that we want to use
 	LOGGER = new Combobiler.Logger(taOutput);
@@ -15,5 +16,12 @@ $(document).ready(function(){
 		LOGGER.headerInfo('Compilation started');
 		var lexer = new Combobiler.Lexer(taSourceCode.val());
 		lexer.performLexicalAnalysis();
+	});
+
+	programTable.on('click', '.user-program', function(e) {
+		e.preventDefault();
+
+		var button = $(this);
+		taSourceCode.val(button.data('program'));
 	});
 });
