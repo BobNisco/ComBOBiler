@@ -33,6 +33,8 @@ module Combobiler {
 				return new True(line);
 			} else if (symbol == 'false') {
 				return new False(line);
+			} else if (symbol == 'int') {
+				return new Int(line);
 			} else {
 				// TODO: Handle errors better
 				return null;
@@ -115,6 +117,12 @@ module Combobiler {
 	export class False extends Token {
 		constructor(line) {
 			super('false', line);
+		}
+	}
+
+	export class Int extends Token {
+		constructor(line) {
+			super('int', line);
 		}
 	}
 }

@@ -40,6 +40,8 @@ var Combobiler;
                 return new True(line);
             } else if (symbol == 'false') {
                 return new False(line);
+            } else if (symbol == 'int') {
+                return new Int(line);
             } else {
                 // TODO: Handle errors better
                 return null;
@@ -165,4 +167,13 @@ var Combobiler;
         return False;
     })(Token);
     Combobiler.False = False;
+
+    var Int = (function (_super) {
+        __extends(Int, _super);
+        function Int(line) {
+            _super.call(this, 'int', line);
+        }
+        return Int;
+    })(Token);
+    Combobiler.Int = Int;
 })(Combobiler || (Combobiler = {}));
