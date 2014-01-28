@@ -8,5 +8,7 @@ $(document).ready(function(){
 
 	compileButton.on('click', function(e) {
 		e.preventDefault();
+		logger.clear();
+		logger.info('Compilation started');
 	});
 });

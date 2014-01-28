@@ -9,6 +9,7 @@ $(document).ready(function () {
 
     compileButton.on('click', function (e) {
         e.preventDefault();
-        logger.info('Hi!');
+        logger.clear();
+        logger.info('Compilation started');
     });
 });
