@@ -4,6 +4,7 @@ var Combobiler;
     var Logger = (function () {
         function Logger(textarea) {
             this.textarea = textarea;
+            this.info('Logger initialized!');
         }
         /**
         * Clears all of the text in the output field

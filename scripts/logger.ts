@@ -3,7 +3,7 @@
 module Combobiler {
 	export class Logger {
 		constructor (public textarea: JQuery) {
-
+			this.info('Logger initialized!');
 		}
 
 		/**
