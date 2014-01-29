@@ -50,6 +50,10 @@ var Combobiler;
                 return new If(line);
             } else if (symbol == 'string') {
                 return new String(line);
+            } else if (symbol == '==') {
+                return new Equality(line);
+            } else if (symbol == '!=') {
+                return new NonEquality(line);
             } else if (/^\d+$/.exec(symbol) || /(\")[A-Za-z][A-Za-z0-9]*(\")/.exec(symbol)) {
                 return new Value(line, symbol);
             } else if (/^[A-Za-z][A-Za-z0-9]*$/.exec(symbol)) {
@@ -211,6 +215,24 @@ var Combobiler;
         return String;
     })(Token);
     Combobiler.String = String;
+
+    var Equality = (function (_super) {
+        __extends(Equality, _super);
+        function Equality(line) {
+            _super.call(this, '==', line);
+        }
+        return Equality;
+    })(Token);
+    Combobiler.Equality = Equality;
+
+    var NonEquality = (function (_super) {
+        __extends(NonEquality, _super);
+        function NonEquality(line) {
+            _super.call(this, '!=', line);
+        }
+        return NonEquality;
+    })(Token);
+    Combobiler.NonEquality = NonEquality;
 
     /**
     * A subclass of the Token object meant for tokens who need to

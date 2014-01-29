@@ -43,6 +43,10 @@ module Combobiler {
 				return new If(line);
 			} else if (symbol == 'string') {
 				return new String(line);
+			} else if (symbol == '==') {
+				return new Equality(line);
+			} else if (symbol == '!=') {
+				return new NonEquality(line);
 			} else if (/^\d+$/.exec(symbol) || /(\")[A-Za-z][A-Za-z0-9]*(\")/.exec(symbol)) {
 				return new Value(line, symbol);
 			} else if (/^[A-Za-z][A-Za-z0-9]*$/.exec(symbol)) {
@@ -151,6 +155,18 @@ module Combobiler {
 	export class String extends Token {
 		constructor(line) {
 			super('string', line);
+		}
+	}
+
+	export class Equality extends Token {
+		constructor(line) {
+			super('==', line);
+		}
+	}
+
+	export class NonEquality extends Token {
+		constructor(line) {
+			super('!=', line);
 		}
 	}
 
