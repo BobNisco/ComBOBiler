@@ -9,8 +9,10 @@ textarea {
 	font-family: monospace;
 }
 #output {
-	max-height: 400px;
-	height: 400px;
+	display: block;
+	max-height: 450px;
+	height: 450px;
+	overflow: auto;
 }
 .log-row {
 	padding-bottom: 2px;
