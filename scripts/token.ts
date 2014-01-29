@@ -41,7 +41,9 @@ module Combobiler {
 				return new Int(line);
 			} else if (symbol == 'if') {
 				return new If(line);
-			} else if (/^\d+$/.exec(symbol)) {
+			} else if (symbol == 'string') {
+				return new String(line);
+			} else if (/^\d+$/.exec(symbol) || /(\")[A-Za-z][A-Za-z0-9]*(\")/.exec(symbol)) {
 				return new Value(line, symbol);
 			} else if (/^[A-Za-z][A-Za-z0-9]*$/.exec(symbol)) {
 				return new VariableIdentifier(line, symbol);
@@ -143,6 +145,12 @@ module Combobiler {
 	export class If extends Token {
 		constructor(line) {
 			super('if', line);
+		}
+	}
+
+	export class String extends Token {
+		constructor(line) {
+			super('string', line);
 		}
 	}
 

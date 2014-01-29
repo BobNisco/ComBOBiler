@@ -48,7 +48,9 @@ var Combobiler;
                 return new Int(line);
             } else if (symbol == 'if') {
                 return new If(line);
-            } else if (/^\d+$/.exec(symbol)) {
+            } else if (symbol == 'string') {
+                return new String(line);
+            } else if (/^\d+$/.exec(symbol) || /(\")[A-Za-z][A-Za-z0-9]*(\")/.exec(symbol)) {
                 return new Value(line, symbol);
             } else if (/^[A-Za-z][A-Za-z0-9]*$/.exec(symbol)) {
                 return new VariableIdentifier(line, symbol);
@@ -200,6 +202,15 @@ var Combobiler;
         return If;
     })(Token);
     Combobiler.If = If;
+
+    var String = (function (_super) {
+        __extends(String, _super);
+        function String(line) {
+            _super.call(this, 'string', line);
+        }
+        return String;
+    })(Token);
+    Combobiler.String = String;
 
     /**
     * A subclass of the Token object meant for tokens who need to
