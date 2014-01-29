@@ -7,6 +7,7 @@ $(document).ready(function(){
 	var output = $('#output');
 	var programTable = $('#program-table');
 	var logFilter = $('#log-filter');
+	var clearLogButton = $('#clear-log-button');
 	// Instantiate a new instance of our logger class by passing in
 	// the div that we want to use
 	LOGGER = new Combobiler.Logger(output);
@@ -37,5 +38,10 @@ $(document).ready(function(){
 				thisRow.hide();
 			}
 		});
+	});
+
+	clearLogButton.on('click', function(e) {
+		e.preventDefault();
+		output.empty();
 	});
 });
