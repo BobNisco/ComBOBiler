@@ -46,6 +46,12 @@ var Combobiler;
                 return new False(line);
             } else if (symbol == 'int') {
                 return new Int(line);
+            } else if (symbol == 'if') {
+                return new If(line);
+            } else if (/^\d+$/.exec(symbol)) {
+                return new Value(line, symbol);
+            } else if (/^[A-Za-z][A-Za-z0-9]*$/.exec(symbol)) {
+                return new VariableIdentifier(line, symbol);
             } else {
                 // TODO: Handle errors better
                 return null;
@@ -180,4 +186,39 @@ var Combobiler;
         return Int;
     })(Token);
     Combobiler.Int = Int;
+
+    var If = (function (_super) {
+        __extends(If, _super);
+        function If(line) {
+            _super.call(this, 'if', line);
+        }
+        return If;
+    })(Token);
+    Combobiler.If = If;
+
+    var VariableIdentifier = (function (_super) {
+        __extends(VariableIdentifier, _super);
+        function VariableIdentifier(line, identifier) {
+            _super.call(this, 'varid', line);
+            this.identifier = identifier;
+        }
+        VariableIdentifier.prototype.toString = function () {
+            return this.symbol + '(' + this.identifier + ') on line ' + this.line;
+        };
+        return VariableIdentifier;
+    })(Token);
+    Combobiler.VariableIdentifier = VariableIdentifier;
+
+    var Value = (function (_super) {
+        __extends(Value, _super);
+        function Value(line, value) {
+            _super.call(this, 'value', line);
+            this.value = value;
+        }
+        Value.prototype.toString = function () {
+            return this.symbol + '(' + this.value + ') on line ' + this.line;
+        };
+        return Value;
+    })(Token);
+    Combobiler.Value = Value;
 })(Combobiler || (Combobiler = {}));
