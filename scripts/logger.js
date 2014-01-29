@@ -28,7 +28,12 @@ var Combobiler;
             } else if (type === 'error') {
                 displayClass = 'label-danger';
             }
-            return '<div class="log-row" data-type="' + type + '"><span class="label ' + displayClass + '">' + header + '</span> ' + message + '</div>';
+            return '<div class="log-row" data-type="' + type + '"><span class="label ' + displayClass + '">' + header + '</span> ' + message + ' <small>' + this.prettyPrintDate() + '</div>';
+        };
+
+        Logger.prototype.prettyPrintDate = function () {
+            var currentdate = new Date();
+            return (currentdate.getMonth() + 1) + "/" + currentdate.getDate() + "/" + currentdate.getFullYear() + " | " + currentdate.getHours() + ":" + currentdate.getMinutes() + ":" + currentdate.getSeconds();
         };
         return Logger;
     })();
