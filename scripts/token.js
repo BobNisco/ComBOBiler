@@ -52,6 +52,11 @@ var Combobiler;
                 return new Value(line, symbol);
             } else if (/^[A-Za-z][A-Za-z0-9]*$/.exec(symbol)) {
                 return new VariableIdentifier(line, symbol);
+            } else if (/(\bprint\b)(\()([A-Za-z][A-Za-z0-9]*)(\))/.exec(symbol)) {
+                var match = /(\bprint\b)(\()([A-Za-z][A-Za-z0-9]*)(\))/.exec(symbol);
+
+                // Pass what's in between the parenthesis as a parameter
+                return new Print(line, match[3]);
             } else {
                 // TODO: Handle errors better
                 return null;
@@ -221,4 +226,17 @@ var Combobiler;
         return Value;
     })(Token);
     Combobiler.Value = Value;
+
+    var Print = (function (_super) {
+        __extends(Print, _super);
+        function Print(line, value) {
+            _super.call(this, 'print', line);
+            this.value = value;
+        }
+        Print.prototype.toString = function () {
+            return this.symbol + '(' + this.value + ') on line ' + this.line;
+        };
+        return Print;
+    })(Token);
+    Combobiler.Print = Print;
 })(Combobiler || (Combobiler = {}));

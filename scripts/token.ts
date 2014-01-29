@@ -45,6 +45,10 @@ module Combobiler {
 				return new Value(line, symbol);
 			} else if (/^[A-Za-z][A-Za-z0-9]*$/.exec(symbol)) {
 				return new VariableIdentifier(line, symbol);
+			} else if (/(\bprint\b)(\()([A-Za-z][A-Za-z0-9]*)(\))/.exec(symbol)) {
+				var match = /(\bprint\b)(\()([A-Za-z][A-Za-z0-9]*)(\))/.exec(symbol);
+				// Pass what's in between the parenthesis as a parameter
+				return new Print(line, match[3]);
 			} else {
 				// TODO: Handle errors better
 				return null;
@@ -155,6 +159,16 @@ module Combobiler {
 	export class Value extends Token {
 		constructor(line, public value: string) {
 			super('value', line);
+		}
+
+		public toString() {
+			return this.symbol + '(' + this.value + ') on line ' + this.line;
+		}
+	}
+
+	export class Print extends Token {
+		constructor(line, public value: string) {
+			super('print', line);
 		}
 
 		public toString() {
