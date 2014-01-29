@@ -8,3 +8,10 @@
 textarea {
 	font-family: monospace;
 }
+#output {
+	max-height: 400px;
+	height: 400px;
+}
+.log-row {
+	padding-bottom: 2px;
+}

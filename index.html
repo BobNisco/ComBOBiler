@@ -64,8 +64,22 @@
 					</div>
 				</div>
 				<div class="col-md-6">
-					<h5>Output</h5>
-					<textarea id="taOutput" class="col-xs-12" rows="18"></textarea>
+					<div class="row">
+						<div class="col-md-6">
+							<h5>Output</h5>
+						</div>
+						<div class="col-md-6">
+							<div class="pull-right">
+								<label for="log-filter">Filter by type:</label>
+								<select id="log-filter">
+									<option value="-">Show All</option>
+									<option value="info">Info</option>
+									<option value="error">Error</option>
+								</select>
+							</div>
+						</div>
+					</div>
+					<div id="output" class="col-xs-12"></div>
 				</div>
 			</div>
 		</div>

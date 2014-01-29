@@ -4,16 +4,17 @@ var LOGGER = null;
 $(document).ready(function(){
 	var compileButton = $('#compile-button');
 	var taSourceCode = $('#taSourceCode');
-	var taOutput = $('#taOutput');
+	var output = $('#output');
 	var programTable = $('#program-table');
+	var logFilter = $('#log-filter');
 	// Instantiate a new instance of our logger class by passing in
-	// the textarea that we want to use
-	LOGGER = new Combobiler.Logger(taOutput);
+	// the div that we want to use
+	LOGGER = new Combobiler.Logger(output);
 
 	compileButton.on('click', function(e) {
 		e.preventDefault();
 		LOGGER.clear();
-		LOGGER.headerInfo('Compilation started');
+		LOGGER.info('Compilation started');
 		var lexer = new Combobiler.Lexer(taSourceCode.val());
 		lexer.performLexicalAnalysis();
 	});
@@ -23,5 +24,19 @@ $(document).ready(function(){
 
 		var button = $(this);
 		taSourceCode.val(button.data('program'));
+	});
+
+	logFilter.on('change', function(e) {
+		e.preventDefault();
+		var dropdown = $(this);
+		var selectedValue = dropdown.val();
+		var logEntries = output.find('.log-row');
+		$.each(logEntries, function(i, val) {
+			var thisRow = $(val);
+			thisRow.show();
+			if (selectedValue !== '-' && thisRow.data('type') !== selectedValue) {
+				thisRow.hide();
+			}
+		});
 	});
 });

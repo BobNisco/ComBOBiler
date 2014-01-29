@@ -13,7 +13,7 @@ var Combobiler;
 
             // Split the source code by spaces
             var splitSource = this.source.split(' ');
-            LOGGER.headerInfo('Lexical Analysis Start');
+            LOGGER.info('Lexical Analysis Start');
 
             // Our return (strongly-typed in TypeScript) array of Tokens
             var tokenStream = new Array();

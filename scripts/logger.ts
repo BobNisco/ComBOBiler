@@ -19,13 +19,18 @@ module Combobiler {
 		 * @param message the text to be put into the output field
 		 */
 		public info(message: string) {
-			this.textarea.append(message + '&#10;');
+			this.textarea.prepend(this.createLogRow('info', 'Info', message));
 		}
 
-		public headerInfo(message: string) {
-			this.info('------------------------');
-			this.info(message);
-			this.info('------------------------');
+		private createLogRow(type: string, header: string, message: string) {
+			var displayClass = "";
+			if (type === 'info') {
+				displayClass = 'label-info';
+			} else if (type === 'error') {
+				displayClass = 'label-danger';
+			}
+			return '<div class="log-row" data-type="' + type + '"><span class="label ' + displayClass + '">'
+				   + header + '</span> ' + message + '</div>';
 		}
 	}
 }

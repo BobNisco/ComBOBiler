@@ -18,13 +18,17 @@ var Combobiler;
         * @param message the text to be put into the output field
         */
         Logger.prototype.info = function (message) {
-            this.textarea.append(message + '&#10;');
+            this.textarea.prepend(this.createLogRow('info', 'Info', message));
         };
 
-        Logger.prototype.headerInfo = function (message) {
-            this.info('------------------------');
-            this.info(message);
-            this.info('------------------------');
+        Logger.prototype.createLogRow = function (type, header, message) {
+            var displayClass = "";
+            if (type === 'info') {
+                displayClass = 'label-info';
+            } else if (type === 'error') {
+                displayClass = 'label-danger';
+            }
+            return '<div class="log-row" data-type="' + type + '"><span class="label ' + displayClass + '">' + header + '</span> ' + message + '</div>';
         };
         return Logger;
     })();
