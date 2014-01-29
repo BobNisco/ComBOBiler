@@ -35,6 +35,11 @@ var Combobiler;
                     if (newToken != null) {
                         tokenStream.push(newToken);
                         LOGGER.info('Found token ' + newToken.toString());
+                    } else {
+                        LOGGER.error('Lexical error in token ' + current + ' on line ' + this.currentLine);
+                        // TODO: Once all rules of grammar are implemented, we want to
+                        // break if there ever is an error. But for now, it helps us debug
+                        //break;
                     }
 
                     // Advance the line AFTER we're done lexing
@@ -43,6 +48,7 @@ var Combobiler;
                     }
                 }
             }
+            LOGGER.info('==== Lexical Analysis End ====');
             return tokenStream;
         };
         return Lexer;

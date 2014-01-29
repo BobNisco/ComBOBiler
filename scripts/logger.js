@@ -22,6 +22,10 @@ var Combobiler;
             this.textarea.prepend(this.createLogRow('info', 'Info', message));
         };
 
+        Logger.prototype.error = function (message) {
+            this.textarea.prepend(this.createLogRow('error', 'Error', message));
+        };
+
         Logger.prototype.createLogRow = function (type, header, message) {
             var displayClass = "";
             if (type === 'info') {

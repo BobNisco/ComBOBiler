@@ -22,6 +22,10 @@ module Combobiler {
 			this.textarea.prepend(this.createLogRow('info', 'Info', message));
 		}
 
+		public error(message: string) {
+			this.textarea.prepend(this.createLogRow('error', 'Error', message));
+		}
+
 		private createLogRow(type: string, header: string, message: string) {
 			var displayClass = "";
 			if (type === 'info') {
