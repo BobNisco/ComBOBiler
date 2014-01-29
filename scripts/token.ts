@@ -146,19 +146,13 @@ module Combobiler {
 		}
 	}
 
-	export class VariableIdentifier extends Token {
-		constructor(line, public identifier: string) {
-			super('varid', line);
-		}
-
-		public toString() {
-			return this.symbol + '(' + this.identifier + ') on line ' + this.line;
-		}
-	}
-
-	export class Value extends Token {
-		constructor(line, public value: string) {
-			super('value', line);
+	/**
+	 * A subclass of the Token object meant for tokens who need to
+	 * store a value in them.
+	 */
+	export class ValueToken extends Token {
+		constructor(symbol, line, public value: string) {
+			super(symbol, line);
 		}
 
 		public toString() {
@@ -166,13 +160,21 @@ module Combobiler {
 		}
 	}
 
-	export class Print extends Token {
-		constructor(line, public value: string) {
-			super('print', line);
+	export class VariableIdentifier extends ValueToken {
+		constructor(line, value) {
+			super('varid', line, value);
 		}
+	}
 
-		public toString() {
-			return this.symbol + '(' + this.value + ') on line ' + this.line;
+	export class Value extends ValueToken {
+		constructor(line, value) {
+			super('value', line, value);
+		}
+	}
+
+	export class Print extends ValueToken {
+		constructor(line, value) {
+			super('print', line, value);
 		}
 	}
 }

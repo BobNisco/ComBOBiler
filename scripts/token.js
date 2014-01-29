@@ -201,42 +201,47 @@ var Combobiler;
     })(Token);
     Combobiler.If = If;
 
+    /**
+    * A subclass of the Token object meant for tokens who need to
+    * store a value in them.
+    */
+    var ValueToken = (function (_super) {
+        __extends(ValueToken, _super);
+        function ValueToken(symbol, line, value) {
+            _super.call(this, symbol, line);
+            this.value = value;
+        }
+        ValueToken.prototype.toString = function () {
+            return this.symbol + '(' + this.value + ') on line ' + this.line;
+        };
+        return ValueToken;
+    })(Token);
+    Combobiler.ValueToken = ValueToken;
+
     var VariableIdentifier = (function (_super) {
         __extends(VariableIdentifier, _super);
-        function VariableIdentifier(line, identifier) {
-            _super.call(this, 'varid', line);
-            this.identifier = identifier;
+        function VariableIdentifier(line, value) {
+            _super.call(this, 'varid', line, value);
         }
-        VariableIdentifier.prototype.toString = function () {
-            return this.symbol + '(' + this.identifier + ') on line ' + this.line;
-        };
         return VariableIdentifier;
-    })(Token);
+    })(ValueToken);
     Combobiler.VariableIdentifier = VariableIdentifier;
 
     var Value = (function (_super) {
         __extends(Value, _super);
         function Value(line, value) {
-            _super.call(this, 'value', line);
-            this.value = value;
+            _super.call(this, 'value', line, value);
         }
-        Value.prototype.toString = function () {
-            return this.symbol + '(' + this.value + ') on line ' + this.line;
-        };
         return Value;
-    })(Token);
+    })(ValueToken);
     Combobiler.Value = Value;
 
     var Print = (function (_super) {
         __extends(Print, _super);
         function Print(line, value) {
-            _super.call(this, 'print', line);
-            this.value = value;
+            _super.call(this, 'print', line, value);
         }
-        Print.prototype.toString = function () {
-            return this.symbol + '(' + this.value + ') on line ' + this.line;
-        };
         return Print;
-    })(Token);
+    })(ValueToken);
     Combobiler.Print = Print;
 })(Combobiler || (Combobiler = {}));
