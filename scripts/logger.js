@@ -33,7 +33,7 @@ var Combobiler;
 
         Logger.prototype.prettyPrintDate = function () {
             var currentdate = new Date();
-            return (currentdate.getMonth() + 1) + "/" + currentdate.getDate() + "/" + currentdate.getFullYear() + " | " + currentdate.getHours() + ":" + currentdate.getMinutes() + ":" + currentdate.getSeconds();
+            return (currentdate.getMonth() + 1) + "/" + currentdate.getDate() + "/" + currentdate.getFullYear() + " | " + currentdate.getHours() + ":" + ('0' + currentdate.getMinutes()).slice(-2) + ":" + ('0' + currentdate.getSeconds()).slice(-2);
         };
         return Logger;
     })();
