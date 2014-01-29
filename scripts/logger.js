@@ -28,7 +28,7 @@ var Combobiler;
             } else if (type === 'error') {
                 displayClass = 'label-danger';
             }
-            return '<div class="log-row" data-type="' + type + '"><span class="label ' + displayClass + '">' + header + '</span> ' + message + ' <small>' + this.prettyPrintDate() + '</div>';
+            return '<div class="log-row" data-type="' + type + '"><span class="label ' + displayClass + '">' + header + '</span> ' + message + ' <small class="pull-right">' + this.prettyPrintDate() + '</div>';
         };
 
         Logger.prototype.prettyPrintDate = function () {

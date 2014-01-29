@@ -15,7 +15,7 @@ module Combobiler {
 			var regExForNewLine = /\r|\n/;
 			// Split the source code by spaces
 			var splitSource = this.source.split(' ');
-			LOGGER.info('Lexical Analysis Start');
+			LOGGER.info('==== Lexical Analysis Start ====');
 			// Our return (strongly-typed in TypeScript) array of Tokens
 			var tokenStream = new Array<Token>();
 
@@ -30,7 +30,11 @@ module Combobiler {
 						// we can match it properly in the makeNewToken function
 						current = current.replace(regExForNewLine, '');
 					}
-					tokenStream.push(Combobiler.Token.makeNewToken(current, this.currentLine));
+					var newToken = Combobiler.Token.makeNewToken(current, this.currentLine);
+					if (newToken != null) {
+						tokenStream.push(newToken);
+						LOGGER.info('Found token ' + newToken.toString());
+					}
 					// Advance the line AFTER we're done lexing
 					if (needToAdvanceLine) {
 						this.currentLine += 1;

@@ -30,7 +30,7 @@ module Combobiler {
 				displayClass = 'label-danger';
 			}
 			return '<div class="log-row" data-type="' + type + '"><span class="label ' + displayClass + '">'
-				   + header + '</span> ' + message + ' <small>' + this.prettyPrintDate() + '</div>';
+				   + header + '</span> ' + message + ' <small class="pull-right">' + this.prettyPrintDate() + '</div>';
 		}
 
 		private prettyPrintDate() {
