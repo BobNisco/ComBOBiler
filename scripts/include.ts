@@ -30,7 +30,6 @@ $(document).ready(function(){
 	logFilterType.on('change', function(e) {
 		e.preventDefault();
 		var dropdown = $(this);
-		var selectedValue = dropdown.val();
 		var logEntries = output.find('.log-row');
 		$.each(logEntries, function(i, val) {
 			var thisRow = $(val);
@@ -44,7 +43,6 @@ $(document).ready(function(){
 	logFilterStatus.on('change', function(e) {
 		e.preventDefault();
 		var dropdown = $(this);
-		var selectedValue = dropdown.val();
 		var logEntries = output.find('.label');
 		$.each(logEntries, function(i, val) {
 			var thisLabel = $(val);
