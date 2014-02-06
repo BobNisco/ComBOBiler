@@ -5,7 +5,6 @@
 module Combobiler {
 	export class Lexer {
 		private source: string;
-		private currentLine = 1;
 		// Define some default logger options for the lexer
 		private loggerOptions = {
 			type: 'lex',
@@ -17,37 +16,31 @@ module Combobiler {
 		}
 
 		public performLexicalAnalysis() {
-			var regExForNewLine = /\r+|\n+|\t+/;
-			// Split the source code by spaces
-			var splitSource = this.source.split(' ');
+			// Split the source code by lines
+			var splitSource = this.source.split('\n');
 			this.log('==== Lexical Analysis Start ====');
 			// Our return (strongly-typed in TypeScript) array of Tokens
 			var tokenStream = new Array<Token>();
 
-			for (var i in splitSource) {
-				var current = splitSource[i];
-				if (current !== '') {
-					var needToAdvanceLine = false;
-					// Check if we need to advance the current line that we're on
-					if (regExForNewLine.exec(current)) {
-						needToAdvanceLine = true;
-						// Strip the newline character from the current node so that
-						// we can match it properly in the makeNewToken function
-						current = current.replace(regExForNewLine, '');
-					}
-					var newToken = Combobiler.Token.makeNewToken(current, this.currentLine);
-					if (newToken != null) {
-						tokenStream.push(newToken);
-						this.log('Found token ' + newToken.toString());
-					} else {
-						this.error('Lexical error in token ' + current + ' on line ' + this.currentLine);
-						// TODO: Once all rules of grammar are implemented, we want to
-						// break if there ever is an error. But for now, it helps us debug
-						//break;
-					}
-					// Advance the line AFTER we're done lexing
-					if (needToAdvanceLine) {
-						this.currentLine += 1;
+			for (var line = 0; line < splitSource.length; line++) {
+				var currentLine = splitSource[line];
+				console.log(currentLine);
+				// Split each part of the line up by spaces
+				var splitLine = currentLine.split(' ');
+
+				for (var i = 0; i < splitLine.length; i++) {
+					var current = splitLine[i];
+					if (current !== '') {
+						var newToken = Combobiler.Token.makeNewToken(current, line + 1);
+						if (newToken != null) {
+							tokenStream.push(newToken);
+							this.log('Found token ' + newToken.toString());
+						} else {
+							this.error('Lexical error in token ' + current + ' on line ' + line + 1);
+							// TODO: Once all rules of grammar are implemented, we want to
+							// break if there ever is an error. But for now, it helps us debug
+							//break;
+						}
 					}
 				}
 			}
