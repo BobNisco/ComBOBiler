@@ -24,7 +24,6 @@ module Combobiler {
 
 			for (var line = 0; line < splitSource.length; line++) {
 				var currentLine = splitSource[line];
-				console.log(currentLine);
 				// Split each part of the line up by spaces
 				var splitLine = currentLine.split(' ');
 

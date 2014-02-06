@@ -13,8 +13,6 @@ var Combobiler;
             this.source = $.trim(s);
         }
         Lexer.prototype.performLexicalAnalysis = function () {
-            var regExForNewLine = /\r+|\n+|\t+/;
-
             // Split the source code by lines
             var splitSource = this.source.split('\n');
             this.log('==== Lexical Analysis Start ====');
@@ -24,7 +22,6 @@ var Combobiler;
 
             for (var line = 0; line < splitSource.length; line++) {
                 var currentLine = splitSource[line];
-                console.log(currentLine);
 
                 // Split each part of the line up by spaces
                 var splitLine = currentLine.split(' ');

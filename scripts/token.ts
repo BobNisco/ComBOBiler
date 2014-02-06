@@ -43,6 +43,8 @@ module Combobiler {
 				return new If(line);
 			} else if (symbol == 'string') {
 				return new String(line);
+			} else if (symbol == 'boolean') {
+				return new Boolean(line);
 			} else if (symbol == '==') {
 				return new Equality(line);
 			} else if (symbol == '!=') {
@@ -158,6 +160,12 @@ module Combobiler {
 		}
 	}
 
+	export class Boolean extends Token {
+		constructor(line) {
+			super('boolean', line);
+		}
+	}
+
 	export class Equality extends Token {
 		constructor(line) {
 			super('==', line);
@@ -199,6 +207,12 @@ module Combobiler {
 	export class Print extends ValueToken {
 		constructor(line, value) {
 			super('print', line, value);
+		}
+	}
+
+	export class Char extends ValueToken {
+		constructor(line, value) {
+		    super('char', line, value);
 		}
 	}
 }

@@ -50,6 +50,8 @@ var Combobiler;
                 return new If(line);
             } else if (symbol == 'string') {
                 return new String(line);
+            } else if (symbol == 'boolean') {
+                return new Boolean(line);
             } else if (symbol == '==') {
                 return new Equality(line);
             } else if (symbol == '!=') {
@@ -215,6 +217,15 @@ var Combobiler;
         return String;
     })(Token);
     Combobiler.String = String;
+
+    var Boolean = (function (_super) {
+        __extends(Boolean, _super);
+        function Boolean(line) {
+            _super.call(this, 'boolean', line);
+        }
+        return Boolean;
+    })(Token);
+    Combobiler.Boolean = Boolean;
 
     var Equality = (function (_super) {
         __extends(Equality, _super);
