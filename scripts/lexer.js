@@ -6,6 +6,11 @@ var Combobiler;
     var Lexer = (function () {
         function Lexer(s) {
             this.currentLine = 1;
+            // Define some default logger options for the lexer
+            this.loggerOptions = {
+                type: 'lex',
+                header: 'Lexer'
+            };
             this.source = $.trim(s);
         }
         Lexer.prototype.performLexicalAnalysis = function () {
@@ -13,7 +18,7 @@ var Combobiler;
 
             // Split the source code by spaces
             var splitSource = this.source.split(' ');
-            LOGGER.info('==== Lexical Analysis Start ====');
+            this.log('==== Lexical Analysis Start ====');
 
             // Our return (strongly-typed in TypeScript) array of Tokens
             var tokenStream = new Array();
@@ -34,9 +39,9 @@ var Combobiler;
                     var newToken = Combobiler.Token.makeNewToken(current, this.currentLine);
                     if (newToken != null) {
                         tokenStream.push(newToken);
-                        LOGGER.info('Found token ' + newToken.toString());
+                        this.log('Found token ' + newToken.toString());
                     } else {
-                        LOGGER.error('Lexical error in token ' + current + ' on line ' + this.currentLine);
+                        this.error('Lexical error in token ' + current + ' on line ' + this.currentLine);
                         // TODO: Once all rules of grammar are implemented, we want to
                         // break if there ever is an error. But for now, it helps us debug
                         //break;
@@ -48,8 +53,28 @@ var Combobiler;
                     }
                 }
             }
-            LOGGER.info('==== Lexical Analysis End ====');
+            this.log('==== Lexical Analysis End ====');
             return tokenStream;
+        };
+
+        /**
+        * Internal handler for passing our log message to the logger. This method should
+        * be used for non-errors in the lexer.
+        *
+        * @param message the text to be put into the output field
+        */
+        Lexer.prototype.log = function (message) {
+            LOGGER.log($.extend({ displayClass: 'label-info' }, this.loggerOptions), message);
+        };
+
+        /**
+        * Internal handler for passsing our error message to the logger. This method
+        * should be used for errors in the lexer.
+        *
+        * @param message the text to be put into the output field
+        */
+        Lexer.prototype.error = function (message) {
+            LOGGER.log($.extend({ displayClass: 'label-danger' }, this.loggerOptions), message);
         };
         return Lexer;
     })();

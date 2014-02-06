@@ -70,11 +70,17 @@
 						</div>
 						<div class="col-md-6">
 							<div class="pull-right">
-								<label for="log-filter">Filter by type:</label>
-								<select id="log-filter">
+								<label for="log-filter-type">Filter by type:</label>
+								<select id="log-filter-type">
 									<option value="-">Show All</option>
-									<option value="info">Info</option>
-									<option value="error">Error</option>
+									<option value="info">Compiler Info</option>
+									<option value="lex">Lexer</option>
+								</select>
+								<label for="log-filter-status">Filter by status:</label>
+								<select id="log-filter-status">
+									<option value="-">Show All</option>
+									<option value="label-info">Info</option>
+									<option value="label-danger">Error</option>
 								</select>
 							</div>
 						</div>

@@ -6,7 +6,8 @@ $(document).ready(function(){
 	var taSourceCode = $('#taSourceCode');
 	var output = $('#output');
 	var programTable = $('#program-table');
-	var logFilter = $('#log-filter');
+	var logFilterType = $('#log-filter-type');
+	var logFilterStatus = $('#log-filter-status');
 	var clearLogButton = $('#clear-log-button');
 	// Instantiate a new instance of our logger class by passing in
 	// the div that we want to use
@@ -26,7 +27,7 @@ $(document).ready(function(){
 		taSourceCode.val(button.data('program'));
 	});
 
-	logFilter.on('change', function(e) {
+	logFilterType.on('change', function(e) {
 		e.preventDefault();
 		var dropdown = $(this);
 		var selectedValue = dropdown.val();
@@ -34,11 +35,42 @@ $(document).ready(function(){
 		$.each(logEntries, function(i, val) {
 			var thisRow = $(val);
 			thisRow.show();
-			if (selectedValue !== '-' && thisRow.data('type') !== selectedValue) {
+			if (!determineIfRowShouldBeDisplayed(thisRow)) {
 				thisRow.hide();
 			}
 		});
 	});
+
+	logFilterStatus.on('change', function(e) {
+		e.preventDefault();
+		var dropdown = $(this);
+		var selectedValue = dropdown.val();
+		var logEntries = output.find('.label');
+		$.each(logEntries, function(i, val) {
+			var thisLabel = $(val);
+			var thisRow = thisLabel.parent();
+			thisRow.show();
+			if (!determineIfRowShouldBeDisplayed(thisRow)) {
+				thisRow.hide();
+			}
+		});
+	});
+
+	var determineIfRowShouldBeDisplayedForType = function(selectedValue, thisRow) {
+		return !(selectedValue !== '-' && thisRow.data('type') !== selectedValue);
+	}
+
+	var determineIfRowShouldBeDisplayedForStatus = function(selectedValue, thisLabel) {
+		return !(selectedValue !== '-' && !thisLabel.hasClass(selectedValue))
+	}
+
+	var determineIfRowShouldBeDisplayed = function(row) {
+		var currentFilterType = logFilterType.val();
+		var currentFilterStatus = logFilterStatus.val();
+		var thisLabel = row.find('.label');
+		return (determineIfRowShouldBeDisplayedForStatus(currentFilterStatus, thisLabel) &&
+				determineIfRowShouldBeDisplayedForType(currentFilterType, row))
+	}
 
 	clearLogButton.on('click', function(e) {
 		e.preventDefault();

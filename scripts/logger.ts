@@ -19,32 +19,45 @@ module Combobiler {
 		 * @param message the text to be put into the output field
 		 */
 		public info(message: string) {
-			this.textarea.prepend(this.createLogRow('info', 'Info', message));
+			this.log({
+					displayClass: 'label-info',
+					type: 'info',
+					header: 'Info',
+				}, message);
 		}
 
-		public error(message: string) {
-			this.textarea.prepend(this.createLogRow('error', 'Error', message));
+		public log(options: Object, message: string) {
+			this.textarea.prepend(this.createLogRow(options, message));
 		}
 
-		private createLogRow(type: string, header: string, message: string) {
-			var displayClass = "";
-			if (type === 'info') {
-				displayClass = 'label-info';
-			} else if (type === 'error') {
-				displayClass = 'label-danger';
-			}
-			return '<div class="log-row" data-type="' + type + '"><span class="label ' + displayClass + '">'
-				   + header + '</span> ' + message + ' <small class="pull-right">' + this.prettyPrintDate() + '</div>';
+		/**
+		 * The internal handler for creating the log rows.
+		 *
+		 * @param type the type of log row this is. The value will be used to filter
+		 *        by type on the GUI.
+		 * @param header the text that will appear in the label of the log row
+		 * @param message the text to be put into the output field
+		 */
+		private createLogRow(options: any, message: string) {
+			return '<div class="log-row" data-type="' + options.type + '" data-header="'
+				   + options.header + '"><span class="label ' + options.displayClass + '">'
+				   + options.header + '</span> ' + message + ' <small class="pull-right">'
+				   + this.prettyPrintDateTime() + '</div>';
 		}
 
-		private prettyPrintDate() {
-			var currentdate = new Date();
-			return (currentdate.getMonth()+1)  + "/"
-                + currentdate.getDate() + "/"
-                + currentdate.getFullYear() + " | "
-                + currentdate.getHours() + ":"
-                + ('0' + currentdate.getMinutes()).slice(-2) + ":"
-                + ('0' + currentdate.getSeconds()).slice(-2);
+		/**
+		 * Pretty prints the date and time
+		 *
+		 * @param currentDateTime (optional) the date to be pretty printed.
+		          If no date is passed in, then it will default to the current date.
+		 */
+		private prettyPrintDateTime(currentDateTime: any = new Date()) {
+			return (currentDateTime.getMonth()+1)  + "/"
+                + currentDateTime.getDate() + "/"
+                + currentDateTime.getFullYear() + " | "
+                + currentDateTime.getHours() + ":"
+                + ('0' + currentDateTime.getMinutes()).slice(-2) + ":"
+                + ('0' + currentDateTime.getSeconds()).slice(-2);
 		}
 	}
 }
