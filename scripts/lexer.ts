@@ -17,7 +17,7 @@ module Combobiler {
 		}
 
 		public performLexicalAnalysis() {
-			var regExForNewLine = /\r|\n/;
+			var regExForNewLine = /\r+|\n+|\t+/;
 			// Split the source code by spaces
 			var splitSource = this.source.split(' ');
 			this.log('==== Lexical Analysis Start ====');
