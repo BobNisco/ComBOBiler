@@ -36,9 +36,6 @@ module Combobiler {
 							this.log('Found token ' + newToken.toString());
 						} else {
 							this.error('Lexical error: ' + current + ' on line ' + line + 1);
-							// Comment out the break command if you don't want compilation
-							// to stop during the lex phase
-							break;
 						}
 					}
 				}
