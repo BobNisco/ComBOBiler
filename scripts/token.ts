@@ -9,7 +9,7 @@ module Combobiler {
 		public static alphaNumRegexString = "[A-Za-z0-9]*";
 		public static stringRegex = /(\")[A-Za-z][A-Za-z0-9]*(\")/;
 		public static identifierRegex = new RegExp("^[A-Za-z]" + Token.alphaNumRegexString);
-		public static intRegex = /^0$|^[1-9]+\d*/;
+		public static intRegex = /^0$|^[1-9]\d*$/;
 
 		// TypeScript (like JS) does not have a difference between
 		// an integer or a float/double.

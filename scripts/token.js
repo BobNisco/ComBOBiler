@@ -51,7 +51,7 @@ var Combobiler;
         Token.alphaNumRegexString = "[A-Za-z0-9]*";
         Token.stringRegex = /(\")[A-Za-z][A-Za-z0-9]*(\")/;
         Token.identifierRegex = new RegExp("^[A-Za-z]" + Token.alphaNumRegexString);
-        Token.intRegex = /^0$|^[1-9]+\d*/;
+        Token.intRegex = /^0$|^[1-9]\d*$/;
 
         Token.symbolMapping = function (symbol, line) {
             // Make an associative array where the keys are the reserved symbols
