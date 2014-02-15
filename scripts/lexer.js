@@ -34,10 +34,9 @@ var Combobiler;
                             tokenStream.push(newToken);
                             this.log('Found token ' + newToken.toString());
                         } else {
-                            this.error('Lexical error in token ' + current + ' on line ' + line + 1);
-                            // TODO: Once all rules of grammar are implemented, we want to
-                            // break if there ever is an error. But for now, it helps us debug
-                            //break;
+                            this.error('Lexical error: ' + current + ' on line ' + line + 1);
+
+                            break;
                         }
                     }
                 }

@@ -9,7 +9,7 @@ module Combobiler {
 		public static alphaNumRegexString = "[A-Za-z0-9]*";
 		public static stringRegex = /(\")[A-Za-z][A-Za-z0-9]*(\")/;
 		public static identifierRegex = new RegExp("[A-Za-z]" + Token.alphaNumRegexString);
-		public static intRegex = /(0)|([1-9][0-9]*)/;
+		public static intRegex = /0|[1-9]+\d*/;
 
 		// TypeScript (like JS) does not have a difference between
 		// an integer or a float/double.
@@ -21,48 +21,53 @@ module Combobiler {
 			return this.symbol + ' on line ' + this.line;
 		}
 
+		/**
+		 * A simple way to easily create new tokens for reserved symbols
+		 */
+		private static symbolMapping = function(symbol: string, line: number) {
+			// Make an associative array where the keys are the reserved symbols
+			// and the value is an anonymous, self-invoking function that returns
+			// the proper Token
+			var tokens = {
+				'while': function() { return new While(line); }(),
+				'(': function() { return new LParen(line); }(),
+				')': function() { return new RParen(line); }(),
+				'<': function() { return new LessThan(line); }(),
+				'>': function() { return new GreaterThan(line); }(),
+				'{': function() { return new OpenBrace(line); }(),
+				'}': function() { return new CloseBrace(line); }(),
+				'=': function() { return new Assignment(line); }(),
+				'+': function() { return new Plus(line); }(),
+				'-': function() { return new Minus(line); }(),
+				';': function() { return new Semicolon(line); }(),
+				'true': function() { return new True(line); }(),
+				'false': function() { return new False(line); }(),
+				'int': function() { return new Int(line); }(),
+				'if': function() { return new If(line); }(),
+				'string': function() { return new String(line); }(),
+				'boolean': function() { return new Boolean(line); }(),
+				'==': function() { return new Equality(line); }(),
+				'!=': function() { return new NonEquality(line); }(),
+				'$': function() { return new EndBlock(line); }(),
+			}
+			return tokens[symbol];
+		}
+
+		/**
+		 * A function that will return a new Token of the proper subclass
+		 * depending on what symbol was passed in to it.
+		 *
+		 * @param symbol the string of characters that we are attempting to
+		 *        match against
+		 * @param line the line number in which the symbol was found
+		 */
 		public static makeNewToken(symbol: string, line: number) {
-			if (symbol == 'while') {
-				return new While(line);
-			} else if (symbol == '(') {
-				return new LParen(line);
-			} else if (symbol == ')') {
-				return new RParen(line);
-			} else if (symbol == '<') {
-				return new LessThan(line);
-			} else if (symbol == '>') {
-				return new GreaterThan(line);
-			} else if (symbol == '{') {
-				return new OpenBrace(line);
-			} else if (symbol == '}') {
-				return new CloseBrace(line);
-			} else if (symbol == '=') {
-				return new Assignment(line);
-			} else if (symbol == '+') {
-				return new Plus(line);
-			} else if (symbol == '-') {
-				return new Minus(line);
-			} else if (symbol == ';') {
-				return new Semicolon(line);
-			} else if (symbol == 'true') {
-				return new True(line);
-			} else if (symbol == 'false') {
-				return new False(line);
-			} else if (symbol == 'int') {
-				return new Int(line);
-			} else if (symbol == 'if') {
-				return new If(line);
-			} else if (symbol == 'string') {
-				return new String(line);
-			} else if (symbol == 'boolean') {
-				return new Boolean(line);
-			} else if (symbol == '==') {
-				return new Equality(line);
-			} else if (symbol == '!=') {
-				return new NonEquality(line);
-			} else if (symbol == '$') {
-				return new EndBlock(line);
-			} else if (Token.intRegex.exec(symbol)) {
+			var possibleToken = Token.symbolMapping(symbol, line);
+			if (possibleToken !== undefined) {
+				return possibleToken;
+			}
+
+			if (Token.intRegex.exec(symbol)) {
 				return new IntValue(line, symbol);
 			} else if (Token.stringRegex.exec(symbol)) {
 				return new StringValue(line, symbol);
