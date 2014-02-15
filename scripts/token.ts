@@ -60,6 +60,8 @@ module Combobiler {
 				return new Equality(line);
 			} else if (symbol == '!=') {
 				return new NonEquality(line);
+			} else if (symbol == '$') {
+				return new EndBlock(line);
 			} else if (Token.intRegex.exec(symbol)) {
 				return new IntValue(line, symbol);
 			} else if (Token.stringRegex.exec(symbol)) {
@@ -188,6 +190,12 @@ module Combobiler {
 	export class NonEquality extends Token {
 		constructor(line) {
 			super('!=', line);
+		}
+	}
+
+	export class EndBlock extends Token {
+		constructor(line) {
+			super('$', line);
 		}
 	}
 

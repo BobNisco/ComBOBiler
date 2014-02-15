@@ -56,6 +56,8 @@ var Combobiler;
                 return new Equality(line);
             } else if (symbol == '!=') {
                 return new NonEquality(line);
+            } else if (symbol == '$') {
+                return new EndBlock(line);
             } else if (Token.intRegex.exec(symbol)) {
                 return new IntValue(line, symbol);
             } else if (Token.stringRegex.exec(symbol)) {
@@ -251,6 +253,15 @@ var Combobiler;
         return NonEquality;
     })(Token);
     Combobiler.NonEquality = NonEquality;
+
+    var EndBlock = (function (_super) {
+        __extends(EndBlock, _super);
+        function EndBlock(line) {
+            _super.call(this, '$', line);
+        }
+        return EndBlock;
+    })(Token);
+    Combobiler.EndBlock = EndBlock;
 
     /**
     * A subclass of the Token object meant for tokens who need to
