@@ -56,20 +56,27 @@ var Combobiler;
                 return new Equality(line);
             } else if (symbol == '!=') {
                 return new NonEquality(line);
-            } else if (/^\d+$/.exec(symbol) || /(\")[A-Za-z][A-Za-z0-9]*(\")/.exec(symbol)) {
-                return new Value(line, symbol);
-            } else if (/^[A-Za-z][A-Za-z0-9]*$/.exec(symbol)) {
-                return new VariableIdentifier(line, symbol);
+            } else if (Token.intRegex.exec(symbol)) {
+                return new IntValue(line, symbol);
+            } else if (Token.stringRegex.exec(symbol)) {
+                return new StringValue(line, symbol);
             } else if (/(\bprint\b)(\()([A-Za-z][A-Za-z0-9]*)(\))/.exec(symbol)) {
                 var match = /(\bprint\b)(\()([A-Za-z][A-Za-z0-9]*)(\))/.exec(symbol);
 
                 // Pass what's in between the parenthesis as a parameter
                 return new Print(line, match[3]);
+            } else if (Token.identifierRegex.exec(symbol)) {
+                return new VariableIdentifier(line, symbol);
             } else {
                 // TODO: Handle errors better
                 return null;
             }
         };
+        Token.numberRegex = /^\d+$/;
+        Token.alphaNumRegexString = "[A-Za-z0-9]*";
+        Token.stringRegex = /(\")[A-Za-z][A-Za-z0-9]*(\")/;
+        Token.identifierRegex = new RegExp("[A-Za-z]" + Token.alphaNumRegexString);
+        Token.intRegex = /(0)|([1-9][0-9]*)/;
         return Token;
     })();
     Combobiler.Token = Token;
@@ -271,14 +278,23 @@ var Combobiler;
     })(ValueToken);
     Combobiler.VariableIdentifier = VariableIdentifier;
 
-    var Value = (function (_super) {
-        __extends(Value, _super);
-        function Value(line, value) {
-            _super.call(this, 'value', line, value);
+    var StringValue = (function (_super) {
+        __extends(StringValue, _super);
+        function StringValue(line, value) {
+            _super.call(this, 'string value', line, value);
         }
-        return Value;
+        return StringValue;
     })(ValueToken);
-    Combobiler.Value = Value;
+    Combobiler.StringValue = StringValue;
+
+    var IntValue = (function (_super) {
+        __extends(IntValue, _super);
+        function IntValue(line, value) {
+            _super.call(this, 'int value', line, value);
+        }
+        return IntValue;
+    })(ValueToken);
+    Combobiler.IntValue = IntValue;
 
     var Print = (function (_super) {
         __extends(Print, _super);

@@ -38,8 +38,7 @@ $(document).ready(function () {
         e.preventDefault();
         var dropdown = $(this), logEntries = output.find('.label');
         $.each(logEntries, function (i, val) {
-            var thisLabel = $(val);
-            var thisRow = thisLabel.parent();
+            var thisLabel = $(val), thisRow = thisLabel.parent();
             thisRow.show();
             if (!determineIfRowShouldBeDisplayed(thisRow)) {
                 thisRow.hide();

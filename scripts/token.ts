@@ -1,5 +1,16 @@
 module Combobiler {
 	export class Token {
+
+		/**
+		 * Define our regex for identifying certain tokens as static variables
+		 * so that we can reference them from other classes if need be.
+		 */
+		public static numberRegex = /^\d+$/;
+		public static alphaNumRegexString = "[A-Za-z0-9]*";
+		public static stringRegex = /(\")[A-Za-z][A-Za-z0-9]*(\")/;
+		public static identifierRegex = new RegExp("[A-Za-z]" + Token.alphaNumRegexString);
+		public static intRegex = /(0)|([1-9][0-9]*)/;
+
 		// TypeScript (like JS) does not have a difference between
 		// an integer or a float/double.
 		constructor(public symbol: string, public line: number) {
@@ -49,14 +60,16 @@ module Combobiler {
 				return new Equality(line);
 			} else if (symbol == '!=') {
 				return new NonEquality(line);
-			} else if (/^\d+$/.exec(symbol) || /(\")[A-Za-z][A-Za-z0-9]*(\")/.exec(symbol)) {
-				return new Value(line, symbol);
-			} else if (/^[A-Za-z][A-Za-z0-9]*$/.exec(symbol)) {
-				return new VariableIdentifier(line, symbol);
+			} else if (Token.intRegex.exec(symbol)) {
+				return new IntValue(line, symbol);
+			} else if (Token.stringRegex.exec(symbol)) {
+				return new StringValue(line, symbol);
 			} else if (/(\bprint\b)(\()([A-Za-z][A-Za-z0-9]*)(\))/.exec(symbol)) {
 				var match = /(\bprint\b)(\()([A-Za-z][A-Za-z0-9]*)(\))/.exec(symbol);
 				// Pass what's in between the parenthesis as a parameter
 				return new Print(line, match[3]);
+			} else if (Token.identifierRegex.exec(symbol)) {
+				return new VariableIdentifier(line, symbol);
 			} else {
 				// TODO: Handle errors better
 				return null;
@@ -198,9 +211,15 @@ module Combobiler {
 		}
 	}
 
-	export class Value extends ValueToken {
+	export class StringValue extends ValueToken {
 		constructor(line, value) {
-			super('value', line, value);
+			super('string value', line, value);
+		}
+	}
+
+	export class IntValue extends ValueToken {
+		constructor(line, value) {
+			super('int value', line, value);
 		}
 	}
 
