@@ -2,13 +2,13 @@
 var LOGGER = null;
 
 $(document).ready(function(){
-	var compileButton = $('#compile-button');
-	var taSourceCode = $('#taSourceCode');
-	var output = $('#output');
-	var programTable = $('#program-table');
-	var logFilterType = $('#log-filter-type');
-	var logFilterStatus = $('#log-filter-status');
-	var clearLogButton = $('#clear-log-button');
+	var compileButton = $('#compile-button'),
+		taSourceCode = $('#taSourceCode'),
+		output = $('#output'),
+		programTable = $('#program-table'),
+		logFilterType = $('#log-filter-type'),
+		logFilterStatus = $('#log-filter-status'),
+		clearLogButton = $('#clear-log-button');
 	// Instantiate a new instance of our logger class by passing in
 	// the div that we want to use
 	LOGGER = new Combobiler.Logger(output);
@@ -29,8 +29,8 @@ $(document).ready(function(){
 
 	logFilterType.on('change', function(e) {
 		e.preventDefault();
-		var dropdown = $(this);
-		var logEntries = output.find('.log-row');
+		var dropdown = $(this),
+			logEntries = output.find('.log-row');
 		$.each(logEntries, function(i, val) {
 			var thisRow = $(val);
 			thisRow.show();
@@ -42,11 +42,11 @@ $(document).ready(function(){
 
 	logFilterStatus.on('change', function(e) {
 		e.preventDefault();
-		var dropdown = $(this);
-		var logEntries = output.find('.label');
+		var dropdown = $(this),
+			logEntries = output.find('.label');
 		$.each(logEntries, function(i, val) {
-			var thisLabel = $(val);
-			var thisRow = thisLabel.parent();
+			var thisLabel = $(val),
+				thisRow = thisLabel.parent();
 			thisRow.show();
 			if (!determineIfRowShouldBeDisplayed(thisRow)) {
 				thisRow.hide();
@@ -63,9 +63,9 @@ $(document).ready(function(){
 	}
 
 	var determineIfRowShouldBeDisplayed = function(row) {
-		var currentFilterType = logFilterType.val();
-		var currentFilterStatus = logFilterStatus.val();
-		var thisLabel = row.find('.label');
+		var currentFilterType = logFilterType.val(),
+			currentFilterStatus = logFilterStatus.val(),
+			thisLabel = row.find('.label');
 		return (determineIfRowShouldBeDisplayedForStatus(currentFilterStatus, thisLabel) &&
 				determineIfRowShouldBeDisplayedForType(currentFilterType, row))
 	}

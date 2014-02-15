@@ -288,4 +288,13 @@ var Combobiler;
         return Print;
     })(ValueToken);
     Combobiler.Print = Print;
+
+    var Char = (function (_super) {
+        __extends(Char, _super);
+        function Char(line, value) {
+            _super.call(this, 'char', line, value);
+        }
+        return Char;
+    })(ValueToken);
+    Combobiler.Char = Char;
 })(Combobiler || (Combobiler = {}));
