@@ -5,7 +5,10 @@ var Combobiler;
         function Logger(textarea, personality) {
             this.textarea = textarea;
             this.personality = personality;
-            this.info('Logger initialized!');
+            this.info({
+                standard: 'Logger initialized!',
+                sarcastic: 'Logger initialized!'
+            });
         }
         /**
         * Clears all of the text in the output field
@@ -19,16 +22,16 @@ var Combobiler;
         *
         * @param message the text to be put into the output field
         */
-        Logger.prototype.info = function (message) {
+        Logger.prototype.info = function (messages) {
             this.log({
                 displayClass: 'label-info',
                 type: 'info',
                 header: 'Info'
-            }, message);
+            }, messages);
         };
 
-        Logger.prototype.log = function (options, message) {
-            this.textarea.prepend(this.createLogRow(options, message));
+        Logger.prototype.log = function (options, messages) {
+            this.textarea.prepend(this.createLogRow(options, messages[this.getPersonality()]));
         };
 
         Logger.prototype.getPersonality = function () {

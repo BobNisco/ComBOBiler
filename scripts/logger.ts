@@ -3,7 +3,10 @@
 module Combobiler {
 	export class Logger {
 		constructor (public textarea: JQuery, private personality: JQuery) {
-			this.info('Logger initialized!');
+			this.info({
+				standard: 'Logger initialized!',
+				sarcastic: 'Logger initialized!'
+			});
 		}
 
 		/**
@@ -18,16 +21,16 @@ module Combobiler {
 		 *
 		 * @param message the text to be put into the output field
 		 */
-		public info(message: string) {
+		public info(messages: Object) {
 			this.log({
 					displayClass: 'label-info',
 					type: 'info',
 					header: 'Info',
-				}, message);
+				}, messages);
 		}
 
-		public log(options: Object, message: string) {
-			this.textarea.prepend(this.createLogRow(options, message));
+		public log(options: Object, messages: Object) {
+			this.textarea.prepend(this.createLogRow(options, messages[this.getPersonality()]));
 		}
 
 		public getPersonality() {

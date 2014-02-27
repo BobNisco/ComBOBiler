@@ -20,7 +20,10 @@ $(document).ready(function(){
 
 	compileButton.on('click', function(e) {
 		e.preventDefault();
-		LOGGER.info('Compilation started');
+		LOGGER.info({
+			standard: 'Compilation started',
+			sarcastic: 'Compilation started'
+		});
 		var lexer = new Combobiler.Lexer(taSourceCode.val());
 		lexer.performLexicalAnalysis();
 	});
