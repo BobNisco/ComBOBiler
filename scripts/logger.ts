@@ -2,7 +2,7 @@
 
 module Combobiler {
 	export class Logger {
-		constructor (public textarea: JQuery) {
+		constructor (public textarea: JQuery, private personality: JQuery) {
 			this.info('Logger initialized!');
 		}
 
@@ -28,6 +28,10 @@ module Combobiler {
 
 		public log(options: Object, message: string) {
 			this.textarea.prepend(this.createLogRow(options, message));
+		}
+
+		public getPersonality() {
+			return this.personality.val();
 		}
 
 		/**

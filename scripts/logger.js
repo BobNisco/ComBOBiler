@@ -2,8 +2,9 @@
 var Combobiler;
 (function (Combobiler) {
     var Logger = (function () {
-        function Logger(textarea) {
+        function Logger(textarea, personality) {
             this.textarea = textarea;
+            this.personality = personality;
             this.info('Logger initialized!');
         }
         /**
@@ -28,6 +29,10 @@ var Combobiler;
 
         Logger.prototype.log = function (options, message) {
             this.textarea.prepend(this.createLogRow(options, message));
+        };
+
+        Logger.prototype.getPersonality = function () {
+            return this.personality.val();
         };
 
         /**

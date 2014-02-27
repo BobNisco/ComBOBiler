@@ -1,12 +1,15 @@
+///<reference path="jquery.d.ts" />
+///<reference path="logger.ts" />
+///<reference path="lexer.ts" />
 // Some global variables that will be initialized once the page is fully loaded
 var LOGGER = null;
 
 $(document).ready(function () {
-    var compileButton = $('#compile-button'), taSourceCode = $('#taSourceCode'), output = $('#output'), programTable = $('#program-table'), logFilterType = $('#log-filter-type'), logFilterStatus = $('#log-filter-status'), clearLogButton = $('#clear-log-button');
+    var compileButton = $('#compile-button'), taSourceCode = $('#taSourceCode'), output = $('#output'), programTable = $('#program-table'), logFilterType = $('#log-filter-type'), logFilterStatus = $('#log-filter-status'), clearLogButton = $('#clear-log-button'), logPersonality = $('#log-personality');
 
     // Instantiate a new instance of our logger class by passing in
-    // the div that we want to use
-    LOGGER = new Combobiler.Logger(output);
+    // the div that we want to use and the personality selector
+    LOGGER = new Combobiler.Logger(output, logPersonality);
 
     compileButton.on('click', function (e) {
         e.preventDefault();
