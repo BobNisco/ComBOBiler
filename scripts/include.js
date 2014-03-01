@@ -18,7 +18,9 @@ $(document).ready(function () {
             sarcastic: 'Compilation started'
         });
         var lexer = new Combobiler.Lexer(taSourceCode.val());
-        lexer.performLexicalAnalysis();
+        var tokens = lexer.performLexicalAnalysis();
+        var parser = new Combobiler.Parser(tokens);
+        parser.performParse();
     });
 
     programTable.on('click', '.user-program', function (e) {
