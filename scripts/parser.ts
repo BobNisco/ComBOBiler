@@ -77,7 +77,67 @@ module Combobiler {
 		}
 
 		private parseStatementList() {
+			while(!(this.peekNextToken() instanceof CloseBrace)) {
+				var token = this.getNextToken();
 
+				if (token instanceof Print) {
+					this.parsePrintStatement(token);
+				} else if (token instanceof Assignment) {
+					this.parseAssignmentStatement(token);
+				} else if (token instanceof VariableIdentifier) {
+					this.parseVariableDeclaration(token);
+				} else if (token instanceof While) {
+					this.parseWhileStatement(token);
+				} else if (token instanceof If) {
+					this.parseIfStatement(token);
+				} else if (token instanceof OpenBrace) {
+					this.parseBlock();
+				} else {
+					this.error({
+						standard: 'Tried to parse statement list, but could not find valid statement on line ' + token.line,
+						sarcastic: 'Why do you even program if you can\'t get a simple statement correct on line ' + token.line
+					});
+				}
+			}
+		}
+
+		private parsePrintStatement(token: Token) {
+			this.log({
+				standard: 'Parsing print statement on line ' + token.line,
+				sarcastic: 'Parsing print statement on line ' + token.line,
+			});
+		}
+
+		private parseAssignmentStatement(token: Token) {
+			this.log({
+				standard: 'Parsing assignment statement on line ' + token.line,
+				sarcastic: 'Parsing assignment statement on line ' + token.line,
+			});
+		}
+
+		private parseVariableDeclaration(token: Token) {
+			this.log({
+				standard: 'Parsing variable declaration statement on line ' + token.line,
+				sarcastic: 'Parsing variable declaration statement on line ' + token.line,
+			});
+		}
+
+		private parseWhileStatement(token: Token) {
+			this.log({
+				standard: 'Parsing while statement on line ' + token.line,
+				sarcastic: 'Parsing while statement on line ' + token.line,
+			});
+		}
+
+		private parseIfStatement(token: Token) {
+			this.log({
+				standard: 'Parsing if statement on line ' + token.line,
+				sarcastic: 'Parsing if statement on line ' + token.line,
+			});
+		}
+
+		private peekNextToken() {
+			return this.tokens[this.current + 1];
 		}
 
 		private getNextToken() {

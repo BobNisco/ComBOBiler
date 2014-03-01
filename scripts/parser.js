@@ -71,6 +71,67 @@ var Combobiler;
         };
 
         Parser.prototype.parseStatementList = function () {
+            while (!(this.peekNextToken() instanceof Combobiler.CloseBrace)) {
+                var token = this.getNextToken();
+
+                if (token instanceof Combobiler.Print) {
+                    this.parsePrintStatement(token);
+                } else if (token instanceof Combobiler.Assignment) {
+                    this.parseAssignmentStatement(token);
+                } else if (token instanceof Combobiler.VariableIdentifier) {
+                    this.parseVariableDeclaration(token);
+                } else if (token instanceof Combobiler.While) {
+                    this.parseWhileStatement(token);
+                } else if (token instanceof Combobiler.If) {
+                    this.parseIfStatement(token);
+                } else if (token instanceof Combobiler.OpenBrace) {
+                    this.parseBlock();
+                } else {
+                    this.error({
+                        standard: 'Tried to parse statement list, but could not find valid statement on line ' + token.line,
+                        sarcastic: 'Why do you even program if you can\'t get a simple statement correct on line ' + token.line
+                    });
+                }
+            }
+        };
+
+        Parser.prototype.parsePrintStatement = function (token) {
+            this.log({
+                standard: 'Parsing print statement on line ' + token.line,
+                sarcastic: 'Parsing print statement on line ' + token.line
+            });
+        };
+
+        Parser.prototype.parseAssignmentStatement = function (token) {
+            this.log({
+                standard: 'Parsing assignment statement on line ' + token.line,
+                sarcastic: 'Parsing assignment statement on line ' + token.line
+            });
+        };
+
+        Parser.prototype.parseVariableDeclaration = function (token) {
+            this.log({
+                standard: 'Parsing variable declaration statement on line ' + token.line,
+                sarcastic: 'Parsing variable declaration statement on line ' + token.line
+            });
+        };
+
+        Parser.prototype.parseWhileStatement = function (token) {
+            this.log({
+                standard: 'Parsing while statement on line ' + token.line,
+                sarcastic: 'Parsing while statement on line ' + token.line
+            });
+        };
+
+        Parser.prototype.parseIfStatement = function (token) {
+            this.log({
+                standard: 'Parsing if statement on line ' + token.line,
+                sarcastic: 'Parsing if statement on line ' + token.line
+            });
+        };
+
+        Parser.prototype.peekNextToken = function () {
+            return this.tokens[this.current + 1];
         };
 
         Parser.prototype.getNextToken = function () {
