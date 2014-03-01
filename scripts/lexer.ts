@@ -25,6 +25,7 @@ module Combobiler {
 			// Our return (strongly-typed in TypeScript) array of Tokens
 			var tokenStream = new Array<Token>();
 
+			perLineLoop:
 			for (var line = 0; line < splitSource.length; line++) {
 				var currentLine = splitSource[line];
 				// Split each part of the line up by spaces
@@ -45,6 +46,7 @@ module Combobiler {
 								standard: 'Lexical error: ' + current + ' on line ' + (line + 1),
 								sarcastic: 'You dun goofed, lex error ' + current + ' on line ' + (line + 1)
 							});
+							break perLineLoop;
 						}
 					}
 				}

@@ -23,6 +23,7 @@ var Combobiler;
             // Our return (strongly-typed in TypeScript) array of Tokens
             var tokenStream = new Array();
 
+            perLineLoop:
             for (var line = 0; line < splitSource.length; line++) {
                 var currentLine = splitSource[line];
 
@@ -44,6 +45,7 @@ var Combobiler;
                                 standard: 'Lexical error: ' + current + ' on line ' + (line + 1),
                                 sarcastic: 'You dun goofed, lex error ' + current + ' on line ' + (line + 1)
                             });
+                            break perLineLoop;
                         }
                     }
                 }
