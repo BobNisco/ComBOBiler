@@ -1,6 +1,7 @@
 ///<reference path="token.ts" />
 ///<reference path="jquery.d.ts" />
 ///<reference path="include.ts" />
+///<reference path="scope_node.ts" />
 
 module Combobiler {
 	export class Scope {
@@ -16,8 +17,22 @@ module Combobiler {
 			return this.parent;
 		}
 
-		public addSymbol(key: any, value: any) {
+		public addSymbol(key: any, value: ScopeNode) {
 			this.symbols[key] = value;
+		}
+
+		public findSymbol(key: any) {
+			// Check to see if the key exists in this scope
+			for (var k in this.symbols) {
+				if (k == key) {
+					return this.symbols[k];
+				}
+			}
+			if (this.parent != null) {
+				// Else, we'll walk up the tree
+				return this.parent.findSymbol(key);
+			}
+			return null;
 		}
 	}
 }

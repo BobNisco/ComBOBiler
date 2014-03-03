@@ -3,6 +3,7 @@
 ///<reference path="include.ts" />
 ///<reference path="lexer.ts" />
 ///<reference path="scope.ts" />
+///<reference path="scope_node.ts" />
 
 module Combobiler {
 	export class Parser {
@@ -127,11 +128,27 @@ module Combobiler {
 			var varId = token;
 			this.assertToken(varId, VariableIdentifier);
 			this.assertToken(this.getNextToken(), Assignment);
-			var value = this.parseExpression(this.getNextToken());
-			// Create a test variable that we know is of type number
-			var testType: number = 1;
-			// Assert that the type is a number, since this is a statically typed language
-			this.assertType(value, testType);
+			var exprToken: Token = this.getNextToken();
+			var value = this.parseExpression(exprToken);
+
+			var possibleSymbol = this.currentScope.findSymbol(varId.value);
+
+			if (possibleSymbol.getType() == typeof Combobiler.IntValue) {
+				// Create a test variable that we know is of type number
+				var numberTestType: number = 1;
+				// Assert that the type is a number, since this is a statically typed language
+				this.assertType(value, numberTestType);
+			} else if (exprToken instanceof Combobiler.StringValue) {
+				// Create a test variable that we know is of type String
+				var stringTestType: string = "test";
+				// Assert that the type is a string, since this is a statically typed language
+				this.assertType(value, stringTestType);
+			} else if (exprToken instanceof Combobiler.Boolean) {
+				// Create a test variable that we know is of type boolean
+				var booleanTestType: boolean = true;
+				// Assert that the type is a boolean, since this is a statically typed language
+				this.assertType(value, booleanTestType);
+			}
 			this.currentScope.addSymbol(varId.value, value);
 			this.log({
 				standard: 'Parsed assignment statement on line ' + token.line,
@@ -203,8 +220,11 @@ module Combobiler {
 		}
 
 		private parseVariableDeclaration(token: Token) {
+			var node: ScopeNode = new ScopeNode(null, token.symbol);
 			this.assertTokenInSet(token, [Combobiler.String, Combobiler.Int, Combobiler.Boolean]);
-			this.parseId(this.getNextToken());
+			token = this.getNextToken();
+			this.parseId(token);
+			this.currentScope.addSymbol(token.value, node);
 			this.log({
 				standard: 'Parsed variable declaration statement on line ' + token.line,
 				sarcastic: 'Parsed variable declaration statement on line ' + token.line,
@@ -246,11 +266,11 @@ module Combobiler {
 			return token;
 		}
 
-		private assertType(token: Token, type: any) {
-			if (typeof token.value == typeof type) {
+		private assertType(val: any, type: any) {
+			if (typeof val == typeof type) {
 				return true;
 			} else {
-				throw new Error('Expected ' + typeof type + ' but got ' + typeof token.value + ' instead');
+				throw new Error('Expected ' + typeof type + ' but got ' + typeof val + ' instead');
 			}
 		}
 
