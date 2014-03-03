@@ -2,6 +2,7 @@
 ///<reference path="jquery.d.ts" />
 ///<reference path="include.ts" />
 ///<reference path="lexer.ts" />
+///<reference path="scope.ts" />
 
 module Combobiler {
 	export class Parser {
@@ -14,6 +15,10 @@ module Combobiler {
 		private tokens: Array<Token>;
 
 		private current: number;
+
+		// We'll keep reference to the "current scope"
+		// We will instantiate it with a blank Scope instance
+		private currentScope = new Scope({}, null);
 
 		constructor(tokens: Array<Token>) {
 			this.tokens = tokens;
@@ -64,10 +69,17 @@ module Combobiler {
 
 		private parseBlock(token: Token) {
 			this.assertToken(token, OpenBrace);
+			// Opening up a new block denotes a new scope
+			// We will set the current scope to the newly instantiated Scope instance
+			// which sets its parent attribute to the last current scope
+			this.currentScope = new Scope({}, this.currentScope);
 			var startLine = token.line;
 			this.parseStatementList();
 			token = this.getNextToken();
 			this.assertToken(token, CloseBrace);
+			// At this point, the block is closed, therefore we can move the currentScope
+			// pointer back to the currentScope's parent.
+			this.currentScope = this.currentScope.getParent();
 			this.log({
 				standard: 'Parsed a block that started on line ' + startLine + ' and ended on ' + token.line,
 				sarcastic: 'I don\'t have something sarcastic to say, but yay we parsed a block on line ' + startLine + ' and ended on ' + token.line
@@ -111,9 +123,12 @@ module Combobiler {
 		}
 
 		private parseAssignmentStatement(token: Token) {
-			this.assertToken(token, VariableIdentifier);
+			// Capture some variables so we can add to the symbol table/scope blocks
+			var varId = token;
+			this.assertToken(varId, VariableIdentifier);
 			this.assertToken(this.getNextToken(), Assignment);
-			this.parseExpression(this.getNextToken());
+			var value = this.parseExpression(this.getNextToken());
+			this.currentScope.addSymbol(varId.value, value);
 			this.log({
 				standard: 'Parsed assignment statement on line ' + token.line,
 				sarcastic: 'Parsed assignment statement on line ' + token.line,
@@ -122,9 +137,9 @@ module Combobiler {
 
 		private parseExpression(token: Token) {
 			if (token instanceof Combobiler.IntValue) {
-				this.parseIntExpression(token);
+				return this.parseIntExpression(token);
 			} else if (token instanceof Combobiler.StringValue) {
-				this.parseStringExpression(token);
+				return this.parseStringExpression(token);
 			} else if (token instanceof Combobiler.Boolean) {
 				this.parseBooleanExpression(token);
 			} else if (token instanceof VariableIdentifier) {
@@ -135,19 +150,24 @@ module Combobiler {
 		}
 
 		private parseIntExpression(token: Token) {
+			var resultValue = token.value;
 			this.assertToken(token, Combobiler.IntValue);
 			if (this.peekNextToken() instanceof Plus) {
 				this.assertToken(this.getNextToken(), Plus);
-				this.parseExpression(this.getNextToken());
+				var nextToken = this.getNextToken();
+				this.parseExpression(nextToken);
+				resultValue += nextToken.value;
 			}
 			this.log({
 				standard: 'Parsed int expression on line ' + token.line,
 				sarcastic: 'Parsed int expression on line ' + token.line,
 			});
+			return resultValue;
 		}
 
 		private parseStringExpression(token: Token) {
 			this.assertToken(token, Combobiler.StringValue);
+			return token.value;
 			this.log({
 				standard: 'Parsed string expression on line ' + token.line,
 				sarcastic: 'Parsed string expression on line ' + token.line,

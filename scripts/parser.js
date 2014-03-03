@@ -2,6 +2,7 @@
 ///<reference path="jquery.d.ts" />
 ///<reference path="include.ts" />
 ///<reference path="lexer.ts" />
+///<reference path="scope.ts" />
 var Combobiler;
 (function (Combobiler) {
     var Parser = (function () {
@@ -11,6 +12,9 @@ var Combobiler;
                 type: 'parser',
                 header: 'Parser'
             };
+            // We'll keep reference to the "current scope"
+            // We will instantiate it with a blank Scope instance
+            this.currentScope = new Combobiler.Scope({}, null);
             this.tokens = tokens;
             this.current = -1;
         }
@@ -58,10 +62,19 @@ var Combobiler;
 
         Parser.prototype.parseBlock = function (token) {
             this.assertToken(token, Combobiler.OpenBrace);
+
+            // Opening up a new block denotes a new scope
+            // We will set the current scope to the newly instantiated Scope instance
+            // which sets its parent attribute to the last current scope
+            this.currentScope = new Combobiler.Scope({}, this.currentScope);
             var startLine = token.line;
             this.parseStatementList();
             token = this.getNextToken();
             this.assertToken(token, Combobiler.CloseBrace);
+
+            // At this point, the block is closed, therefore we can move the currentScope
+            // pointer back to the currentScope's parent.
+            this.currentScope = this.currentScope.getParent();
             this.log({
                 standard: 'Parsed a block that started on line ' + startLine + ' and ended on ' + token.line,
                 sarcastic: 'I don\'t have something sarcastic to say, but yay we parsed a block on line ' + startLine + ' and ended on ' + token.line
@@ -105,9 +118,12 @@ var Combobiler;
         };
 
         Parser.prototype.parseAssignmentStatement = function (token) {
-            this.assertToken(token, Combobiler.VariableIdentifier);
+            // Capture some variables so we can add to the symbol table/scope blocks
+            var varId = token;
+            this.assertToken(varId, Combobiler.VariableIdentifier);
             this.assertToken(this.getNextToken(), Combobiler.Assignment);
-            this.parseExpression(this.getNextToken());
+            var value = this.parseExpression(this.getNextToken());
+            this.currentScope.addSymbol(varId.value, value);
             this.log({
                 standard: 'Parsed assignment statement on line ' + token.line,
                 sarcastic: 'Parsed assignment statement on line ' + token.line
@@ -116,9 +132,9 @@ var Combobiler;
 
         Parser.prototype.parseExpression = function (token) {
             if (token instanceof Combobiler.IntValue) {
-                this.parseIntExpression(token);
+                return this.parseIntExpression(token);
             } else if (token instanceof Combobiler.StringValue) {
-                this.parseStringExpression(token);
+                return this.parseStringExpression(token);
             } else if (token instanceof Combobiler.Boolean) {
                 this.parseBooleanExpression(token);
             } else if (token instanceof Combobiler.VariableIdentifier) {
@@ -129,19 +145,24 @@ var Combobiler;
         };
 
         Parser.prototype.parseIntExpression = function (token) {
+            var resultValue = token.value;
             this.assertToken(token, Combobiler.IntValue);
             if (this.peekNextToken() instanceof Combobiler.Plus) {
                 this.assertToken(this.getNextToken(), Combobiler.Plus);
-                this.parseExpression(this.getNextToken());
+                var nextToken = this.getNextToken();
+                this.parseExpression(nextToken);
+                resultValue += nextToken.value;
             }
             this.log({
                 standard: 'Parsed int expression on line ' + token.line,
                 sarcastic: 'Parsed int expression on line ' + token.line
             });
+            return resultValue;
         };
 
         Parser.prototype.parseStringExpression = function (token) {
             this.assertToken(token, Combobiler.StringValue);
+            return token.value;
             this.log({
                 standard: 'Parsed string expression on line ' + token.line,
                 sarcastic: 'Parsed string expression on line ' + token.line

@@ -11,5 +11,13 @@ module Combobiler {
 		    this.symbols = symbols;
 		    this.parent = parent;
 		}
+
+		public getParent() {
+			return this.parent;
+		}
+
+		public addSymbol(key: any, value: any) {
+			this.symbols[key] = value;
+		}
 	}
 }

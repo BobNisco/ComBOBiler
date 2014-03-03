@@ -8,6 +8,13 @@ var Combobiler;
             this.symbols = symbols;
             this.parent = parent;
         }
+        Scope.prototype.getParent = function () {
+            return this.parent;
+        };
+
+        Scope.prototype.addSymbol = function (key, value) {
+            this.symbols[key] = value;
+        };
         return Scope;
     })();
     Combobiler.Scope = Scope;
