@@ -35,11 +35,6 @@ var Combobiler;
                 return new IntValue(line, symbol);
             } else if (Token.stringRegex.exec(symbol)) {
                 return new StringValue(line, symbol);
-            } else if (/(\bprint\b)(\()([A-Za-z][A-Za-z0-9]*)(\))/.exec(symbol)) {
-                var match = /(\bprint\b)(\()([A-Za-z][A-Za-z0-9]*)(\))/.exec(symbol);
-
-                // Pass what's in between the parenthesis as a parameter
-                return new Print(line, match[3]);
             } else if (Token.identifierRegex.exec(symbol)) {
                 return new VariableIdentifier(line, symbol);
             } else {
@@ -117,6 +112,9 @@ var Combobiler;
                 }(),
                 '$': function () {
                     return new EndBlock(line);
+                }(),
+                'print': function () {
+                    return new Print(line);
                 }()
             };
             return tokens[symbol];
@@ -305,6 +303,15 @@ var Combobiler;
     })(Token);
     Combobiler.EndBlock = EndBlock;
 
+    var Print = (function (_super) {
+        __extends(Print, _super);
+        function Print(line) {
+            _super.call(this, 'print', line);
+        }
+        return Print;
+    })(Token);
+    Combobiler.Print = Print;
+
     /**
     * A subclass of the Token object meant for tokens who need to
     * store a value in them.
@@ -348,15 +355,6 @@ var Combobiler;
         return IntValue;
     })(ValueToken);
     Combobiler.IntValue = IntValue;
-
-    var Print = (function (_super) {
-        __extends(Print, _super);
-        function Print(line, value) {
-            _super.call(this, 'print', line, value);
-        }
-        return Print;
-    })(ValueToken);
-    Combobiler.Print = Print;
 
     var Char = (function (_super) {
         __extends(Char, _super);

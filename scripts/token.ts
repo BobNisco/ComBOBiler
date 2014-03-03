@@ -49,6 +49,7 @@ module Combobiler {
 				'==': function() { return new Equality(line); }(),
 				'!=': function() { return new NonEquality(line); }(),
 				'$': function() { return new EndBlock(line); }(),
+				'print': function() { return new Print(line); }(),
 			}
 			return tokens[symbol];
 		}
@@ -71,10 +72,6 @@ module Combobiler {
 				return new IntValue(line, symbol);
 			} else if (Token.stringRegex.exec(symbol)) {
 				return new StringValue(line, symbol);
-			} else if (/(\bprint\b)(\()([A-Za-z][A-Za-z0-9]*)(\))/.exec(symbol)) {
-				var match = /(\bprint\b)(\()([A-Za-z][A-Za-z0-9]*)(\))/.exec(symbol);
-				// Pass what's in between the parenthesis as a parameter
-				return new Print(line, match[3]);
 			} else if (Token.identifierRegex.exec(symbol)) {
 				return new VariableIdentifier(line, symbol);
 			} else {
@@ -204,6 +201,12 @@ module Combobiler {
 		}
 	}
 
+	export class Print extends Token {
+		constructor(line) {
+		    super('print', line);
+		}
+	}
+
 	/**
 	 * A subclass of the Token object meant for tokens who need to
 	 * store a value in them.
@@ -233,12 +236,6 @@ module Combobiler {
 	export class IntValue extends ValueToken {
 		constructor(line, value) {
 			super('int value', line, value);
-		}
-	}
-
-	export class Print extends ValueToken {
-		constructor(line, value) {
-			super('print', line, value);
 		}
 	}
 

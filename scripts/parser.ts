@@ -122,9 +122,9 @@ module Combobiler {
 		}
 
 		private parseExpression(token: Token) {
-			if (token instanceof Combobiler.Int) {
+			if (token instanceof Combobiler.IntValue) {
 				this.parseIntExpression(token);
-			} else if (token instanceof Combobiler.String) {
+			} else if (token instanceof Combobiler.StringValue) {
 				this.parseStringExpression(token);
 			} else if (token instanceof Combobiler.Boolean) {
 				this.parseBooleanExpression(token);
@@ -148,7 +148,7 @@ module Combobiler {
 		}
 
 		private parseStringExpression(token: Token) {
-			this.assertToken(token, Combobiler.String);
+			this.assertToken(token, Combobiler.StringValue);
 			this.log({
 				standard: 'Parsed string expression on line ' + token.line,
 				sarcastic: 'Parsed string expression on line ' + token.line,
