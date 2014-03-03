@@ -128,6 +128,10 @@ module Combobiler {
 			this.assertToken(varId, VariableIdentifier);
 			this.assertToken(this.getNextToken(), Assignment);
 			var value = this.parseExpression(this.getNextToken());
+			// Create a test variable that we know is of type number
+			var testType: number = 1;
+			// Assert that the type is a number, since this is a statically typed language
+			this.assertType(value, testType);
 			this.currentScope.addSymbol(varId.value, value);
 			this.log({
 				standard: 'Parsed assignment statement on line ' + token.line,
@@ -150,19 +154,19 @@ module Combobiler {
 		}
 
 		private parseIntExpression(token: Token) {
-			var resultValue = token.value;
+			var resultValue = +token.value;
 			this.assertToken(token, Combobiler.IntValue);
 			if (this.peekNextToken() instanceof Plus) {
 				this.assertToken(this.getNextToken(), Plus);
 				var nextToken = this.getNextToken();
 				this.parseExpression(nextToken);
-				resultValue += nextToken.value;
+				resultValue += +nextToken.value;
 			}
 			this.log({
 				standard: 'Parsed int expression on line ' + token.line,
 				sarcastic: 'Parsed int expression on line ' + token.line,
 			});
-			return resultValue;
+			return +resultValue;
 		}
 
 		private parseStringExpression(token: Token) {
@@ -240,6 +244,14 @@ module Combobiler {
 				});
 			}
 			return token;
+		}
+
+		private assertType(token: Token, type: any) {
+			if (typeof token.value == typeof type) {
+				return true;
+			} else {
+				throw new Error('Expected ' + typeof type + ' but got ' + typeof token.value + ' instead');
+			}
 		}
 
 		private assertToken(token: Token, type: any) {

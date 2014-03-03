@@ -123,6 +123,12 @@ var Combobiler;
             this.assertToken(varId, Combobiler.VariableIdentifier);
             this.assertToken(this.getNextToken(), Combobiler.Assignment);
             var value = this.parseExpression(this.getNextToken());
+
+            // Create a test variable that we know is of type number
+            var testType = 1;
+
+            // Assert that the type is a number, since this is a statically typed language
+            this.assertType(value, testType);
             this.currentScope.addSymbol(varId.value, value);
             this.log({
                 standard: 'Parsed assignment statement on line ' + token.line,
@@ -145,19 +151,19 @@ var Combobiler;
         };
 
         Parser.prototype.parseIntExpression = function (token) {
-            var resultValue = token.value;
+            var resultValue = +token.value;
             this.assertToken(token, Combobiler.IntValue);
             if (this.peekNextToken() instanceof Combobiler.Plus) {
                 this.assertToken(this.getNextToken(), Combobiler.Plus);
                 var nextToken = this.getNextToken();
                 this.parseExpression(nextToken);
-                resultValue += nextToken.value;
+                resultValue += +nextToken.value;
             }
             this.log({
                 standard: 'Parsed int expression on line ' + token.line,
                 sarcastic: 'Parsed int expression on line ' + token.line
             });
-            return resultValue;
+            return +resultValue;
         };
 
         Parser.prototype.parseStringExpression = function (token) {
@@ -235,6 +241,14 @@ var Combobiler;
                 });
             }
             return token;
+        };
+
+        Parser.prototype.assertType = function (token, type) {
+            if (typeof token.value == typeof type) {
+                return true;
+            } else {
+                throw new Error('Expected ' + typeof type + ' but got ' + typeof token.value + ' instead');
+            }
         };
 
         Parser.prototype.assertToken = function (token, type) {
