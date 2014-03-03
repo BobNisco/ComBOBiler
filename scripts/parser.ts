@@ -238,7 +238,7 @@ module Combobiler {
 		private assertTokenInSet(token: Token, types: any) {
 			var found = false;
 			for (var t in types) {
-				if (token instanceof t) {
+				if (token instanceof types[t]) {
 					found = true;
 					break;
 				}
@@ -248,7 +248,7 @@ module Combobiler {
 			} else {
 				var expectedString = '';
 				for (var t in types) {
-					expectedString += t.symbol + ', ';
+					expectedString += types[t].symbol + ', ';
 				}
 				throw new Error('Expected one of the following(' + expectedString + ') but got ' + token.symbol + ' instead');
 			}

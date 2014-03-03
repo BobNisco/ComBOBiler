@@ -232,7 +232,7 @@ var Combobiler;
         Parser.prototype.assertTokenInSet = function (token, types) {
             var found = false;
             for (var t in types) {
-                if (token instanceof t) {
+                if (token instanceof types[t]) {
                     found = true;
                     break;
                 }
@@ -242,7 +242,7 @@ var Combobiler;
             } else {
                 var expectedString = '';
                 for (var t in types) {
-                    expectedString += t.symbol + ', ';
+                    expectedString += types[t].symbol + ', ';
                 }
                 throw new Error('Expected one of the following(' + expectedString + ') but got ' + token.symbol + ' instead');
             }
