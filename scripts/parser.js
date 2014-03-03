@@ -41,7 +41,7 @@ var Combobiler;
         };
 
         Parser.prototype.parseProgram = function () {
-            this.parseBlock();
+            this.parseBlock(this.getNextToken());
             var token = this.getNextToken();
             if (token instanceof Combobiler.EndBlock) {
                 this.log({
@@ -56,8 +56,7 @@ var Combobiler;
             }
         };
 
-        Parser.prototype.parseBlock = function () {
-            var token = this.getNextToken();
+        Parser.prototype.parseBlock = function (token) {
             this.assertToken(token, Combobiler.OpenBrace);
             var startLine = token.line;
             this.parseStatementList();
@@ -84,7 +83,7 @@ var Combobiler;
                 } else if (token instanceof Combobiler.If) {
                     this.parseIfStatement(token);
                 } else if (token instanceof Combobiler.OpenBrace) {
-                    this.parseBlock();
+                    this.parseBlock(token);
                 } else {
                     this.error({
                         standard: 'Tried to parse statement list, but could not find valid statement on line ' + token.line,
@@ -130,7 +129,7 @@ var Combobiler;
         };
 
         Parser.prototype.parseIntExpression = function (token) {
-            this.assertToken(token, Combobiler.Int);
+            this.assertToken(token, Combobiler.IntValue);
             if (this.peekNextToken() instanceof Combobiler.Plus) {
                 this.assertToken(this.getNextToken(), Combobiler.Plus);
                 this.parseExpression(this.getNextToken());
@@ -185,7 +184,7 @@ var Combobiler;
         Parser.prototype.parseWhileStatement = function (token) {
             this.assertToken(token, Combobiler.While);
             this.parseBooleanExpression(this.getNextToken());
-            this.parseBlock();
+            this.parseBlock(this.getNextToken());
             this.log({
                 standard: 'Parsed while statement on line ' + token.line,
                 sarcastic: 'Parsed while statement on line ' + token.line
@@ -195,7 +194,7 @@ var Combobiler;
         Parser.prototype.parseIfStatement = function (token) {
             this.assertToken(token, Combobiler.If);
             this.parseBooleanExpression(this.getNextToken());
-            this.parseBlock();
+            this.parseBlock(this.getNextToken());
             this.log({
                 standard: 'Parsing if statement on line ' + token.line,
                 sarcastic: 'Parsing if statement on line ' + token.line

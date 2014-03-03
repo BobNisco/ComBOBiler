@@ -47,7 +47,7 @@ module Combobiler {
 		}
 
 		private parseProgram() {
-			this.parseBlock();
+			this.parseBlock(this.getNextToken());
 			var token = this.getNextToken();
 			if (token instanceof EndBlock) {
 				this.log({
@@ -62,8 +62,7 @@ module Combobiler {
 			}
 		}
 
-		private parseBlock() {
-			var token = this.getNextToken();
+		private parseBlock(token: Token) {
 			this.assertToken(token, OpenBrace);
 			var startLine = token.line;
 			this.parseStatementList();
@@ -90,7 +89,7 @@ module Combobiler {
 				} else if (token instanceof If) {
 					this.parseIfStatement(token);
 				} else if (token instanceof OpenBrace) {
-					this.parseBlock();
+					this.parseBlock(token);
 				} else {
 					this.error({
 						standard: 'Tried to parse statement list, but could not find valid statement on line ' + token.line,
@@ -136,7 +135,7 @@ module Combobiler {
 		}
 
 		private parseIntExpression(token: Token) {
-			this.assertToken(token, Combobiler.Int);
+			this.assertToken(token, Combobiler.IntValue);
 			if (this.peekNextToken() instanceof Plus) {
 				this.assertToken(this.getNextToken(), Plus);
 				this.parseExpression(this.getNextToken());
@@ -191,7 +190,7 @@ module Combobiler {
 		private parseWhileStatement(token: Token) {
 			this.assertToken(token, Combobiler.While);
 			this.parseBooleanExpression(this.getNextToken());
-			this.parseBlock();
+			this.parseBlock(this.getNextToken());
 			this.log({
 				standard: 'Parsed while statement on line ' + token.line,
 				sarcastic: 'Parsed while statement on line ' + token.line,
@@ -201,7 +200,7 @@ module Combobiler {
 		private parseIfStatement(token: Token) {
 			this.assertToken(token, Combobiler.If);
 			this.parseBooleanExpression(this.getNextToken());
-			this.parseBlock();
+			this.parseBlock(this.getNextToken());
 			this.log({
 				standard: 'Parsing if statement on line ' + token.line,
 				sarcastic: 'Parsing if statement on line ' + token.line,
