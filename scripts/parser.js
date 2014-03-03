@@ -97,8 +97,7 @@ var Combobiler;
         Parser.prototype.parsePrintStatement = function (token) {
             this.assertToken(token, Combobiler.Print);
             this.assertToken(this.getNextToken(), Combobiler.LParen);
-
-            //this.parseExpression();
+            this.parseExpression(this.getNextToken());
             this.assertToken(this.getNextToken(), Combobiler.RParen);
             this.log({
                 standard: 'Parsed a print statement on line',
@@ -109,15 +108,25 @@ var Combobiler;
         Parser.prototype.parseAssignmentStatement = function (token) {
             this.assertToken(token, Combobiler.VariableIdentifier);
             this.assertToken(this.getNextToken(), Combobiler.Assignment);
-
-            //this.assertTokenInSet(this.getNextToken(),)
+            this.parseExpression(this.getNextToken());
             this.log({
-                standard: 'Parsing assignment statement on line ' + token.line,
-                sarcastic: 'Parsing assignment statement on line ' + token.line
+                standard: 'Parsed assignment statement on line ' + token.line,
+                sarcastic: 'Parsed assignment statement on line ' + token.line
             });
         };
 
         Parser.prototype.parseExpression = function (token) {
+            if (token instanceof Combobiler.Int) {
+                this.parseIntExpression(token);
+            } else if (token instanceof Combobiler.String) {
+                this.parseStringExpression(token);
+            } else if (token instanceof Combobiler.Boolean) {
+                this.parseBooleanExpression(token);
+            } else if (token instanceof Combobiler.VariableIdentifier) {
+                this.parseId(token);
+            } else {
+                throw new Error('Error while parsing expression on line ' + token.line);
+            }
         };
 
         Parser.prototype.parseIntExpression = function (token) {
@@ -126,35 +135,67 @@ var Combobiler;
                 this.assertToken(this.getNextToken(), Combobiler.Plus);
                 this.parseExpression(this.getNextToken());
             }
+            this.log({
+                standard: 'Parsed int expression on line ' + token.line,
+                sarcastic: 'Parsed int expression on line ' + token.line
+            });
         };
 
         Parser.prototype.parseStringExpression = function (token) {
             this.assertToken(token, Combobiler.String);
+            this.log({
+                standard: 'Parsed string expression on line ' + token.line,
+                sarcastic: 'Parsed string expression on line ' + token.line
+            });
         };
 
         Parser.prototype.parseBooleanExpression = function (token) {
-            this.assertToken(token, Combobiler.LParen);
-            this.parseExpression(this.getNextToken());
-            this.assertTokenInSet(this.getNextToken(), [Combobiler.Equality, Combobiler.NonEquality]);
-            this.parseExpression(this.getNextToken());
-            this.assertToken(this.getNextToken(), Combobiler.RParen);
+            if (token instanceof Combobiler.LParen) {
+                this.assertToken(token, Combobiler.LParen);
+                this.parseExpression(this.getNextToken());
+                this.assertTokenInSet(this.getNextToken(), [Combobiler.Equality, Combobiler.NonEquality]);
+                this.parseExpression(this.getNextToken());
+                this.assertToken(this.getNextToken(), Combobiler.RParen);
+            } else if (token instanceof Combobiler.Boolean) {
+                this.assertToken(token, Combobiler.Boolean);
+            }
+            this.log({
+                standard: 'Parsed boolean expression statement on line ' + token.line,
+                sarcastic: 'Parsed boolean expression statement on line ' + token.line
+            });
+        };
+
+        Parser.prototype.parseId = function (token) {
+            this.assertToken(token, Combobiler.VariableIdentifier);
+            this.log({
+                standard: 'Parsed ID on line ' + token.line,
+                sarcastic: 'Parsed ID on line ' + token.line
+            });
         };
 
         Parser.prototype.parseVariableDeclaration = function (token) {
+            this.assertTokenInSet(token, [Combobiler.String, Combobiler.Int, Combobiler.Boolean]);
+            this.parseId(this.getNextToken());
             this.log({
-                standard: 'Parsing variable declaration statement on line ' + token.line,
-                sarcastic: 'Parsing variable declaration statement on line ' + token.line
+                standard: 'Parsed variable declaration statement on line ' + token.line,
+                sarcastic: 'Parsed variable declaration statement on line ' + token.line
             });
         };
 
         Parser.prototype.parseWhileStatement = function (token) {
+            this.assertToken(token, Combobiler.While);
+            this.parseBooleanExpression(this.getNextToken());
+            this.parseBlock();
             this.log({
-                standard: 'Parsing while statement on line ' + token.line,
-                sarcastic: 'Parsing while statement on line ' + token.line
+                standard: 'Parsed while statement on line ' + token.line,
+                sarcastic: 'Parsed while statement on line ' + token.line
             });
         };
 
         Parser.prototype.parseIfStatement = function (token) {
+            this.assertToken(token, Combobiler.If);
+            this.parseBooleanExpression(this.getNextToken());
+            this.parseBlock();
             this.log({
                 standard: 'Parsing if statement on line ' + token.line,
                 sarcastic: 'Parsing if statement on line ' + token.line
