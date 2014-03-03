@@ -31,12 +31,19 @@ module Combobiler {
 					sarcastic: 'What the hell am I supposed to do without a single token?'
 				});
 			} else {
-				this.parseProgram();
+				try {
+					this.parseProgram();
+					this.log({
+						standard: '==== Parse end ====',
+						sarcastic: '==== Parse end ===='
+					});
+				} catch (error) {
+					this.error({
+						standard: '==== Parse ended due to error ====',
+						sarcastic: '==== Parse ended due to error ===='
+					});
+				}
 			}
-			this.log({
-				standard: '==== Parse end ====',
-				sarcastic: '==== Parse end ===='
-			});
 		}
 
 		private parseProgram() {
@@ -57,23 +64,15 @@ module Combobiler {
 
 		private parseBlock() {
 			var token = this.getNextToken();
-			if (token instanceof OpenBrace) {
-				var startLine = token.line;
-				this.parseStatementList();
-				token = this.getNextToken();
-				if (token instanceof CloseBrace) {
-					var endLine = token.line;
-					this.log({
-						standard: 'Parsed a block that started on line ' + startLine + ' and ended on ' + endLine,
-						sarcastic: 'I don\'t have something sarcastic to say, but yay we parsed a block on line ' + startLine + ' and ended on ' + endLine
-					});
-				}
-			} else {
-				this.error({
-					standard: 'Error while parsing block. Expected open brace "{", but got ' + token.symbol + ' on line ' + token.line,
-					sarcastic: 'Oh great, another error by you. This time it happened on line ' + token.line + ' but I\'ll leave it up to you to figure the rest out'
-				})
-			}
+			this.assertToken(token, OpenBrace);
+			var startLine = token.line;
+			this.parseStatementList();
+			token = this.getNextToken();
+			this.assertToken(token, CloseBrace);
+			this.log({
+				standard: 'Parsed a block that started on line ' + startLine + ' and ended on ' + token.line,
+				sarcastic: 'I don\'t have something sarcastic to say, but yay we parsed a block on line ' + startLine + ' and ended on ' + token.line
+			});
 		}
 
 		private parseStatementList() {
@@ -102,9 +101,13 @@ module Combobiler {
 		}
 
 		private parsePrintStatement(token: Token) {
+			this.assertToken(token, Print);
+			this.assertToken(this.getNextToken(), LParen);
+			//this.parseExpression();
+			this.assertToken(this.getNextToken(), RParen);
 			this.log({
-				standard: 'Parsing print statement on line ' + token.line,
-				sarcastic: 'Parsing print statement on line ' + token.line,
+				standard: 'Parsed a print statement on line',
+				sarcastic: 'Parsed a print statement on line'
 			});
 		}
 
@@ -149,6 +152,18 @@ module Combobiler {
 				});
 			}
 			return token;
+		}
+
+		private assertToken(token: Token, type: any) {
+			if (token instanceof type) {
+				this.log({
+					standard: 'Parsed a token of type ' + token.symbol,
+					sarcastic: 'Parsed a token of type ' + token.symbol
+				});
+				return true;
+			} else {
+				throw new Error('Expected ' + type.symbol + ' but got ' + token.symbol + ' instead');
+			}
 		}
 
 		/**
