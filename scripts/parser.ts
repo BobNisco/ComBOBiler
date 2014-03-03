@@ -81,9 +81,9 @@ module Combobiler {
 
 				if (token instanceof Print) {
 					this.parsePrintStatement(token);
-				} else if (token instanceof Assignment) {
+				} else if (token instanceof VariableIdentifier && this.peekNextToken() instanceof Assignment) {
 					this.parseAssignmentStatement(token);
-				} else if (token instanceof VariableIdentifier) {
+				} else if (token instanceof Combobiler.Int || token instanceof Combobiler.String || token instanceof Combobiler.Boolean) {
 					this.parseVariableDeclaration(token);
 				} else if (token instanceof While) {
 					this.parseWhileStatement(token);
@@ -112,10 +112,37 @@ module Combobiler {
 		}
 
 		private parseAssignmentStatement(token: Token) {
+			this.assertToken(token, VariableIdentifier);
+			this.assertToken(this.getNextToken(), Assignment);
+			//this.assertTokenInSet(this.getNextToken(),)
 			this.log({
 				standard: 'Parsing assignment statement on line ' + token.line,
 				sarcastic: 'Parsing assignment statement on line ' + token.line,
 			});
+		}
+
+		private parseExpression(token: Token) {
+
+		}
+
+		private parseIntExpression(token: Token) {
+			this.assertToken(token, Combobiler.Int);
+			if (this.peekNextToken() instanceof Plus) {
+				this.assertToken(this.getNextToken(), Plus);
+				this.parseExpression(this.getNextToken());
+			}
+		}
+
+		private parseStringExpression(token: Token) {
+			this.assertToken(token, Combobiler.String);
+		}
+
+		private parseBooleanExpression(token: Token) {
+			this.assertToken(token, LParen);
+			this.parseExpression(this.getNextToken());
+			this.assertTokenInSet(this.getNextToken(), [Equality, NonEquality]);
+			this.parseExpression(this.getNextToken());
+			this.assertToken(this.getNextToken(), RParen);
 		}
 
 		private parseVariableDeclaration(token: Token) {
@@ -163,6 +190,25 @@ module Combobiler {
 				return true;
 			} else {
 				throw new Error('Expected ' + type.symbol + ' but got ' + token.symbol + ' instead');
+			}
+		}
+
+		private assertTokenInSet(token: Token, types: any) {
+			var found = false;
+			for (var t in types) {
+				if (token instanceof t) {
+					found = true;
+					break;
+				}
+			}
+			if (found) {
+				return true;
+			} else {
+				var expectedString = '';
+				for (var t in types) {
+					expectedString += t.symbol + ', ';
+				}
+				throw new Error('Expected one of the following(' + expectedString + ') but got ' + token.symbol + ' instead');
 			}
 		}
 

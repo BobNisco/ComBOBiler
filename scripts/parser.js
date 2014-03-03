@@ -75,9 +75,9 @@ var Combobiler;
 
                 if (token instanceof Combobiler.Print) {
                     this.parsePrintStatement(token);
-                } else if (token instanceof Combobiler.Assignment) {
+                } else if (token instanceof Combobiler.VariableIdentifier && this.peekNextToken() instanceof Combobiler.Assignment) {
                     this.parseAssignmentStatement(token);
-                } else if (token instanceof Combobiler.VariableIdentifier) {
+                } else if (token instanceof Combobiler.Int || token instanceof Combobiler.String || token instanceof Combobiler.Boolean) {
                     this.parseVariableDeclaration(token);
                 } else if (token instanceof Combobiler.While) {
                     this.parseWhileStatement(token);
@@ -107,10 +107,37 @@ var Combobiler;
         };
 
         Parser.prototype.parseAssignmentStatement = function (token) {
+            this.assertToken(token, Combobiler.VariableIdentifier);
+            this.assertToken(this.getNextToken(), Combobiler.Assignment);
+
+            //this.assertTokenInSet(this.getNextToken(),)
             this.log({
                 standard: 'Parsing assignment statement on line ' + token.line,
                 sarcastic: 'Parsing assignment statement on line ' + token.line
             });
+        };
+
+        Parser.prototype.parseExpression = function (token) {
+        };
+
+        Parser.prototype.parseIntExpression = function (token) {
+            this.assertToken(token, Combobiler.Int);
+            if (this.peekNextToken() instanceof Combobiler.Plus) {
+                this.assertToken(this.getNextToken(), Combobiler.Plus);
+                this.parseExpression(this.getNextToken());
+            }
+        };
+
+        Parser.prototype.parseStringExpression = function (token) {
+            this.assertToken(token, Combobiler.String);
+        };
+
+        Parser.prototype.parseBooleanExpression = function (token) {
+            this.assertToken(token, Combobiler.LParen);
+            this.parseExpression(this.getNextToken());
+            this.assertTokenInSet(this.getNextToken(), [Combobiler.Equality, Combobiler.NonEquality]);
+            this.parseExpression(this.getNextToken());
+            this.assertToken(this.getNextToken(), Combobiler.RParen);
         };
 
         Parser.prototype.parseVariableDeclaration = function (token) {
@@ -158,6 +185,25 @@ var Combobiler;
                 return true;
             } else {
                 throw new Error('Expected ' + type.symbol + ' but got ' + token.symbol + ' instead');
+            }
+        };
+
+        Parser.prototype.assertTokenInSet = function (token, types) {
+            var found = false;
+            for (var t in types) {
+                if (token instanceof t) {
+                    found = true;
+                    break;
+                }
+            }
+            if (found) {
+                return true;
+            } else {
+                var expectedString = '';
+                for (var t in types) {
+                    expectedString += t.symbol + ', ';
+                }
+                throw new Error('Expected one of the following(' + expectedString + ') but got ' + token.symbol + ' instead');
             }
         };
 
