@@ -73,10 +73,20 @@ var Combobiler;
             // We will set the current scope to the newly instantiated Scope instance
             // which sets its parent attribute to the last current scope
             this.currentScope = new Combobiler.Scope({}, this.currentScope);
+            this.log({
+                standard: 'Opening up a new scope block',
+                sarcastic: 'Opening up a new scope block'
+            });
             var startLine = token.line;
             this.parseStatementList();
             token = this.getNextToken();
             this.assertToken(token, Combobiler.CloseBrace);
+
+            // Log the block scope
+            this.log({
+                standard: 'The scope block being closed held the following info ' + this.currentScope.toString(),
+                sarcastic: 'The scope block being closed held the following info ' + this.currentScope.toString()
+            });
 
             // At this point, the block is closed, therefore we can move the currentScope
             // pointer back to the currentScope's parent.
@@ -136,6 +146,7 @@ var Combobiler;
             if (possibleSymbol == null) {
                 throw new Error('Can not assign value to undeclared variable ' + varId.value + ' on line ' + varId.line);
             }
+            var node;
 
             if (exprToken instanceof Combobiler.IntValue && possibleSymbol.getType() == 'int') {
                 // Create a test variable that we know is of type number
@@ -143,22 +154,25 @@ var Combobiler;
 
                 // Assert that the type is a number, since this is a statically typed language
                 this.assertType(value, numberTestType);
+                node = new Combobiler.ScopeNode(value, 'int');
             } else if (exprToken instanceof Combobiler.StringValue && possibleSymbol.getType() == 'string') {
                 // Create a test variable that we know is of type String
                 var stringTestType = "test";
 
                 // Assert that the type is a string, since this is a statically typed language
                 this.assertType(value, stringTestType);
+                node = new Combobiler.ScopeNode(value, 'string');
             } else if ((exprToken instanceof Combobiler.True || exprToken instanceof Combobiler.False) && possibleSymbol.getType() == 'boolean') {
                 // Create a test variable that we know is of type boolean
                 var booleanTestType = true;
 
                 // Assert that the type is a boolean, since this is a statically typed language
                 this.assertType(value, booleanTestType);
+                node = new Combobiler.ScopeNode(value, 'bool');
             } else {
                 throw new Error('Type mismatch. Expected ' + possibleSymbol.getType() + ' on line ' + varId.line);
             }
-            this.currentScope.addSymbol(varId.value, value);
+            this.currentScope.addSymbol(varId.value, node);
             this.log({
                 standard: 'Parsed assignment statement on line ' + token.line,
                 sarcastic: 'Parsed assignment statement on line ' + token.line

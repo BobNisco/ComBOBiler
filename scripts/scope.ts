@@ -34,5 +34,13 @@ module Combobiler {
 			}
 			return null;
 		}
+
+		public toString() {
+			var result: string = '';
+			for (var k in this.symbols) {
+				result += this.symbols[k] + ' : ' + this.symbols[k].toString() + '\n';
+			}
+			return result;
+		}
 	}
 }

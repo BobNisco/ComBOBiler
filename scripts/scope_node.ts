@@ -27,5 +27,9 @@ module Combobiler {
 		public getType() {
 			return this.type;
 		}
+
+		public toString() {
+			return 'value: ' + this.value + ', type: ' + this.type;
+		}
 	}
 }

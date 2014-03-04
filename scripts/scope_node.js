@@ -23,6 +23,10 @@ var Combobiler;
         ScopeNode.prototype.getType = function () {
             return this.type;
         };
+
+        ScopeNode.prototype.toString = function () {
+            return 'value: ' + this.value + ', type: ' + this.type;
+        };
         return ScopeNode;
     })();
     Combobiler.ScopeNode = ScopeNode;

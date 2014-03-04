@@ -29,6 +29,14 @@ var Combobiler;
             }
             return null;
         };
+
+        Scope.prototype.toString = function () {
+            var result = '';
+            for (var k in this.symbols) {
+                result += this.symbols[k] + ' : ' + this.symbols[k].toString() + '\n';
+            }
+            return result;
+        };
         return Scope;
     })();
     Combobiler.Scope = Scope;
