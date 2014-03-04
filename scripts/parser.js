@@ -149,7 +149,7 @@ var Combobiler;
 
                 // Assert that the type is a string, since this is a statically typed language
                 this.assertType(value, stringTestType);
-            } else if (exprToken instanceof Combobiler.Boolean) {
+            } else if ((exprToken instanceof Combobiler.True || exprToken instanceof Combobiler.False) && possibleSymbol.getType() == 'boolean') {
                 // Create a test variable that we know is of type boolean
                 var booleanTestType = true;
 
@@ -170,8 +170,8 @@ var Combobiler;
                 return this.parseIntExpression(token);
             } else if (token instanceof Combobiler.StringValue) {
                 return this.parseStringExpression(token);
-            } else if (token instanceof Combobiler.Boolean) {
-                this.parseBooleanExpression(token);
+            } else if (token instanceof Combobiler.Boolean || token instanceof Combobiler.True || token instanceof Combobiler.False) {
+                return this.parseBooleanExpression(token);
             } else if (token instanceof Combobiler.VariableIdentifier) {
                 this.parseId(token);
             } else {
@@ -197,27 +197,32 @@ var Combobiler;
 
         Parser.prototype.parseStringExpression = function (token) {
             this.assertToken(token, Combobiler.StringValue);
-            return token.value;
             this.log({
                 standard: 'Parsed string expression on line ' + token.line,
                 sarcastic: 'Parsed string expression on line ' + token.line
             });
+            return token.value;
         };
 
         Parser.prototype.parseBooleanExpression = function (token) {
+            var resultValue;
             if (token instanceof Combobiler.LParen) {
                 this.assertToken(token, Combobiler.LParen);
                 this.parseExpression(this.getNextToken());
                 this.assertTokenInSet(this.getNextToken(), [Combobiler.Equality, Combobiler.NonEquality]);
                 this.parseExpression(this.getNextToken());
                 this.assertToken(this.getNextToken(), Combobiler.RParen);
-            } else if (token instanceof Combobiler.Boolean) {
-                this.assertToken(token, Combobiler.Boolean);
+            } else if (token instanceof Combobiler.False || token instanceof Combobiler.True) {
+                this.assertTokenInSet(token, [Combobiler.False, Combobiler.True]);
+
+                // Needs to return a JS bool value from this function
+                resultValue = token instanceof Combobiler.True;
             }
             this.log({
                 standard: 'Parsed boolean expression statement on line ' + token.line,
                 sarcastic: 'Parsed boolean expression statement on line ' + token.line
             });
+            return resultValue;
         };
 
         Parser.prototype.parseId = function (token) {
