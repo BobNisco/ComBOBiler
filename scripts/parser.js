@@ -38,6 +38,11 @@ var Combobiler;
                     });
                 } catch (error) {
                     this.error({
+                        standard: error,
+                        sarcastic: error
+                    });
+
+                    this.error({
                         standard: '==== Parse ended due to error ====',
                         sarcastic: '==== Parse ended due to error ===='
                     });
@@ -127,6 +132,10 @@ var Combobiler;
             var value = this.parseExpression(exprToken);
 
             var possibleSymbol = this.currentScope.findSymbol(varId.value);
+
+            if (possibleSymbol == null) {
+                throw new Error('Can not assign value to undeclared variable ' + varId.value + ' on line ' + varId.line);
+            }
 
             if (possibleSymbol.getType() == typeof Combobiler.IntValue) {
                 // Create a test variable that we know is of type number
