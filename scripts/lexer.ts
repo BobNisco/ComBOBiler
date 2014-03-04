@@ -47,6 +47,14 @@ module Combobiler {
 						}
 					}
 				}
+				if (!(tokenStream[tokenStream.length - 1] instanceof Combobiler.EndBlock)) {
+					this.log({
+						standard: 'Missing $ at end of program. Inserting one for you',
+						sarcastic: 'Nice job, forgetting $ at end of program. You\'re lucky that I\'m smart enough to do this for you',
+					});
+					tokenStream.push(Combobiler.Token.makeNewToken('$', splitSource.length + 1));
+					$('#taSourceCode').val(this.source + ' $');
+				}
 				this.log({
 					standard: '==== Lexical Analysis End ====',
 					sarcastic: '==== Lexical Analysis End ===='
