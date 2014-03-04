@@ -27,8 +27,11 @@ $(document).ready(function(){
 		});
 		var lexer = new Combobiler.Lexer(taSourceCode.val());
 		var tokens = lexer.performLexicalAnalysis();
-		var parser = new Combobiler.Parser(tokens);
-		parser.performParse();
+		if (tokens.length > 0) {
+			// Only move onto parse if we returned tokens
+			var parser = new Combobiler.Parser(tokens);
+			parser.performParse();
+		}
 	});
 
 	programTable.on('click', '.user-program', function(e) {
