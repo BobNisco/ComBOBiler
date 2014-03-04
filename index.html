@@ -33,42 +33,21 @@
 		<div class="container">
 			<div class="row">
 				<div class="col-md-6">
-					<div class="row">
-						<div class="col-md-12">
-							<h5>Source Code</h5>
-							<textarea id="taSourceCode" class="col-xs-12" rows="18"></textarea>
-						</div>
-					</div>
-					<div class="row">
-						<div class="col-md-12">
-							<h5>Test Programs</h5>
-							<table class="table" id="program-table">
-								<thead>
-									<tr>
-										<th>Program</th>
-										<th>Description</th>
-									</tr>
-								</thead>
-								<tbody>
-									<tr>
-										<td><div class="btn btn-sm btn-info user-program" data-program="{&#10;    while false {&#10;        print ( &quot;a&quot; )&#10;    }&#10;    &#10;    print ( &quot;done&quot; )&#10;} $&#10;">Program 1</div></td>
-										<td>Non While</td>
-									</tr>
-									<tr>
-										<td><div class="btn btn-sm btn-info user-program" data-program="{&#10;    int a&#10;    a = 1&#10;    {&#10;        int a&#10;        a = 2&#10;        print ( a )&#10;    }&#10;    &#10;    string b&#10;    b = &quot;alan&quot;&#10;    &#10;    if ( a == 1 ) {&#10;        print ( b )&#10;    }&#10;    &#10;    string c&#10;    c = &quot;james&quot;&#10;    b = &quot;blackstone&quot;&#10;    print ( b )&#10;} $&#10;">Program 2</div></td>
-										<td>Everything 1</td>
-									</tr>
-								</tbody>
-							</table>
-						</div>
-					</div>
+					<h5>Source Code</h5>
+					<textarea id="taSourceCode" class="col-xs-12" rows="18"></textarea>
 				</div>
 				<div class="col-md-6">
+					<h5>Output</h5>
+					<textarea id="taOutput" class="col-xs-12" rows="18"></textarea>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-md-12">
 					<div class="row">
-						<div class="col-md-6">
+						<div class="col-md-4">
 							<h5>Output <button class="btn btn-sm btn-info" id="clear-log-button">Clear Log</button></h5>
 						</div>
-						<div class="col-md-6">
+						<div class="col-md-8">
 							<div class="pull-right">
 								<label for="log-filter-type">Filter by type:</label>
 								<select id="log-filter-type">
@@ -91,7 +70,30 @@
 							</div>
 						</div>
 					</div>
-					<div id="output" class="col-xs-12"></div>
+					<div id="logOutput" class="col-xs-12"></div>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-md-6">
+					<h5>Test Programs</h5>
+					<table class="table" id="program-table">
+						<thead>
+							<tr>
+								<th>Program</th>
+								<th>Description</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td><div class="btn btn-sm btn-info user-program" data-program="{&#10;    while false {&#10;        print ( &quot;a&quot; )&#10;    }&#10;    &#10;    print ( &quot;done&quot; )&#10;} $&#10;">Program 1</div></td>
+								<td>Non While</td>
+							</tr>
+							<tr>
+								<td><div class="btn btn-sm btn-info user-program" data-program="{&#10;    int a&#10;    a = 1&#10;    {&#10;        int a&#10;        a = 2&#10;        print ( a )&#10;    }&#10;    &#10;    string b&#10;    b = &quot;alan&quot;&#10;    &#10;    if ( a == 1 ) {&#10;        print ( b )&#10;    }&#10;    &#10;    string c&#10;    c = &quot;james&quot;&#10;    b = &quot;blackstone&quot;&#10;    print ( b )&#10;} $&#10;">Program 2</div></td>
+								<td>Everything 1</td>
+							</tr>
+						</tbody>
+					</table>
 				</div>
 			</div>
 		</div>

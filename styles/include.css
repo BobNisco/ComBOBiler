@@ -8,7 +8,7 @@
 textarea {
 	font-family: monospace;
 }
-#output {
+#logOutput {
 	display: block;
 	max-height: 450px;
 	height: 450px;

@@ -8,7 +8,8 @@ var LOGGER = null;
 $(document).ready(function(){
 	var compileButton = $('#compile-button'),
 		taSourceCode = $('#taSourceCode'),
-		output = $('#output'),
+		taOutput = $('#taOutput'),
+		logOutput = $('#logOutput'),
 		programTable = $('#program-table'),
 		logFilterType = $('#log-filter-type'),
 		logFilterStatus = $('#log-filter-status'),
@@ -16,7 +17,7 @@ $(document).ready(function(){
 		logPersonality = $('#log-personality');
 	// Instantiate a new instance of our logger class by passing in
 	// the div that we want to use and the personality selector
-	LOGGER = new Combobiler.Logger(output, logPersonality);
+	LOGGER = new Combobiler.Logger(logOutput, logPersonality);
 
 	compileButton.on('click', function(e) {
 		e.preventDefault();
@@ -40,7 +41,7 @@ $(document).ready(function(){
 	logFilterType.on('change', function(e) {
 		e.preventDefault();
 		var dropdown = $(this),
-			logEntries = output.find('.log-row');
+			logEntries = logOutput.find('.log-row');
 		$.each(logEntries, function(i, val) {
 			var thisRow = $(val);
 			thisRow.show();
@@ -53,7 +54,7 @@ $(document).ready(function(){
 	logFilterStatus.on('change', function(e) {
 		e.preventDefault();
 		var dropdown = $(this),
-			logEntries = output.find('.label');
+			logEntries = logOutput.find('.label');
 		$.each(logEntries, function(i, val) {
 			var thisLabel = $(val),
 				thisRow = thisLabel.parent();
@@ -82,6 +83,6 @@ $(document).ready(function(){
 
 	clearLogButton.on('click', function(e) {
 		e.preventDefault();
-		output.empty();
+		logOutput.empty();
 	});
 });

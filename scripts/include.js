@@ -5,11 +5,11 @@
 var LOGGER = null;
 
 $(document).ready(function () {
-    var compileButton = $('#compile-button'), taSourceCode = $('#taSourceCode'), output = $('#output'), programTable = $('#program-table'), logFilterType = $('#log-filter-type'), logFilterStatus = $('#log-filter-status'), clearLogButton = $('#clear-log-button'), logPersonality = $('#log-personality');
+    var compileButton = $('#compile-button'), taSourceCode = $('#taSourceCode'), taOutput = $('#taOutput'), logOutput = $('#logOutput'), programTable = $('#program-table'), logFilterType = $('#log-filter-type'), logFilterStatus = $('#log-filter-status'), clearLogButton = $('#clear-log-button'), logPersonality = $('#log-personality');
 
     // Instantiate a new instance of our logger class by passing in
     // the div that we want to use and the personality selector
-    LOGGER = new Combobiler.Logger(output, logPersonality);
+    LOGGER = new Combobiler.Logger(logOutput, logPersonality);
 
     compileButton.on('click', function (e) {
         e.preventDefault();
@@ -32,7 +32,7 @@ $(document).ready(function () {
 
     logFilterType.on('change', function (e) {
         e.preventDefault();
-        var dropdown = $(this), logEntries = output.find('.log-row');
+        var dropdown = $(this), logEntries = logOutput.find('.log-row');
         $.each(logEntries, function (i, val) {
             var thisRow = $(val);
             thisRow.show();
@@ -44,7 +44,7 @@ $(document).ready(function () {
 
     logFilterStatus.on('change', function (e) {
         e.preventDefault();
-        var dropdown = $(this), logEntries = output.find('.label');
+        var dropdown = $(this), logEntries = logOutput.find('.label');
         $.each(logEntries, function (i, val) {
             var thisLabel = $(val), thisRow = thisLabel.parent();
             thisRow.show();
@@ -69,6 +69,6 @@ $(document).ready(function () {
 
     clearLogButton.on('click', function (e) {
         e.preventDefault();
-        output.empty();
+        logOutput.empty();
     });
 });
