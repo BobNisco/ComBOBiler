@@ -46,7 +46,7 @@ var Combobiler;
                         }
                     }
                 }
-                if (!(tokenStream[tokenStream.length - 1] instanceof Combobiler.EndBlock)) {
+                if (tokenStream.length > 0 && !(tokenStream[tokenStream.length - 1] instanceof Combobiler.EndBlock)) {
                     this.log({
                         standard: 'Missing $ at end of program. Inserting one for you',
                         sarcastic: 'Nice job, forgetting $ at end of program. You\'re lucky that I\'m smart enough to do this for you'
