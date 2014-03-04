@@ -142,12 +142,12 @@ module Combobiler {
 				throw new Error('Can not assign value to undeclared variable ' + varId.value + ' on line ' + varId.line);
 			}
 
-			if (possibleSymbol.getType() == typeof Combobiler.IntValue) {
+			if (exprToken instanceof Combobiler.IntValue && possibleSymbol.getType() == 'int') {
 				// Create a test variable that we know is of type number
 				var numberTestType: number = 1;
 				// Assert that the type is a number, since this is a statically typed language
 				this.assertType(value, numberTestType);
-			} else if (exprToken instanceof Combobiler.StringValue) {
+			} else if (exprToken instanceof Combobiler.StringValue && possibleSymbol.getType() == 'string') {
 				// Create a test variable that we know is of type String
 				var stringTestType: string = "test";
 				// Assert that the type is a string, since this is a statically typed language
@@ -157,6 +157,8 @@ module Combobiler {
 				var booleanTestType: boolean = true;
 				// Assert that the type is a boolean, since this is a statically typed language
 				this.assertType(value, booleanTestType);
+			} else {
+				throw new Error('Type mismatch. Expected ' + possibleSymbol.getType() + ' on line ' + varId.line);
 			}
 			this.currentScope.addSymbol(varId.value, value);
 			this.log({
