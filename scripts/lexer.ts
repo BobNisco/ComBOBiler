@@ -25,36 +25,38 @@ module Combobiler {
 			// Our return (strongly-typed in TypeScript) array of Tokens
 			var tokenStream = new Array<Token>();
 
-			perLineLoop:
-			for (var line = 0; line < splitSource.length; line++) {
-				var currentLine = splitSource[line];
-				// Split each part of the line up by spaces
-				var splitLine = currentLine.split(' ');
+			try {
+				for (var line = 0; line < splitSource.length; line++) {
+					var currentLine = splitSource[line];
+					// Split each part of the line up by spaces
+					var splitLine = currentLine.split(' ');
 
-				for (var i = 0; i < splitLine.length; i++) {
-					var current = splitLine[i];
-					if (current !== '') {
-						var newToken = Combobiler.Token.makeNewToken(current, line + 1);
-						if (newToken != null) {
-							tokenStream.push(newToken);
-							this.log({
-								standard: 'Found token ' + newToken.toString(),
-								sarcastic: 'Cool, a token ' + newToken.toString() + ' but who cares?'
-							});
-						} else {
-							this.error({
-								standard: 'Lexical error: ' + current + ' on line ' + (line + 1),
-								sarcastic: 'You dun goofed, lex error ' + current + ' on line ' + (line + 1)
-							});
-							break perLineLoop;
+					for (var i = 0; i < splitLine.length; i++) {
+						var current = splitLine[i];
+						if (current !== '') {
+							var newToken = Combobiler.Token.makeNewToken(current, line + 1);
+							if (newToken != null) {
+								tokenStream.push(newToken);
+								this.log({
+									standard: 'Found token ' + newToken.toString(),
+									sarcastic: 'Cool, a token ' + newToken.toString() + ' but who cares?'
+								});
+							} else {
+								throw new Error('Lexical error: ' + current + ' on line ' + (line + 1));
+							}
 						}
 					}
 				}
+				this.log({
+					standard: '==== Lexical Analysis End ====',
+					sarcastic: '==== Lexical Analysis End ===='
+				});
+			} catch (error) {
+				this.error({
+					standard: error,
+					sarcastic: error,
+				});
 			}
-			this.log({
-				standard: '==== Lexical Analysis End ====',
-				sarcastic: '==== Lexical Analysis End ===='
-			});
 			return tokenStream;
 		}
 

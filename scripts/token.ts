@@ -6,9 +6,8 @@ module Combobiler {
 		 * so that we can reference them from other classes if need be.
 		 */
 		public static numberRegex = /^\d+$/;
-		public static alphaNumRegexString = "[A-Za-z0-9]*";
 		public static stringRegex = /(\")[A-Za-z][A-Za-z0-9]*(\")/;
-		public static identifierRegex = new RegExp("^[A-Za-z]" + Token.alphaNumRegexString);
+		public static identifierRegex = /^[a-z][A-Za-z0-9]*$/;
 		public static intRegex = /^0$|^[1-9]\d*$/;
 
 		// TypeScript (like JS) does not have a difference between
