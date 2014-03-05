@@ -79,9 +79,6 @@ var Combobiler;
                 '+': function () {
                     return new Plus(line);
                 }(),
-                '-': function () {
-                    return new Minus(line);
-                }(),
                 ';': function () {
                     return new Semicolon(line);
                 }(),
@@ -202,15 +199,6 @@ var Combobiler;
         return Plus;
     })(Token);
     Combobiler.Plus = Plus;
-
-    var Minus = (function (_super) {
-        __extends(Minus, _super);
-        function Minus(line) {
-            _super.call(this, '-', line);
-        }
-        return Minus;
-    })(Token);
-    Combobiler.Minus = Minus;
 
     var Semicolon = (function (_super) {
         __extends(Semicolon, _super);

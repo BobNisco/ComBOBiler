@@ -37,7 +37,6 @@ module Combobiler {
 				'}': function() { return new CloseBrace(line); }(),
 				'=': function() { return new Assignment(line); }(),
 				'+': function() { return new Plus(line); }(),
-				'-': function() { return new Minus(line); }(),
 				';': function() { return new Semicolon(line); }(),
 				'true': function() { return new True(line); }(),
 				'false': function() { return new False(line); }(),
@@ -131,12 +130,6 @@ module Combobiler {
 	export class Plus extends Token {
 		constructor(line) {
 			super('+', line);
-		}
-	}
-
-	export class Minus extends Token {
-		constructor(line) {
-			super('-', line);
 		}
 	}
 
