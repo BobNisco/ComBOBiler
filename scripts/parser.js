@@ -74,8 +74,8 @@ var Combobiler;
             // which sets its parent attribute to the last current scope
             this.currentScope = new Combobiler.Scope({}, this.currentScope);
             this.log({
-                standard: 'Opening up a new scope block',
-                sarcastic: 'Opening up a new scope block'
+                standard: 'Opening up a new scope block on line ' + token.line,
+                sarcastic: 'Opening up a new scope block on line ' + token.line
             });
             var startLine = token.line;
             this.parseStatementList();
@@ -92,8 +92,8 @@ var Combobiler;
             // pointer back to the currentScope's parent.
             this.currentScope = this.currentScope.getParent();
             this.log({
-                standard: 'Parsed a block that started on line ' + startLine + ' and ended on ' + token.line,
-                sarcastic: 'I don\'t have something sarcastic to say, but yay we parsed a block on line ' + startLine + ' and ended on ' + token.line
+                standard: 'Parsed a block that started on line ' + startLine + ' and ended on line ' + token.line,
+                sarcastic: 'I don\'t have something sarcastic to say, but yay we parsed a block on line ' + startLine + ' and ended on line ' + token.line
             });
         };
 
@@ -312,10 +312,6 @@ var Combobiler;
 
         Parser.prototype.assertToken = function (token, type) {
             if (token instanceof type) {
-                this.log({
-                    standard: 'Parsed a token of type ' + token.symbol,
-                    sarcastic: 'Parsed a token of type ' + token.symbol
-                });
                 return true;
             } else {
                 throw new Error('Expected ' + type.symbol + ' but got ' + token.symbol + ' instead');
