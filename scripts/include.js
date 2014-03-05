@@ -1,6 +1,6 @@
 ///<reference path="jquery.d.ts" />
 ///<reference path="logger.ts" />
-///<reference path="lexer.ts" />
+///<reference path="runner.ts" />
 // Some global variables that will be initialized once the page is fully loaded
 var LOGGER = null;
 
@@ -17,13 +17,7 @@ $(document).ready(function () {
             standard: 'Compilation started',
             sarcastic: 'Compilation started'
         });
-        var lexer = new Combobiler.Lexer(taSourceCode.val());
-        var tokens = lexer.performLexicalAnalysis();
-        if (tokens.length > 0) {
-            // Only move onto parse if we returned tokens
-            var parser = new Combobiler.Parser(tokens);
-            parser.performParse();
-        }
+        Combobiler.Runner.run(taSourceCode.val());
     });
 
     programTables.on('click', '.user-program', function (e) {
