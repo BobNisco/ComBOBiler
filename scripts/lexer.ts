@@ -64,6 +64,12 @@ module Combobiler {
 					standard: error,
 					sarcastic: error,
 				});
+				this.error({
+					standard: '==== Lexical Analysis Ended Due To Error ====',
+					sarcastic: '==== Lexical Analysis Ended Due To Error ===='
+				});
+				// Just return an empty array since we didn't lex properly
+				return new Array<Token>();
 			}
 			return tokenStream;
 		}
