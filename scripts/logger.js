@@ -33,7 +33,7 @@ var Combobiler;
         Logger.prototype.log = function (options, messages) {
             var logString;
             if (this.getPersonality() == 'neckbeard') {
-                logString = this.stringToHex(messages['standard']);
+                logString = this.stringToBinary(messages['standard']);
             } else {
                 logString = messages[this.getPersonality()];
             }
@@ -67,7 +67,7 @@ var Combobiler;
             return (currentDateTime.getMonth() + 1) + "/" + currentDateTime.getDate() + "/" + currentDateTime.getFullYear() + " | " + currentDateTime.getHours() + ":" + ('0' + currentDateTime.getMinutes()).slice(-2) + ":" + ('0' + currentDateTime.getSeconds()).slice(-2);
         };
 
-        Logger.prototype.stringToHex = function (text) {
+        Logger.prototype.stringToBinary = function (text) {
             var hex = "";
             for (var i = 0; i < text.length; i++) {
                 hex += text.charCodeAt(i).toString(2) + ' ';

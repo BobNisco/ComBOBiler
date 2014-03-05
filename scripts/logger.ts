@@ -32,7 +32,7 @@ module Combobiler {
 		public log(options: Object, messages: Object) {
 			var logString: string;
 			if (this.getPersonality() == 'neckbeard') {
-				logString = this.stringToHex(messages['standard']);
+				logString = this.stringToBinary(messages['standard']);
 			} else {
 				logString = messages[this.getPersonality()];
 			}
@@ -73,7 +73,7 @@ module Combobiler {
                 + ('0' + currentDateTime.getSeconds()).slice(-2);
 		}
 
-		private stringToHex(text: string) {
+		private stringToBinary(text: string) {
 			var hex: string = "";
 			for (var i = 0; i < text.length; i++) {
 				hex += text.charCodeAt(i).toString(2) + ' ';
