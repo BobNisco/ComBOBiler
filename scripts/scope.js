@@ -33,7 +33,7 @@ var Combobiler;
         Scope.prototype.toString = function () {
             var result = '';
             for (var k in this.symbols) {
-                result += this.symbols[k] + ' : ' + this.symbols[k].toString() + '\n';
+                result += 'symbol: ' + k + ', ' + this.symbols[k].toString() + ', ';
             }
             return result;
         };

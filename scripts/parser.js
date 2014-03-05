@@ -174,6 +174,10 @@ var Combobiler;
             }
             this.currentScope.addSymbol(varId.value, node);
             this.log({
+                standard: 'Added symbol ' + varId.value + ' of type ' + node.getType() + ' with value ' + node.getValue() + ' to symbol table',
+                sarcastic: 'Added symbol ' + varId.value + ' of type ' + node.getType() + ' with value ' + node.getValue() + ' to symbol table'
+            });
+            this.log({
                 standard: 'Parsed assignment statement on line ' + token.line,
                 sarcastic: 'Parsed assignment statement on line ' + token.line
             });
