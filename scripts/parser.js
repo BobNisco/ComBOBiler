@@ -82,11 +82,13 @@ var Combobiler;
             token = this.getNextToken();
             this.assertToken(token, Combobiler.CloseBrace);
 
-            // Log the block scope
-            this.log({
-                standard: 'The scope block being closed held the following info ' + this.currentScope.toString(),
-                sarcastic: 'The scope block being closed held the following info ' + this.currentScope.toString()
-            });
+            // Log the block scope, if there was anything in there
+            if (Object.keys(this.currentScope.getSymbols()).length > 0) {
+                this.log({
+                    standard: 'The scope block being closed held the following info ' + this.currentScope.toString(),
+                    sarcastic: 'The scope block being closed held the following info ' + this.currentScope.toString()
+                });
+            }
 
             // At this point, the block is closed, therefore we can move the currentScope
             // pointer back to the currentScope's parent.
@@ -128,8 +130,8 @@ var Combobiler;
             this.parseExpression(this.getNextToken());
             this.assertToken(this.getNextToken(), Combobiler.RParen);
             this.log({
-                standard: 'Parsed a print statement on line',
-                sarcastic: 'Parsed a print statement on line'
+                standard: 'Parsed a print statement on line ' + token.line,
+                sarcastic: 'Parsed a print statement on line ' + token.line
             });
         };
 

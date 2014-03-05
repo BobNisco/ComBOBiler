@@ -21,6 +21,10 @@ module Combobiler {
 			this.symbols[key] = value;
 		}
 
+		public getSymbols() {
+			return this.symbols;
+		}
+
 		public findSymbol(key: any) {
 			// Check to see if the key exists in this scope
 			for (var k in this.symbols) {

@@ -17,6 +17,10 @@ var Combobiler;
             this.symbols[key] = value;
         };
 
+        Scope.prototype.getSymbols = function () {
+            return this.symbols;
+        };
+
         Scope.prototype.findSymbol = function (key) {
             for (var k in this.symbols) {
                 if (k == key) {
