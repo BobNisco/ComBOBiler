@@ -237,6 +237,8 @@ module Combobiler {
 				this.assertTokenInSet(token, [Combobiler.False, Combobiler.True]);
 				// Needs to return a JS bool value from this function
 				resultValue = token instanceof Combobiler.True;
+			} else {
+				throw new Error('Not a valid Boolean Expression');
 			}
 			this.log({
 				standard: 'Parsed boolean expression statement on line ' + token.line,
