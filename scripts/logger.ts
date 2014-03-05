@@ -30,7 +30,13 @@ module Combobiler {
 		}
 
 		public log(options: Object, messages: Object) {
-			this.textarea.prepend(this.createLogRow(options, messages[this.getPersonality()]));
+			var logString: string;
+			if (this.getPersonality() == 'neckbeard') {
+				logString = this.stringToHex(messages['standard']);
+			} else {
+				logString = messages[this.getPersonality()];
+			}
+			this.textarea.prepend(this.createLogRow(options, logString));
 		}
 
 		public getPersonality() {
@@ -65,6 +71,14 @@ module Combobiler {
                 + currentDateTime.getHours() + ":"
                 + ('0' + currentDateTime.getMinutes()).slice(-2) + ":"
                 + ('0' + currentDateTime.getSeconds()).slice(-2);
+		}
+
+		private stringToHex(text: string) {
+			var hex: string = "";
+			for (var i = 0; i < text.length; i++) {
+				hex += text.charCodeAt(i).toString(2) + ' ';
+			}
+			return hex;
 		}
 	}
 }

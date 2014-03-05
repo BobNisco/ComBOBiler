@@ -31,7 +31,13 @@ var Combobiler;
         };
 
         Logger.prototype.log = function (options, messages) {
-            this.textarea.prepend(this.createLogRow(options, messages[this.getPersonality()]));
+            var logString;
+            if (this.getPersonality() == 'neckbeard') {
+                logString = this.stringToHex(messages['standard']);
+            } else {
+                logString = messages[this.getPersonality()];
+            }
+            this.textarea.prepend(this.createLogRow(options, logString));
         };
 
         Logger.prototype.getPersonality = function () {
@@ -59,6 +65,14 @@ var Combobiler;
         Logger.prototype.prettyPrintDateTime = function (currentDateTime) {
             if (typeof currentDateTime === "undefined") { currentDateTime = new Date(); }
             return (currentDateTime.getMonth() + 1) + "/" + currentDateTime.getDate() + "/" + currentDateTime.getFullYear() + " | " + currentDateTime.getHours() + ":" + ('0' + currentDateTime.getMinutes()).slice(-2) + ":" + ('0' + currentDateTime.getSeconds()).slice(-2);
+        };
+
+        Logger.prototype.stringToHex = function (text) {
+            var hex = "";
+            for (var i = 0; i < text.length; i++) {
+                hex += text.charCodeAt(i).toString(2) + ' ';
+            }
+            return hex;
         };
         return Logger;
     })();
