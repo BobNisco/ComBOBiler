@@ -116,10 +116,7 @@ var Combobiler;
                 } else if (token instanceof Combobiler.OpenBrace) {
                     this.parseBlock(token);
                 } else {
-                    this.error({
-                        standard: 'Tried to parse statement list, but could not find valid statement on line ' + token.line,
-                        sarcastic: 'Why do you even program if you can\'t get a simple statement correct on line ' + token.line
-                    });
+                    throw new Error('Tried to parse statement list, but could not find valid statement on line ' + token.line);
                 }
             }
         };
