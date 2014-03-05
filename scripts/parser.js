@@ -174,8 +174,8 @@ var Combobiler;
             }
             this.currentScope.addSymbol(varId.value, node);
             this.log({
-                standard: 'Added symbol ' + varId.value + ' of type ' + node.getType() + ' with value ' + node.getValue() + ' to symbol table',
-                sarcastic: 'Added symbol ' + varId.value + ' of type ' + node.getType() + ' with value ' + node.getValue() + ' to symbol table'
+                standard: 'Symbol ' + varId.value + ' was assigned value ' + node.getValue() + ' in symbol table',
+                sarcastic: 'Symbol ' + varId.value + ' was assigned value ' + node.getValue() + ' in symbol table'
             });
             this.log({
                 standard: 'Parsed assignment statement on line ' + token.line,
@@ -257,6 +257,10 @@ var Combobiler;
             token = this.getNextToken();
             this.parseId(token);
             this.currentScope.addSymbol(token.value, node);
+            this.log({
+                standard: 'Added symbol ' + token.value + ' of type ' + node.getType() + ' to symbol table',
+                sarcastic: 'Added symbol ' + token.value + ' of type ' + node.getType() + ' to symbol table'
+            });
             this.log({
                 standard: 'Parsed variable declaration statement on line ' + token.line,
                 sarcastic: 'Parsed variable declaration statement on line ' + token.line
