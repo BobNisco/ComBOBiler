@@ -32,10 +32,7 @@ module Combobiler {
 				sarcastic: '==== Parse start ===='
 			});
 			if (this.tokens.length <= 0) {
-				this.error({
-					standard: 'No tokens found, can\'t parse anything!',
-					sarcastic: 'What the hell am I supposed to do without a single token?'
-				});
+				throw new Error('No tokens found, can\'t parse anything!');
 			} else {
 				try {
 					this.parseProgram();
@@ -295,10 +292,7 @@ module Combobiler {
 		private getNextToken() {
 			var token = this.tokens[++this.current];
 			if (token == null) {
-				this.error({
-					standard: 'Ran out of tokens, even though we were expecting more',
-					sarcastic: 'Ran out of tokens, phew, I was tired anyway'
-				});
+				throw new Error('Ran out of tokens, even though we were expecting more');
 			}
 			return token;
 		}
