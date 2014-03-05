@@ -5,7 +5,7 @@
 var LOGGER = null;
 
 $(document).ready(function () {
-    var compileButton = $('#compile-button'), taSourceCode = $('#taSourceCode'), taOutput = $('#taOutput'), logOutput = $('#logOutput'), programTable = $('#program-table'), logFilterType = $('#log-filter-type'), logFilterStatus = $('#log-filter-status'), clearLogButton = $('#clear-log-button'), logPersonality = $('#log-personality');
+    var compileButton = $('#compile-button'), taSourceCode = $('#taSourceCode'), taOutput = $('#taOutput'), logOutput = $('#logOutput'), programTables = $('.program-table'), logFilterType = $('#log-filter-type'), logFilterStatus = $('#log-filter-status'), clearLogButton = $('#clear-log-button'), logPersonality = $('#log-personality');
 
     // Instantiate a new instance of our logger class by passing in
     // the div that we want to use and the personality selector
@@ -26,7 +26,7 @@ $(document).ready(function () {
         }
     });
 
-    programTable.on('click', '.user-program', function (e) {
+    programTables.on('click', '.user-program', function (e) {
         e.preventDefault();
 
         var button = $(this);

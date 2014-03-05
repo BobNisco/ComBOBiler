@@ -10,7 +10,7 @@ $(document).ready(function(){
 		taSourceCode = $('#taSourceCode'),
 		taOutput = $('#taOutput'),
 		logOutput = $('#logOutput'),
-		programTable = $('#program-table'),
+		programTables = $('.program-table'),
 		logFilterType = $('#log-filter-type'),
 		logFilterStatus = $('#log-filter-status'),
 		clearLogButton = $('#clear-log-button'),
@@ -34,7 +34,7 @@ $(document).ready(function(){
 		}
 	});
 
-	programTable.on('click', '.user-program', function(e) {
+	programTables.on('click', '.user-program', function(e) {
 		e.preventDefault();
 
 		var button = $(this);

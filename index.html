@@ -77,8 +77,8 @@
 			</div>
 			<div class="row">
 				<div class="col-md-6">
-					<h5>Test Programs</h5>
-					<table class="table" id="program-table">
+					<h5>Test (Pass) Programs</h5>
+					<table class="table program-table">
 						<thead>
 							<tr>
 								<th>Program</th>
@@ -101,6 +101,27 @@
 							<tr>
 								<td><div class="btn btn-sm btn-info user-program" data-program="{&#10;    int a&#10;    a = 6&#10;    if ( a == 2 + 4 ) {&#10;        print ( a )&#10;    }&#10;    if ( 5 + 4 == 7 + 2 ) {&#10;        print ( a )&#10;    }&#10;} $">Program 4</div></td>
 								<td>Complex If statements</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+				<div class="col-md-6">
+					<h5>Test (Fail) Programs</h5>
+					<table class="table program-table">
+						<thead>
+							<tr>
+								<th>Program</th>
+								<th>Description</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td><div class="btn btn-sm btn-danger user-program" data-program="{&#10;    int a&#10;    a = &quot;bob&quot;&#10;} $">Program 1</div></td>
+								<td>Type Mismatch</td>
+							</tr>
+							<tr>
+								<td><div class="btn btn-sm btn-danger user-program" data-program="{&#10;    float pi&#10;    pi = 3.14&#10;} $">Program 2</div></td>
+								<td>Invalid Type</td>
 							</tr>
 						</tbody>
 					</table>
