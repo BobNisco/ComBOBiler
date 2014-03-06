@@ -33,6 +33,8 @@ module Combobiler {
 			var logString: string;
 			if (this.getPersonality() == 'neckbeard') {
 				logString = this.stringToBinary(messages['standard']);
+			} else if (this.getPersonality() === 'yoda') {
+				logString = this.stringToYoda(messages['standard']);
 			} else {
 				logString = messages[this.getPersonality()];
 			}
@@ -79,6 +81,23 @@ module Combobiler {
 				hex += text.charCodeAt(i).toString(2) + ' ';
 			}
 			return hex;
+		}
+
+		/**
+		 * Shuffles a sentence around, split by spaces. Doesn't actually
+		 * take Yoda's grammar into account. Sorry. Close enough though.
+		 *
+		 * @param text the sentence to be shuffled
+		 *
+		 * @return a shuffled string
+		 */
+		private stringToYoda(text: string) {
+			var o = text.split(' ');
+			// Shuffle the array
+			// Mostly taken from http://jsfromhell.com/array/shuffle
+			for (var j, x, i = o.length; i; j = Math.floor(Math.random() * i), x = o[--i], o[i] = $.trim(o[j]), o[j] = x);
+			// Join the shuffled array back into a "sentence" and return it
+			return o.join(' ');
 		}
 	}
 }
