@@ -144,6 +144,8 @@ var Combobiler;
                 node = new Combobiler.ScopeNode(value, 'string');
             } else if (exprToken instanceof Combobiler.True || exprToken instanceof Combobiler.False) {
                 node = new Combobiler.ScopeNode(value, 'bool');
+            } else if (exprToken instanceof Combobiler.VariableIdentifier) {
+                node = new Combobiler.ScopeNode(exprToken.value, 'varid');
             } else {
                 throw new Error('Unrecognized type');
             }

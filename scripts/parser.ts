@@ -148,6 +148,8 @@ module Combobiler {
 				node = new ScopeNode(value, 'string');
 			} else if (exprToken instanceof Combobiler.True || exprToken instanceof Combobiler.False) {
 				node = new ScopeNode(value, 'bool');
+			} else if (exprToken instanceof Combobiler.VariableIdentifier) {
+				node = new ScopeNode(exprToken.value, 'varid');
 			} else {
 				throw new Error('Unrecognized type');
 			}
