@@ -6,7 +6,7 @@ module Combobiler {
 		 * so that we can reference them from other classes if need be.
 		 */
 		public static numberRegex = /^\d+$/;
-		public static stringRegex = /(\")[A-Za-z][A-Za-z0-9]*(\")/;
+		public static stringRegex = /(\")[A-Za-z\s]*(\")/;
 		public static identifierRegex = /^[a-z]{1}$/;
 		public static intRegex = /^0$|^[1-9]\d*$/;
 

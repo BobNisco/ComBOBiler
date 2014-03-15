@@ -43,7 +43,7 @@ var Combobiler;
             }
         };
         Token.numberRegex = /^\d+$/;
-        Token.stringRegex = /(\")[A-Za-z][A-Za-z0-9]*(\")/;
+        Token.stringRegex = /(\")[A-Za-z\s]*(\")/;
         Token.identifierRegex = /^[a-z]{1}$/;
         Token.intRegex = /^0$|^[1-9]\d*$/;
 
