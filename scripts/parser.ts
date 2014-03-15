@@ -150,6 +150,8 @@ module Combobiler {
 				node = new ScopeNode(value, 'bool');
 			} else if (exprToken instanceof Combobiler.VariableIdentifier) {
 				node = new ScopeNode(exprToken.value, 'varid');
+			} else if (exprToken instanceof Combobiler.LParen) {
+				node = new ScopeNode('bool expression', 'bool');
 			} else {
 				throw new Error('Unrecognized type');
 			}
@@ -169,7 +171,8 @@ module Combobiler {
 				return this.parseIntExpression(token);
 			} else if (token instanceof Combobiler.StringValue) {
 				return this.parseStringExpression(token);
-			} else if (token instanceof Combobiler.Boolean || token instanceof Combobiler.True || token instanceof Combobiler.False) {
+			} else if (token instanceof Combobiler.Boolean || token instanceof Combobiler.True
+				|| token instanceof Combobiler.False || token instanceof Combobiler.LParen) {
 				return this.parseBooleanExpression(token);
 			} else if (token instanceof VariableIdentifier) {
 				this.parseId(token);

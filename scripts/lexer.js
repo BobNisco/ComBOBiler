@@ -24,6 +24,7 @@ var Combobiler;
             var tokenStream = new Array();
 
             try  {
+                lexLoop:
                 for (var line = 0; line < splitSource.length; line++) {
                     var currentLine = splitSource[line];
 
@@ -42,6 +43,13 @@ var Combobiler;
                                         standard: 'Found token ' + newToken.toString(),
                                         sarcastic: 'Cool, a token ' + newToken.toString() + ' but who cares?'
                                     });
+                                    if (newToken instanceof Combobiler.EndBlock && (splitLine[i + 1] != null || splitSource[line + 1] != null)) {
+                                        this.log({
+                                            standard: 'Reached end of program, ignoring rest of input',
+                                            sarcastic: 'Reached end of program, ignoring rest of input'
+                                        });
+                                        break lexLoop;
+                                    }
                                 } else {
                                     throw new Error('Lexical error: ' + current + ' on line ' + (line + 1));
                                 }
