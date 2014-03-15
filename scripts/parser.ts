@@ -140,12 +140,6 @@ module Combobiler {
 			this.assertToken(this.getNextToken(), Assignment);
 			var exprToken: Token = this.getNextToken();
 			var value = this.parseExpression(exprToken);
-
-			var possibleSymbol = this.currentScope.findSymbol(varId.value);
-
-			if (possibleSymbol == null) {
-				throw new Error('Can not assign value to undeclared variable ' + varId.value + ' on line ' + varId.line);
-			}
 			var node: ScopeNode;
 
 			if (exprToken instanceof Combobiler.IntValue) {
@@ -155,7 +149,7 @@ module Combobiler {
 			} else if (exprToken instanceof Combobiler.True || exprToken instanceof Combobiler.False) {
 				node = new ScopeNode(value, 'bool');
 			} else {
-				throw new Error('Type mismatch. Expected ' + possibleSymbol.getType() + ' on line ' + varId.line);
+				throw new Error('Unrecognized type');
 			}
 			this.currentScope.addSymbol(varId.value, node);
 			this.log({
