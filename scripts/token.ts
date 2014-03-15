@@ -7,7 +7,7 @@ module Combobiler {
 		 */
 		public static numberRegex = /^\d+$/;
 		public static stringRegex = /(\")[A-Za-z][A-Za-z0-9]*(\")/;
-		public static identifierRegex = /^[a-z][A-Za-z0-9]*$/;
+		public static identifierRegex = /^[a-z]{1}$/;
 		public static intRegex = /^0$|^[1-9]\d*$/;
 
 		// TypeScript (like JS) does not have a difference between

@@ -28,21 +28,24 @@ module Combobiler {
 			try {
 				for (var line = 0; line < splitSource.length; line++) {
 					var currentLine = splitSource[line];
-					// Split each part of the line up by spaces
-					var splitLine = currentLine.split(' ');
+					// Split each part of the line up by var ids, ints, strings, (non)equality, and anything else
+					var splitLine = currentLine.match(/([a-z]+)|(^0$|^[1-9]\d*$)|("[^"]*")|(!=)|(==)|(\S)/g);
 
-					for (var i = 0; i < splitLine.length; i++) {
-						var current = splitLine[i];
-						if (current !== '') {
-							var newToken = Combobiler.Token.makeNewToken(current, line + 1);
-							if (newToken != null) {
-								tokenStream.push(newToken);
-								this.log({
-									standard: 'Found token ' + newToken.toString(),
-									sarcastic: 'Cool, a token ' + newToken.toString() + ' but who cares?'
-								});
-							} else {
-								throw new Error('Lexical error: ' + current + ' on line ' + (line + 1));
+					// The splitLine will be null if we have a blank line, so we'll just skip over that
+					if (splitLine !== null) {
+						for (var i = 0; i < splitLine.length; i++) {
+							var current = splitLine[i];
+							if (current !== '') {
+								var newToken = Combobiler.Token.makeNewToken(current, line + 1);
+								if (newToken != null) {
+									tokenStream.push(newToken);
+									this.log({
+										standard: 'Found token ' + newToken.toString(),
+										sarcastic: 'Cool, a token ' + newToken.toString() + ' but who cares?'
+									});
+								} else {
+									throw new Error('Lexical error: ' + current + ' on line ' + (line + 1));
+								}
 							}
 						}
 					}
