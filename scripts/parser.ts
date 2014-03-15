@@ -148,23 +148,11 @@ module Combobiler {
 			}
 			var node: ScopeNode;
 
-			if (exprToken instanceof Combobiler.IntValue && possibleSymbol.getType() == 'int') {
-				// Create a test variable that we know is of type number
-				var numberTestType: number = 1;
-				// Assert that the type is a number, since this is a statically typed language
-				this.assertType(value, numberTestType);
+			if (exprToken instanceof Combobiler.IntValue) {
 				node = new ScopeNode(value, 'int');
-			} else if (exprToken instanceof Combobiler.StringValue && possibleSymbol.getType() == 'string') {
-				// Create a test variable that we know is of type String
-				var stringTestType: string = "test";
-				// Assert that the type is a string, since this is a statically typed language
-				this.assertType(value, stringTestType);
+			} else if (exprToken instanceof Combobiler.StringValue) {
 				node = new ScopeNode(value, 'string');
-			} else if ((exprToken instanceof Combobiler.True || exprToken instanceof Combobiler.False) && possibleSymbol.getType() == 'boolean') {
-				// Create a test variable that we know is of type boolean
-				var booleanTestType: boolean = true;
-				// Assert that the type is a boolean, since this is a statically typed language
-				this.assertType(value, booleanTestType);
+			} else if (exprToken instanceof Combobiler.True || exprToken instanceof Combobiler.False) {
 				node = new ScopeNode(value, 'bool');
 			} else {
 				throw new Error('Type mismatch. Expected ' + possibleSymbol.getType() + ' on line ' + varId.line);
