@@ -63,10 +63,7 @@ module Combobiler {
 					sarcastic: 'Your program is parsed, but please don\'t make me do more. I\'m tired.'
 				});
 			} else {
-				this.error({
-					standard: 'Error while parsing block. Expected end program symbol "$", but got ' + token.symbol + ' on line ' + token.line,
-					sarcastic: 'Do you do anything right? I\'m trying to finish parsing your program, but got ' + token.symbol + ' on line ' + token.line
-				})
+				throw new Error('Error while parsing block. Expected end program symbol "$", but got ' + token.symbol + ' on line ' + token.line);
 			}
 		}
 
