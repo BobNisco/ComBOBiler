@@ -17,6 +17,10 @@ module Combobiler {
 
 		private current: number;
 
+		private rootNode: TreeNode;
+
+		private currentNode: TreeNode;
+
 		// We'll keep reference to the "current scope"
 		// We will instantiate it with a blank Scope instance
 		private currentScope = new Scope({}, null);
@@ -36,6 +40,8 @@ module Combobiler {
 			} else {
 				try {
 					this.parseProgram();
+					this.rootNode.printTree();
+					console.log(this.rootNode.serializeTree());
 					this.log({
 						standard: '==== Parse end ====',
 						sarcastic: '==== Parse end ===='
@@ -54,10 +60,25 @@ module Combobiler {
 			}
 		}
 
+		private makeNewChildNode(value: any) {
+			var temp = new TreeNode(value, this.currentNode);
+			this.currentNode.children.push(temp);
+			this.currentNode = temp;
+		}
+
+		private makeNewSiblingNode(value: any) {
+			var temp = new TreeNode(value, this.currentNode.parent);
+			this.currentNode.parent.children.push(temp);
+			this.currentNode = temp;
+		}
+
 		private parseProgram() {
+			this.rootNode = new TreeNode('program', null);
+			this.currentNode = this.rootNode;
 			this.parseBlock(this.getNextToken());
 			var token = this.getNextToken();
 			if (token instanceof EndBlock) {
+				this.makeNewChildNode('$');
 				this.log({
 					standard: 'Hooray! We parsed your program!',
 					sarcastic: 'Your program is parsed, but please don\'t make me do more. I\'m tired.'
@@ -69,6 +90,7 @@ module Combobiler {
 
 		private parseBlock(token: Token) {
 			this.assertToken(token, OpenBrace);
+			this.makeNewChildNode(token);
 			// Opening up a new block denotes a new scope
 			// We will set the current scope to the newly instantiated Scope instance
 			// which sets its parent attribute to the last current scope
@@ -81,6 +103,7 @@ module Combobiler {
 			this.parseStatementList();
 			token = this.getNextToken();
 			this.assertToken(token, CloseBrace);
+			this.makeNewSiblingNode(token);
 			// Log the block scope, if there was anything in there
 			if (Object.keys(this.currentScope.getSymbols()).length > 0) {
 				this.log({
@@ -121,9 +144,14 @@ module Combobiler {
 
 		private parsePrintStatement(token: Token) {
 			this.assertToken(token, Print);
-			this.assertToken(this.getNextToken(), LParen);
+			this.makeNewChildNode(token);
+			token = this.getNextToken();
+			this.assertToken(token, LParen);
+			this.makeNewSiblingNode(token);
 			this.parseExpression(this.getNextToken());
-			this.assertToken(this.getNextToken(), RParen);
+			token = this.getNextToken();
+			this.assertToken(token, RParen);
+			this.makeNewSiblingNode(token);
 			this.log({
 				standard: 'Parsed a print statement on line ' + token.line,
 				sarcastic: 'Parsed a print statement on line ' + token.line,
@@ -134,7 +162,10 @@ module Combobiler {
 			// Capture some variables so we can add to the symbol table/scope blocks
 			var varId = token;
 			this.assertToken(varId, VariableIdentifier);
-			this.assertToken(this.getNextToken(), Assignment);
+			this.makeNewChildNode(varId);
+			token = this.getNextToken();
+			this.assertToken(token, Assignment);
+			this.makeNewSiblingNode(token);
 			var exprToken: Token = this.getNextToken();
 			var value = this.parseExpression(exprToken);
 			var node: ScopeNode;
@@ -181,11 +212,14 @@ module Combobiler {
 		private parseIntExpression(token: Token) {
 			var resultValue = +token.value;
 			this.assertToken(token, Combobiler.IntValue);
+			this.makeNewChildNode(token);
 			if (this.peekNextToken() instanceof Plus) {
-				this.assertToken(this.getNextToken(), Plus);
-				var nextToken = this.getNextToken();
-				this.parseExpression(nextToken);
-				resultValue += +nextToken.value;
+				token = this.getNextToken();
+				this.assertToken(token, Plus);
+				this.makeNewSiblingNode(token);
+				token = this.getNextToken();
+				this.parseExpression(token);
+				resultValue += +token.value;
 			}
 			this.log({
 				standard: 'Parsed int expression on line ' + token.line,
@@ -196,6 +230,7 @@ module Combobiler {
 
 		private parseStringExpression(token: Token) {
 			this.assertToken(token, Combobiler.StringValue);
+			this.makeNewChildNode(token);
 			this.log({
 				standard: 'Parsed string expression on line ' + token.line,
 				sarcastic: 'Parsed string expression on line ' + token.line,
@@ -207,12 +242,22 @@ module Combobiler {
 			var resultValue;
 			if (token instanceof LParen) {
 				this.assertToken(token, LParen);
+				this.makeNewChildNode(token);
 				this.parseExpression(this.getNextToken());
-				this.assertTokenInSet(this.getNextToken(), [Equality, NonEquality]);
+
+				token = this.getNextToken();
+				this.assertTokenInSet(token, [Equality, NonEquality]);
+				this.makeNewSiblingNode(token);
+
 				this.parseExpression(this.getNextToken());
-				this.assertToken(this.getNextToken(), RParen);
+
+				token = this.getNextToken();
+				this.assertToken(token, RParen);
+				this.makeNewSiblingNode(token);
 			} else if (token instanceof Combobiler.False || token instanceof Combobiler.True) {
 				this.assertTokenInSet(token, [Combobiler.False, Combobiler.True]);
+				this.makeNewChildNode(token);
+
 				// Needs to return a JS bool value from this function
 				resultValue = token instanceof Combobiler.True;
 			} else {
@@ -227,6 +272,7 @@ module Combobiler {
 
 		private parseId(token: Token) {
 			this.assertToken(token, VariableIdentifier);
+			this.makeNewChildNode(token);
 			this.log({
 				standard: 'Parsed ID on line ' + token.line,
 				sarcastic: 'Parsed ID on line ' + token.line,
@@ -236,9 +282,13 @@ module Combobiler {
 		private parseVariableDeclaration(token: Token) {
 			var node: ScopeNode = new ScopeNode(null, token.symbol);
 			this.assertTokenInSet(token, [Combobiler.String, Combobiler.Int, Combobiler.Boolean]);
+			this.makeNewChildNode(token);
+
 			token = this.getNextToken();
 			this.parseId(token);
 			this.currentScope.addSymbol(token.value, node);
+			this.makeNewChildNode(token);
+
 			this.log({
 				standard: 'Added symbol ' + token.value + ' of type ' + node.getType() + ' to symbol table',
 				sarcastic: 'Added symbol ' + token.value + ' of type ' + node.getType() + ' to symbol table',
@@ -251,6 +301,8 @@ module Combobiler {
 
 		private parseWhileStatement(token: Token) {
 			this.assertToken(token, Combobiler.While);
+			this.makeNewChildNode(token);
+
 			this.parseBooleanExpression(this.getNextToken());
 			this.parseBlock(this.getNextToken());
 			this.log({
@@ -261,6 +313,8 @@ module Combobiler {
 
 		private parseIfStatement(token: Token) {
 			this.assertToken(token, Combobiler.If);
+			this.makeNewChildNode(token);
+
 			this.parseBooleanExpression(this.getNextToken());
 			this.parseBlock(this.getNextToken());
 			this.log({
