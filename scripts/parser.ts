@@ -23,11 +23,12 @@ module Combobiler {
 
 		// We'll keep reference to the "current scope"
 		// We will instantiate it with a blank Scope instance
-		private currentScope = new Scope({}, null);
+		private currentScope: Scope;
 
 		constructor(tokens: Array<Token>) {
 			this.tokens = tokens;
 			this.current = -1;
+			this.currentScope = new Scope({}, null);
 		}
 
 		public performParse() {
@@ -40,12 +41,14 @@ module Combobiler {
 			} else {
 				try {
 					this.parseProgram();
-					this.rootNode.printTree();
-					console.log(this.rootNode.serializeTree());
 					this.log({
 						standard: '==== Parse end ====',
 						sarcastic: '==== Parse end ===='
 					});
+					return {
+						rootNode: this.rootNode,
+						currentScope: this.currentScope
+					};
 				} catch (error) {
 					this.error({
 						standard: error,
