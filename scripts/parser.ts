@@ -75,6 +75,16 @@ module Combobiler {
 			this.currentNode = temp;
 		}
 
+		private makeNewScope() {
+			var temp = new Scope({}, this.currentScope);
+			this.currentScope.children.push(temp);
+			this.currentScope = temp;
+		}
+
+		private closeCurrentScope() {
+			this.currentScope = this.currentScope.parent;
+		}
+
 		private parseProgram() {
 			this.rootNode = new TreeNode('program', null);
 			this.currentNode = this.rootNode;
@@ -94,10 +104,7 @@ module Combobiler {
 		private parseBlock(token: Token) {
 			this.assertToken(token, OpenBrace);
 			this.makeNewChildNode(token);
-			// Opening up a new block denotes a new scope
-			// We will set the current scope to the newly instantiated Scope instance
-			// which sets its parent attribute to the last current scope
-			this.currentScope = new Scope({}, this.currentScope);
+			this.makeNewScope();
 			this.log({
 				standard: 'Opening up a new scope block on line ' + token.line,
 				sarcastic: 'Opening up a new scope block on line ' + token.line,
@@ -116,7 +123,7 @@ module Combobiler {
 			}
 			// At this point, the block is closed, therefore we can move the currentScope
 			// pointer back to the currentScope's parent.
-			this.currentScope = this.currentScope.getParent();
+			this.closeCurrentScope();
 			this.log({
 				standard: 'Parsed a block that started on line ' + startLine + ' and ended on line ' + token.line,
 				sarcastic: 'I don\'t have something sarcastic to say, but yay we parsed a block on line ' + startLine + ' and ended on line ' + token.line

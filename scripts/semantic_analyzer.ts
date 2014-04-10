@@ -21,6 +21,8 @@ module Combobiler {
 				standard: '==== Semantic Analysis start ====',
 				sarcastic: '==== Semantic Analysis start ===='
 			});
+			console.log(this.rootNode);
+			console.log(this.currentScope);
 			this.log({
 				standard: '==== Semantic Analysis end ====',
 				sarcastic: '==== Semantic Analysis end ===='

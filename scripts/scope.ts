@@ -5,12 +5,10 @@
 
 module Combobiler {
 	export class Scope {
-		private symbols: Object;
-		private parent: Scope;
+		public children: Array<Scope>;
 
-		constructor(symbols: Object, parent: Scope) {
-		    this.symbols = symbols;
-		    this.parent = parent;
+		constructor(private symbols: Object, public parent: Scope) {
+			this.children = new Array<Scope>();
 		}
 
 		public getParent() {

@@ -8,6 +8,7 @@ var Combobiler;
         function Scope(symbols, parent) {
             this.symbols = symbols;
             this.parent = parent;
+            this.children = new Array();
         }
         Scope.prototype.getParent = function () {
             return this.parent;
