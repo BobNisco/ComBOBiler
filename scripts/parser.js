@@ -26,7 +26,7 @@ var Combobiler;
                 throw new Error('No tokens found, can\'t parse anything!');
             } else {
                 try  {
-                    this.parseProgram();
+                    this.parseProgram(this.rootNode);
                     this.log({
                         standard: '==== Parse end ====',
                         sarcastic: '==== Parse end ===='
@@ -49,18 +49,6 @@ var Combobiler;
             }
         };
 
-        Parser.prototype.makeNewChildNode = function (value) {
-            var temp = new Combobiler.TreeNode(value, this.currentNode);
-            this.currentNode.children.push(temp);
-            this.currentNode = temp;
-        };
-
-        Parser.prototype.makeNewSiblingNode = function (value) {
-            var temp = new Combobiler.TreeNode(value, this.currentNode.parent);
-            this.currentNode.parent.children.push(temp);
-            this.currentNode = temp;
-        };
-
         Parser.prototype.makeNewScope = function () {
             var temp = new Combobiler.Scope({}, this.currentScope);
             this.currentScope.children.push(temp);
@@ -71,13 +59,16 @@ var Combobiler;
             this.currentScope = this.currentScope.parent;
         };
 
-        Parser.prototype.parseProgram = function () {
-            this.rootNode = new Combobiler.TreeNode('program', null);
-            this.currentNode = this.rootNode;
-            this.parseBlock(this.getNextToken());
+        Parser.prototype.parseProgram = function (node) {
+            this.rootNode = new Combobiler.TreeNode('Program', null);
+            node = this.rootNode;
+
+            this.parseBlock(node, this.getNextToken());
             var token = this.getNextToken();
             if (token instanceof Combobiler.EndBlock) {
-                this.makeNewChildNode('$');
+                node.addChildNode('$');
+
+                //this.makeNewChildNode(node, '$');
                 this.log({
                     standard: 'Hooray! We parsed your program!',
                     sarcastic: 'Your program is parsed, but please don\'t make me do more. I\'m tired.'
@@ -87,19 +78,28 @@ var Combobiler;
             }
         };
 
-        Parser.prototype.parseBlock = function (token) {
+        Parser.prototype.parseBlock = function (node, token) {
+            node.addChildNode('Block');
+
+            // Set the "current node" to be the new block node
+            node = node.getNewestChild();
+
             this.assertToken(token, Combobiler.OpenBrace);
-            this.makeNewChildNode(token);
+            node.addChildNode(token);
             this.makeNewScope();
             this.log({
                 standard: 'Opening up a new scope block on line ' + token.line,
                 sarcastic: 'Opening up a new scope block on line ' + token.line
             });
+
             var startLine = token.line;
-            this.parseStatementList();
+            this.parseStatementList(node);
+
             token = this.getNextToken();
             this.assertToken(token, Combobiler.CloseBrace);
-            this.makeNewSiblingNode(token);
+
+            //this.makeNewSiblingNode(token);
+            node.addChildNode(token);
 
             // Log the block scope, if there was anything in there
             if (Object.keys(this.currentScope.getSymbols()).length > 0) {
@@ -118,73 +118,91 @@ var Combobiler;
             });
         };
 
-        Parser.prototype.parseStatementList = function () {
+        Parser.prototype.parseStatementList = function (node) {
             while (!(this.peekNextToken() instanceof Combobiler.CloseBrace)) {
+                node.addChildNode('StatementList');
+                node = node.getNewestChild();
+
                 var token = this.getNextToken();
 
                 if (token instanceof Combobiler.Print) {
-                    this.parsePrintStatement(token);
+                    this.parsePrintStatement(node, token);
                 } else if (token instanceof Combobiler.VariableIdentifier && this.peekNextToken() instanceof Combobiler.Assignment) {
-                    this.parseAssignmentStatement(token);
+                    this.parseAssignmentStatement(node, token);
                 } else if (token instanceof Combobiler.Int || token instanceof Combobiler.String || token instanceof Combobiler.Boolean) {
-                    this.parseVariableDeclaration(token);
+                    this.parseVariableDeclaration(node, token);
                 } else if (token instanceof Combobiler.While) {
-                    this.parseWhileStatement(token);
+                    this.parseWhileStatement(node, token);
                 } else if (token instanceof Combobiler.If) {
-                    this.parseIfStatement(token);
+                    this.parseIfStatement(node, token);
                 } else if (token instanceof Combobiler.OpenBrace) {
-                    this.parseBlock(token);
+                    this.parseBlock(node, token);
                 } else {
                     throw new Error('Tried to parse statement list, but could not find valid statement on line ' + token.line);
                 }
             }
         };
 
-        Parser.prototype.parsePrintStatement = function (token) {
+        Parser.prototype.parsePrintStatement = function (node, token) {
+            // Make a new PrintStatement Node
+            node.addChildNode('PrintStatement');
+            node = node.getNewestChild();
+
             this.assertToken(token, Combobiler.Print);
-            this.makeNewChildNode(token);
+            node.addChildNode(token);
+
             token = this.getNextToken();
             this.assertToken(token, Combobiler.LParen);
-            this.makeNewSiblingNode(token);
-            this.parseExpression(this.getNextToken());
+            node.addChildNode(token);
+
+            // RECURSE!
+            this.parseExpression(node, this.getNextToken());
+
             token = this.getNextToken();
             this.assertToken(token, Combobiler.RParen);
-            this.makeNewSiblingNode(token);
+            node.addChildNode(token);
+
             this.log({
                 standard: 'Parsed a print statement on line ' + token.line,
                 sarcastic: 'Parsed a print statement on line ' + token.line
             });
         };
 
-        Parser.prototype.parseAssignmentStatement = function (token) {
+        Parser.prototype.parseAssignmentStatement = function (node, token) {
+            node.addChildNode('AssignmentStatement');
+            node = node.getNewestChild();
+
             // Capture some variables so we can add to the symbol table/scope blocks
             var varId = token;
+
             this.assertToken(varId, Combobiler.VariableIdentifier);
-            this.makeNewChildNode(varId);
+            node.addChildNode(varId);
+
             token = this.getNextToken();
             this.assertToken(token, Combobiler.Assignment);
-            this.makeNewSiblingNode(token);
+            node.addChildNode(token);
+
             var exprToken = this.getNextToken();
-            var value = this.parseExpression(exprToken);
-            var node;
+            var value = this.parseExpression(node, exprToken);
+            var scopeNode;
 
             if (exprToken instanceof Combobiler.IntValue) {
-                node = new Combobiler.ScopeNode(value, 'int');
+                scopeNode = new Combobiler.ScopeNode(value, 'int');
             } else if (exprToken instanceof Combobiler.StringValue) {
-                node = new Combobiler.ScopeNode(value, 'string');
+                scopeNode = new Combobiler.ScopeNode(value, 'string');
             } else if (exprToken instanceof Combobiler.True || exprToken instanceof Combobiler.False) {
-                node = new Combobiler.ScopeNode(value, 'bool');
+                scopeNode = new Combobiler.ScopeNode(value, 'bool');
             } else if (exprToken instanceof Combobiler.VariableIdentifier) {
-                node = new Combobiler.ScopeNode(exprToken.value, 'varid');
+                scopeNode = new Combobiler.ScopeNode(exprToken.value, 'varid');
             } else if (exprToken instanceof Combobiler.LParen) {
-                node = new Combobiler.ScopeNode('bool expression', 'bool');
+                scopeNode = new Combobiler.ScopeNode('bool expression', 'bool');
             } else {
                 throw new Error('Unrecognized type');
             }
-            this.currentScope.addSymbol(varId.value, node);
+            this.currentScope.addSymbol(varId.value, scopeNode);
             this.log({
-                standard: 'Symbol ' + varId.value + ' was assigned value ' + node.getValue() + ' in symbol table',
-                sarcastic: 'Symbol ' + varId.value + ' was assigned value ' + node.getValue() + ' in symbol table'
+                standard: 'Symbol ' + varId.value + ' was assigned value ' + scopeNode.getValue() + ' in symbol table',
+                sarcastic: 'Symbol ' + varId.value + ' was assigned value ' + scopeNode.getValue() + ' in symbol table'
             });
             this.log({
                 standard: 'Parsed assignment statement on line ' + token.line,
@@ -192,30 +210,38 @@ var Combobiler;
             });
         };
 
-        Parser.prototype.parseExpression = function (token) {
+        Parser.prototype.parseExpression = function (node, token) {
+            node.addChildNode('Expression');
+            node = node.getNewestChild();
+
             if (token instanceof Combobiler.IntValue) {
-                return this.parseIntExpression(token);
+                return this.parseIntExpression(node, token);
             } else if (token instanceof Combobiler.StringValue) {
-                return this.parseStringExpression(token);
+                return this.parseStringExpression(node, token);
             } else if (token instanceof Combobiler.Boolean || token instanceof Combobiler.True || token instanceof Combobiler.False || token instanceof Combobiler.LParen) {
-                return this.parseBooleanExpression(token);
+                return this.parseBooleanExpression(node, token);
             } else if (token instanceof Combobiler.VariableIdentifier) {
-                this.parseId(token);
+                this.parseId(node, token);
             } else {
                 throw new Error('Error while parsing expression on line ' + token.line);
             }
         };
 
-        Parser.prototype.parseIntExpression = function (token) {
+        Parser.prototype.parseIntExpression = function (node, token) {
+            node.addChildNode('IntExpression');
+            node = node.getNewestChild();
+
             var resultValue = +token.value;
             this.assertToken(token, Combobiler.IntValue);
-            this.makeNewChildNode(token);
+            node.addChildNode(token);
+
             if (this.peekNextToken() instanceof Combobiler.Plus) {
                 token = this.getNextToken();
                 this.assertToken(token, Combobiler.Plus);
-                this.makeNewSiblingNode(token);
+                node.addChildNode(token);
+
                 token = this.getNextToken();
-                this.parseExpression(token);
+                this.parseExpression(node, token);
                 resultValue += +token.value;
             }
             this.log({
@@ -225,9 +251,13 @@ var Combobiler;
             return +resultValue;
         };
 
-        Parser.prototype.parseStringExpression = function (token) {
+        Parser.prototype.parseStringExpression = function (node, token) {
+            node.addChildNode('StringExpression');
+            node = node.getNewestChild();
+
             this.assertToken(token, Combobiler.StringValue);
-            this.makeNewChildNode(token);
+            node.addChildNode(token);
+
             this.log({
                 standard: 'Parsed string expression on line ' + token.line,
                 sarcastic: 'Parsed string expression on line ' + token.line
@@ -235,25 +265,28 @@ var Combobiler;
             return token.value;
         };
 
-        Parser.prototype.parseBooleanExpression = function (token) {
+        Parser.prototype.parseBooleanExpression = function (node, token) {
+            node.addChildNode('BooleanExpression');
+            node = node.getNewestChild();
+
             var resultValue;
             if (token instanceof Combobiler.LParen) {
                 this.assertToken(token, Combobiler.LParen);
-                this.makeNewChildNode(token);
-                this.parseExpression(this.getNextToken());
+                node.addChildNode(token);
 
+                this.parseExpression(node, this.getNextToken());
                 token = this.getNextToken();
                 this.assertTokenInSet(token, [Combobiler.Equality, Combobiler.NonEquality]);
-                this.makeNewSiblingNode(token);
+                node.addChildNode(token);
 
-                this.parseExpression(this.getNextToken());
+                this.parseExpression(node, this.getNextToken());
 
                 token = this.getNextToken();
                 this.assertToken(token, Combobiler.RParen);
-                this.makeNewSiblingNode(token);
+                node.addChildNode(token);
             } else if (token instanceof Combobiler.False || token instanceof Combobiler.True) {
                 this.assertTokenInSet(token, [Combobiler.False, Combobiler.True]);
-                this.makeNewChildNode(token);
+                node.addChildNode(token);
 
                 // Needs to return a JS bool value from this function
                 resultValue = token instanceof Combobiler.True;
@@ -267,28 +300,34 @@ var Combobiler;
             return resultValue;
         };
 
-        Parser.prototype.parseId = function (token) {
+        Parser.prototype.parseId = function (node, token) {
+            node.addChildNode('Id');
+            node = node.getNewestChild();
+
             this.assertToken(token, Combobiler.VariableIdentifier);
-            this.makeNewChildNode(token);
+            node.addChildNode(token);
             this.log({
                 standard: 'Parsed ID on line ' + token.line,
                 sarcastic: 'Parsed ID on line ' + token.line
             });
         };
 
-        Parser.prototype.parseVariableDeclaration = function (token) {
-            var node = new Combobiler.ScopeNode(null, token.symbol);
+        Parser.prototype.parseVariableDeclaration = function (node, token) {
+            node.addChildNode('VariableDeclaration');
+            node = node.getNewestChild();
+
+            var scopeNode = new Combobiler.ScopeNode(null, token.symbol);
             this.assertTokenInSet(token, [Combobiler.String, Combobiler.Int, Combobiler.Boolean]);
-            this.makeNewChildNode(token);
+            node.addChildNode(token);
 
             token = this.getNextToken();
-            this.parseId(token);
-            this.currentScope.addSymbol(token.value, node);
-            this.makeNewChildNode(token);
+            this.parseId(node, token);
+            this.currentScope.addSymbol(token.value, scopeNode);
+            node.addChildNode(token);
 
             this.log({
-                standard: 'Added symbol ' + token.value + ' of type ' + node.getType() + ' to symbol table',
-                sarcastic: 'Added symbol ' + token.value + ' of type ' + node.getType() + ' to symbol table'
+                standard: 'Added symbol ' + token.value + ' of type ' + scopeNode.getType() + ' to symbol table',
+                sarcastic: 'Added symbol ' + token.value + ' of type ' + scopeNode.getType() + ' to symbol table'
             });
             this.log({
                 standard: 'Parsed variable declaration statement on line ' + token.line,
@@ -296,24 +335,30 @@ var Combobiler;
             });
         };
 
-        Parser.prototype.parseWhileStatement = function (token) {
-            this.assertToken(token, Combobiler.While);
-            this.makeNewChildNode(token);
+        Parser.prototype.parseWhileStatement = function (node, token) {
+            node.addChildNode('WhileStatement');
+            node = node.getNewestChild();
 
-            this.parseBooleanExpression(this.getNextToken());
-            this.parseBlock(this.getNextToken());
+            this.assertToken(token, Combobiler.While);
+            node.addChildNode(token);
+
+            this.parseBooleanExpression(node, this.getNextToken());
+            this.parseBlock(node, this.getNextToken());
             this.log({
                 standard: 'Parsed while statement on line ' + token.line,
                 sarcastic: 'Parsed while statement on line ' + token.line
             });
         };
 
-        Parser.prototype.parseIfStatement = function (token) {
-            this.assertToken(token, Combobiler.If);
-            this.makeNewChildNode(token);
+        Parser.prototype.parseIfStatement = function (node, token) {
+            node.addChildNode('IfStatement');
+            node = node.getNewestChild();
 
-            this.parseBooleanExpression(this.getNextToken());
-            this.parseBlock(this.getNextToken());
+            this.assertToken(token, Combobiler.If);
+            node.addChildNode(token);
+
+            this.parseBooleanExpression(node, this.getNextToken());
+            this.parseBlock(node, this.getNextToken());
             this.log({
                 standard: 'Parsing if statement on line ' + token.line,
                 sarcastic: 'Parsing if statement on line ' + token.line

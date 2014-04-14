@@ -9,6 +9,20 @@ module Combobiler {
 			this.children = new Array<TreeNode>();
 		}
 
+		public addChildNode(value: any) {
+			var temp = new TreeNode(value, this);
+			this.children.push(temp);
+		}
+
+		public addSiblingNode(value: any) {
+			var temp = new TreeNode(value, this.parent);
+			this.parent.children.push(temp);
+		}
+
+		public getNewestChild() {
+			return this.children[this.children.length - 1];
+		}
+
 		public printTree() {
 			console.log(this);
 			for (var i in this.children) {

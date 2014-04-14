@@ -9,6 +9,20 @@ var Combobiler;
             this.parent = parent;
             this.children = new Array();
         }
+        TreeNode.prototype.addChildNode = function (value) {
+            var temp = new TreeNode(value, this);
+            this.children.push(temp);
+        };
+
+        TreeNode.prototype.addSiblingNode = function (value) {
+            var temp = new TreeNode(value, this.parent);
+            this.parent.children.push(temp);
+        };
+
+        TreeNode.prototype.getNewestChild = function () {
+            return this.children[this.children.length - 1];
+        };
+
         TreeNode.prototype.printTree = function () {
             console.log(this);
             for (var i in this.children) {

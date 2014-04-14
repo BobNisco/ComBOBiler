@@ -19,12 +19,43 @@ var Combobiler;
                 standard: '==== Semantic Analysis start ====',
                 sarcastic: '==== Semantic Analysis start ===='
             });
-            console.log(this.rootNode);
-            console.log(this.currentScope);
-            this.log({
-                standard: '==== Semantic Analysis end ====',
-                sarcastic: '==== Semantic Analysis end ===='
-            });
+            try  {
+                console.log(this.rootNode);
+                this.analyzeProgram(this.rootNode);
+                this.log({
+                    standard: '==== Semantic Analysis end ====',
+                    sarcastic: '==== Semantic Analysis end ===='
+                });
+            } catch (error) {
+                this.error({
+                    standard: error,
+                    sarcastic: error
+                });
+
+                this.error({
+                    standard: '==== Semantic Analysis ended due to error ====',
+                    sarcastic: '==== Semantic Analysis ended due to error ===='
+                });
+            }
+        };
+
+        SemanticAnalyzer.prototype.analyzeProgram = function (node) {
+            this.analyzeBlock(node.children[0]);
+        };
+
+        SemanticAnalyzer.prototype.analyzeBlock = function (node) {
+            // TODO: Create new scope
+        };
+
+        SemanticAnalyzer.prototype.analyzeWhileStatement = function (node) {
+            this.analyzeBooleanExpression(node.children[0]);
+            this.analyzeBlock(node.children[1]);
+        };
+
+        SemanticAnalyzer.prototype.analyzePrintStatement = function (node) {
+        };
+
+        SemanticAnalyzer.prototype.analyzeBooleanExpression = function (node) {
         };
 
         /**
