@@ -7,7 +7,7 @@ module Combobiler {
 	export class Scope {
 		public children: Array<Scope>;
 
-		constructor(private symbols: Object, public parent: Scope) {
+		constructor(public symbols: Object, public parent: Scope) {
 			this.children = new Array<Scope>();
 		}
 
@@ -17,6 +17,28 @@ module Combobiler {
 
 		public addSymbol(key: any, value: ScopeNode) {
 			this.symbols[key] = value;
+		}
+
+		public assignValue(key: any, value: any) {
+			var scopeNode = Scope.findSymbolInScope(key, this);
+			if (scopeNode) {
+				scopeNode.value = value;
+			} else {
+				/* TODO: Think of how to handle this error
+				   Since this is a function that will primarily be used in Parse
+				   we shouldn't be checking if the value exists yet. */
+
+			}
+		}
+
+		public static findSymbolInScope(symbol: string, scope: Scope) {
+			if (!scope) {
+				throw new Error('Symbol ' + symbol + ' not found in symbol table');
+			}
+			if (scope.symbols[symbol]) {
+				return scope.symbols[symbol];
+			}
+			return this.findSymbolInScope(symbol, scope.parent);
 		}
 
 		public getSymbols() {

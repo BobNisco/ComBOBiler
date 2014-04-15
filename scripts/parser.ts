@@ -207,7 +207,7 @@ module Combobiler {
 			} else {
 				throw new Error('Unrecognized type');
 			}
-			this.currentScope.addSymbol(varId.value, scopeNode);
+			this.currentScope.assignValue(varId.value, value);
 			this.log({
 				standard: 'Symbol ' + varId.value + ' was assigned value ' + scopeNode.getValue() + ' in symbol table',
 				sarcastic: 'Symbol ' + varId.value + ' was assigned value ' + scopeNode.getValue() + ' in symbol table',
@@ -322,7 +322,7 @@ module Combobiler {
 		}
 
 		private parseVariableDeclaration(node: TreeNode, token: Token) {
-			node.addChildNode('VariableDeclaration');
+			node.addChildNode('VarDecl');
 			node = node.getNewestChild();
 
 			var scopeNode: ScopeNode = new ScopeNode(null, token.symbol);
@@ -384,14 +384,6 @@ module Combobiler {
 				throw new Error('Ran out of tokens, even though we were expecting more');
 			}
 			return token;
-		}
-
-		private assertType(val: any, type: any) {
-			if (typeof val == typeof type) {
-				return true;
-			} else {
-				throw new Error('Expected ' + typeof type + ' but got ' + typeof val + ' instead');
-			}
 		}
 
 		private assertToken(token: Token, type: any) {

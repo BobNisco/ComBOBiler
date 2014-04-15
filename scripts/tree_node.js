@@ -14,11 +14,6 @@ var Combobiler;
             this.children.push(temp);
         };
 
-        TreeNode.prototype.addSiblingNode = function (value) {
-            var temp = new TreeNode(value, this.parent);
-            this.parent.children.push(temp);
-        };
-
         TreeNode.prototype.getNewestChild = function () {
             return this.children[this.children.length - 1];
         };

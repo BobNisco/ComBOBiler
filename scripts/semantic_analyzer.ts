@@ -12,7 +12,7 @@ module Combobiler {
 
 		private currentNode: TreeNode;
 
-		constructor(private rootNode: TreeNode, private currentScope: Scope) {
+		constructor(private rootNode: TreeNode, private rootScope: Scope) {
 			this.currentNode = this.rootNode;
 		}
 
@@ -22,8 +22,7 @@ module Combobiler {
 				sarcastic: '==== Semantic Analysis start ===='
 			});
 			try {
-				console.log(this.rootNode);
-				this.analyzeProgram(this.rootNode);
+				this.analyzeProgram(this.rootNode, this.rootScope);
 				this.log({
 					standard: '==== Semantic Analysis end ====',
 					sarcastic: '==== Semantic Analysis end ===='
@@ -41,25 +40,106 @@ module Combobiler {
 			}
 		}
 
-		private analyzeProgram(node) {
-			this.analyzeBlock(node.children[0]);
+		private analyzeProgram(node: TreeNode, scope: Scope) {
+			this.analyzeBlock(node.children[0], scope);
 		}
 
-		private analyzeBlock(node) {
-			// TODO: Create new scope
+		private analyzeBlock(node: TreeNode, scope: Scope) {
+			// Since a block indicates a new Scope,
+			// we'll pass the first child of the current Scope in as an argument
+			for (var i in scope.children) {
+				this.analyzeStatementList(node.children[1], scope.children[i]);
+			}
 		}
 
-		private analyzeWhileStatement(node) {
-			this.analyzeBooleanExpression(node.children[0]);
-			this.analyzeBlock(node.children[1]);
+		private analyzeStatementList(node: TreeNode, scope: Scope) {
+			if (!node) {
+				// Epsilon production
+				return;
+			}
+			if (node.children.length > 0) {
+				this.analyzeStatement(node.children[0], scope);
+				this.analyzeStatementList(node.children[1], scope);
+			}
 		}
 
-		private analyzePrintStatement(node) {
+		private analyzeStatement(node: TreeNode, scope: Scope) {
+			if (node.value === 'PrintStatement') {
+				this.analyzePrintStatement(node, scope);
+			} else if (node.value === 'AssignmentStatement') {
+				this.analyzeAssignmentStatement(node, scope);
+			} else if (node.value === 'VarDecl') {
+				this.analyzeVarDecl(node, scope);
+			} else if (node.value === 'WhileStatement') {
+				this.analyzeWhileStatement(node, scope);
+			} else if (node.value === 'IfStatement') {
+				this.analyzeIfStatement(node, scope);
+			} else if (node.value === 'Block') {
+				this.analyzeBlock(node, scope);
+			} else {
+				// TODO: Handle error
+			}
+		}
+
+		private analyzeWhileStatement(node: TreeNode, scope: Scope) {
+			this.analyzeBooleanExpression(node.children[1], scope);
+			this.analyzeBlock(node.children[2], scope);
+		}
+
+		private analyzeAssignmentStatement(node: TreeNode, scope: Scope) {
+			var currentId = node.children[0].value.value;
+			var scopeNode = Scope.findSymbolInScope(currentId, scope);
+
+			if (scopeNode.type === 'int') {
+				// Create a test variable that we know is of type number
+				var numberTestType: number = 1;
+				// Assert that the type is a number, since this is a statically typed language
+				this.assertType(scopeNode.value, numberTestType);
+			} else if (scopeNode.type === 'string') {
+				// Create a test variable that we know is of type String
+				var stringTestType: string = 'test';
+				// Assert that the type is a string, since this is a statically typed language
+				this.assertType(scopeNode.value, stringTestType);
+			} else if (scopeNode.type === 'bool') {
+				// Create a test variable that we know is of type boolean
+				var booleanTestType: boolean = true;
+				// Assert that the type is a boolean, since this is a statically typed language
+				this.assertType(scopeNode.value, booleanTestType);
+			} else {
+				this.error({
+					standard: 'Unknown type!',
+					sarcastic: 'Unknown type!',
+				});
+			}
+
+			this.log({
+				standard: 'VarId ' + currentId + ' was assigned a value with expected type ' + scopeNode.type,
+				sarcastic: 'VarId ' + currentId + ' was assigned a value with expected type ' + scopeNode.type,
+			});
+		}
+
+		private analyzeVarDecl(node: TreeNode, scope: Scope) {
 
 		}
 
-		private analyzeBooleanExpression(node) {
+		private analyzeIfStatement(node: TreeNode, scope: Scope) {
 
+		}
+
+		private analyzePrintStatement(node: TreeNode, scope: Scope) {
+
+		}
+
+		private analyzeBooleanExpression(node: TreeNode, scope: Scope) {
+
+		}
+
+		private assertType(val: any, type: any) {
+			if (typeof val == typeof type) {
+				return true;
+			} else {
+				throw new Error('Expected ' + typeof type + ' but got ' + typeof val + ' instead');
+			}
 		}
 
 		/**

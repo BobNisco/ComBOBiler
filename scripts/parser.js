@@ -199,7 +199,7 @@ var Combobiler;
             } else {
                 throw new Error('Unrecognized type');
             }
-            this.currentScope.addSymbol(varId.value, scopeNode);
+            this.currentScope.assignValue(varId.value, value);
             this.log({
                 standard: 'Symbol ' + varId.value + ' was assigned value ' + scopeNode.getValue() + ' in symbol table',
                 sarcastic: 'Symbol ' + varId.value + ' was assigned value ' + scopeNode.getValue() + ' in symbol table'
@@ -313,7 +313,7 @@ var Combobiler;
         };
 
         Parser.prototype.parseVariableDeclaration = function (node, token) {
-            node.addChildNode('VariableDeclaration');
+            node.addChildNode('VarDecl');
             node = node.getNewestChild();
 
             var scopeNode = new Combobiler.ScopeNode(null, token.symbol);
@@ -375,14 +375,6 @@ var Combobiler;
                 throw new Error('Ran out of tokens, even though we were expecting more');
             }
             return token;
-        };
-
-        Parser.prototype.assertType = function (val, type) {
-            if (typeof val == typeof type) {
-                return true;
-            } else {
-                throw new Error('Expected ' + typeof type + ' but got ' + typeof val + ' instead');
-            }
         };
 
         Parser.prototype.assertToken = function (token, type) {

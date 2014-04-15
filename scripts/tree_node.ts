@@ -14,11 +14,6 @@ module Combobiler {
 			this.children.push(temp);
 		}
 
-		public addSiblingNode(value: any) {
-			var temp = new TreeNode(value, this.parent);
-			this.parent.children.push(temp);
-		}
-
 		public getNewestChild() {
 			return this.children[this.children.length - 1];
 		}

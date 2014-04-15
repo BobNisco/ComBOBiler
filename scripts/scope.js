@@ -18,6 +18,27 @@ var Combobiler;
             this.symbols[key] = value;
         };
 
+        Scope.prototype.assignValue = function (key, value) {
+            var scopeNode = Scope.findSymbolInScope(key, this);
+            if (scopeNode) {
+                scopeNode.value = value;
+            } else {
+                /* TODO: Think of how to handle this error
+                Since this is a function that will primarily be used in Parse
+                we shouldn't be checking if the value exists yet. */
+            }
+        };
+
+        Scope.findSymbolInScope = function (symbol, scope) {
+            if (!scope) {
+                throw new Error('Symbol ' + symbol + ' not found in symbol table');
+            }
+            if (scope.symbols[symbol]) {
+                return scope.symbols[symbol];
+            }
+            return this.findSymbolInScope(symbol, scope.parent);
+        };
+
         Scope.prototype.getSymbols = function () {
             return this.symbols;
         };
