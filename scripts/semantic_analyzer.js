@@ -21,6 +21,7 @@ var Combobiler;
             });
             try  {
                 this.analyzeProgram(this.rootNode, this.rootScope, this.astRootNode);
+                this.drawTree(this.rootNode, 'cst-tree-graph');
                 this.log({
                     standard: '==== Semantic Analysis end ====',
                     sarcastic: '==== Semantic Analysis end ===='
@@ -28,6 +29,8 @@ var Combobiler;
                 console.log(this.astRootNode);
                 return this.astRootNode;
             } catch (error) {
+                // Clear the tree displays so that the user is not shown improper trees
+                this.clearTreeDisplay();
                 this.error({
                     standard: error,
                     sarcastic: error
@@ -153,6 +156,16 @@ var Combobiler;
         };
 
         SemanticAnalyzer.prototype.analyzeBooleanExpression = function (node, scope, astNode) {
+        };
+
+        SemanticAnalyzer.prototype.drawTree = function (node, id) {
+            var img = go(node.toSynTree(), 13, '', '', 30, 10, true, true);
+            $('#' + id).empty();
+            $('#' + id).append(img);
+        };
+
+        SemanticAnalyzer.prototype.clearTreeDisplay = function () {
+            $('.tree-graph').empty();
         };
 
         SemanticAnalyzer.prototype.assertType = function (val, type) {

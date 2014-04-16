@@ -41,6 +41,15 @@ var Combobiler;
             }
             return this.value;
         };
+
+        TreeNode.prototype.toSynTree = function () {
+            var result = '[' + this.value + ' ';
+            for (var i in this.children) {
+                result += this.children[i].toSynTree() + ' ';
+            }
+            result += ']';
+            return result;
+        };
         return TreeNode;
     })();
     Combobiler.TreeNode = TreeNode;
