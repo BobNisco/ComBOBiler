@@ -26,6 +26,8 @@ module Combobiler {
 					}
 				}
 			} catch (error) {
+				// Clear the tree displays so that the user is not shown improper trees
+				SemanticAnalyzer.clearTreeDisplay();
 				return false;
 			}
 			return true;

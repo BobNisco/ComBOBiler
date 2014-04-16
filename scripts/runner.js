@@ -27,6 +27,8 @@ var Combobiler;
                     }
                 }
             } catch (error) {
+                // Clear the tree displays so that the user is not shown improper trees
+                Combobiler.SemanticAnalyzer.clearTreeDisplay();
                 return false;
             }
             return true;

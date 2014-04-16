@@ -34,8 +34,6 @@ module Combobiler {
 				console.log(this.astRootNode);
 				return this.astRootNode;
 			} catch (error) {
-				// Clear the tree displays so that the user is not shown improper trees
-				this.clearTreeDisplay();
 				this.error({
 					standard: error,
 					sarcastic: error,
@@ -170,7 +168,7 @@ module Combobiler {
 			$('#' + id).append(img);
 		}
 
-		private clearTreeDisplay() {
+		public static clearTreeDisplay() {
 			$('.tree-graph').empty();
 		}
 
