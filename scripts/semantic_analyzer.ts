@@ -26,6 +26,7 @@ module Combobiler {
 			try {
 				this.analyzeProgram(this.rootNode, this.rootScope, this.astRootNode);
 				this.drawTree(this.rootNode, 'cst-tree-graph');
+				this.drawTree(this.astRootNode, 'ast-tree-graph');
 				this.log({
 					standard: '==== Semantic Analysis end ====',
 					sarcastic: '==== Semantic Analysis end ===='
