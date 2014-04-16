@@ -21,6 +21,7 @@ var Combobiler;
             });
             try  {
                 this.analyzeProgram(this.rootNode, this.rootScope);
+                this.drawAst();
                 this.log({
                     standard: '==== Semantic Analysis end ====',
                     sarcastic: '==== Semantic Analysis end ===='
@@ -127,6 +128,12 @@ var Combobiler;
         };
 
         SemanticAnalyzer.prototype.analyzeBooleanExpression = function (node, scope) {
+        };
+
+        SemanticAnalyzer.prototype.drawAst = function () {
+            var img = go('[S [NP This] [VP [V is] [^NP a wug]]]', 13, '', '', 40, 15, true, true);
+            $("#ast-tree-graph").empty();
+            $("#ast-tree-graph").append(img);
         };
 
         SemanticAnalyzer.prototype.assertType = function (val, type) {

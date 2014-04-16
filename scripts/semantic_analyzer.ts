@@ -23,6 +23,7 @@ module Combobiler {
 			});
 			try {
 				this.analyzeProgram(this.rootNode, this.rootScope);
+				this.drawAst();
 				this.log({
 					standard: '==== Semantic Analysis end ====',
 					sarcastic: '==== Semantic Analysis end ===='
@@ -132,6 +133,12 @@ module Combobiler {
 
 		private analyzeBooleanExpression(node: TreeNode, scope: Scope) {
 
+		}
+
+		private drawAst() {
+			var img = go('[S [NP This] [VP [V is] [^NP a wug]]]', 13, '', '', 40, 15, true, true);
+			$("#ast-tree-graph").empty();
+			$("#ast-tree-graph").append(img);
 		}
 
 		private assertType(val: any, type: any) {
