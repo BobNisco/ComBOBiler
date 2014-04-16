@@ -41,5 +41,14 @@ module Combobiler {
 			}
 			return this.value;
 		}
+
+		public toSynTree() {
+			var result = '[' + this.value + ' ';
+			for (var i in this.children) {
+				result += this.children[i].toSynTree() + ' ';
+			}
+			result += ']';
+			return result;
+		}
 	}
 }

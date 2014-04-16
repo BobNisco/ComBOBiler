@@ -20,3 +20,6 @@ textarea {
 .log-row > small {
 	margin-left: 5px;
 }
+.overflow {
+	overflow: scroll;
+}

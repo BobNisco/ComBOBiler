@@ -23,12 +23,14 @@ module Combobiler {
 			});
 			try {
 				this.analyzeProgram(this.rootNode, this.rootScope);
-				this.drawAst();
+				this.drawTree(this.rootNode, 'cst-tree-graph');
 				this.log({
 					standard: '==== Semantic Analysis end ====',
 					sarcastic: '==== Semantic Analysis end ===='
 				});
 			} catch (error) {
+				// Clear the tree displays so that the user is not shown improper trees
+				this.clearTreeDisplay();
 				this.error({
 					standard: error,
 					sarcastic: error,
@@ -135,10 +137,14 @@ module Combobiler {
 
 		}
 
-		private drawAst() {
-			var img = go('[S [NP This] [VP [V is] [^NP a wug]]]', 13, '', '', 40, 15, true, true);
-			$("#ast-tree-graph").empty();
-			$("#ast-tree-graph").append(img);
+		private drawTree(node: TreeNode, id: string) {
+			var img = go(node.toSynTree(), 13, '', '', 30, 10, true, true);
+			$('#' + id).empty();
+			$('#' + id).append(img);
+		}
+
+		private clearTreeDisplay() {
+			$('.tree-graph').empty();
 		}
 
 		private assertType(val: any, type: any) {
