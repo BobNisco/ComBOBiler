@@ -20,11 +20,13 @@ var Combobiler;
                 sarcastic: '==== Semantic Analysis start ===='
             });
             try  {
-                this.analyzeProgram(this.rootNode, this.rootScope);
+                this.analyzeProgram(this.rootNode, this.rootScope, this.astRootNode);
                 this.log({
                     standard: '==== Semantic Analysis end ====',
                     sarcastic: '==== Semantic Analysis end ===='
                 });
+                console.log(this.astRootNode);
+                return this.astRootNode;
             } catch (error) {
                 this.error({
                     standard: error,
@@ -38,53 +40,68 @@ var Combobiler;
             }
         };
 
-        SemanticAnalyzer.prototype.analyzeProgram = function (node, scope) {
-            this.analyzeBlock(node.children[0], scope);
+        SemanticAnalyzer.prototype.analyzeProgram = function (node, scope, astNode) {
+            this.analyzeBlock(node.children[0], scope, astNode);
         };
 
-        SemanticAnalyzer.prototype.analyzeBlock = function (node, scope) {
+        SemanticAnalyzer.prototype.analyzeBlock = function (node, scope, astNode) {
+            if (this.astRootNode == undefined) {
+                this.astRootNode = new Combobiler.TreeNode('Block', null);
+                astNode = this.astRootNode;
+            } else {
+                astNode.addChildNode(new Combobiler.TreeNode('Block', astNode));
+                astNode = astNode.getNewestChild();
+            }
+
             for (var i in scope.children) {
-                this.analyzeStatementList(node.children[1], scope.children[i]);
+                this.analyzeStatementList(node.children[1], scope.children[i], astNode);
             }
         };
 
-        SemanticAnalyzer.prototype.analyzeStatementList = function (node, scope) {
+        SemanticAnalyzer.prototype.analyzeStatementList = function (node, scope, astNode) {
             if (!node) {
                 // Epsilon production
                 return;
             }
             if (node.children.length > 0) {
-                this.analyzeStatement(node.children[0], scope);
-                this.analyzeStatementList(node.children[1], scope);
+                this.analyzeStatement(node.children[0], scope, astNode);
+                this.analyzeStatementList(node.children[1], scope, astNode);
             }
         };
 
-        SemanticAnalyzer.prototype.analyzeStatement = function (node, scope) {
+        SemanticAnalyzer.prototype.analyzeStatement = function (node, scope, astNode) {
             if (node.value === 'PrintStatement') {
-                this.analyzePrintStatement(node, scope);
+                this.analyzePrintStatement(node, scope, astNode);
             } else if (node.value === 'AssignmentStatement') {
-                this.analyzeAssignmentStatement(node, scope);
+                this.analyzeAssignmentStatement(node, scope, astNode);
             } else if (node.value === 'VarDecl') {
-                this.analyzeVarDecl(node, scope);
+                this.analyzeVarDecl(node, scope, astNode);
             } else if (node.value === 'WhileStatement') {
-                this.analyzeWhileStatement(node, scope);
+                this.analyzeWhileStatement(node, scope, astNode);
             } else if (node.value === 'IfStatement') {
-                this.analyzeIfStatement(node, scope);
+                this.analyzeIfStatement(node, scope, astNode);
             } else if (node.value === 'Block') {
-                this.analyzeBlock(node, scope);
+                this.analyzeBlock(node, scope, astNode);
             } else {
                 // TODO: Handle error
             }
         };
 
-        SemanticAnalyzer.prototype.analyzeWhileStatement = function (node, scope) {
-            this.analyzeBooleanExpression(node.children[1], scope);
-            this.analyzeBlock(node.children[2], scope);
+        SemanticAnalyzer.prototype.analyzeWhileStatement = function (node, scope, astNode) {
+            // Add this node to the AST
+            astNode.addChildNode(new Combobiler.TreeNode('WhileStatement', astNode));
+            astNode = astNode.getNewestChild();
+
+            this.analyzeBooleanExpression(node.children[1], scope, astNode);
+            this.analyzeBlock(node.children[2], scope, astNode);
         };
 
-        SemanticAnalyzer.prototype.analyzeAssignmentStatement = function (node, scope) {
+        SemanticAnalyzer.prototype.analyzeAssignmentStatement = function (node, scope, astNode) {
             var currentId = node.children[0].value.value;
             var scopeNode = Combobiler.Scope.findSymbolInScope(currentId, scope);
+
+            astNode.addChildNode(new Combobiler.TreeNode('AssignmentStatement', astNode));
+            astNode = astNode.getNewestChild();
 
             if (scopeNode.type === 'int') {
                 // Create a test variable that we know is of type number
@@ -111,22 +128,31 @@ var Combobiler;
                 });
             }
 
+            // Add the type and the value to the AST
+            astNode.addChildNode(new Combobiler.TreeNode(scopeNode.type, astNode));
+            astNode.addChildNode(new Combobiler.TreeNode(scopeNode.value, astNode));
+
             this.log({
                 standard: 'VarId ' + currentId + ' was assigned a value with expected type ' + scopeNode.type,
                 sarcastic: 'VarId ' + currentId + ' was assigned a value with expected type ' + scopeNode.type
             });
         };
 
-        SemanticAnalyzer.prototype.analyzeVarDecl = function (node, scope) {
+        SemanticAnalyzer.prototype.analyzeVarDecl = function (node, scope, astNode) {
+            astNode.addChildNode(new Combobiler.TreeNode('VarDecl', astNode));
+            astNode = astNode.getNewestChild();
+
+            astNode.addChildNode(new Combobiler.TreeNode(node.children[0].value, astNode));
+            astNode.addChildNode(new Combobiler.TreeNode(node.children[2].value, astNode));
         };
 
-        SemanticAnalyzer.prototype.analyzeIfStatement = function (node, scope) {
+        SemanticAnalyzer.prototype.analyzeIfStatement = function (node, scope, astNode) {
         };
 
-        SemanticAnalyzer.prototype.analyzePrintStatement = function (node, scope) {
+        SemanticAnalyzer.prototype.analyzePrintStatement = function (node, scope, astNode) {
         };
 
-        SemanticAnalyzer.prototype.analyzeBooleanExpression = function (node, scope) {
+        SemanticAnalyzer.prototype.analyzeBooleanExpression = function (node, scope, astNode) {
         };
 
         SemanticAnalyzer.prototype.assertType = function (val, type) {

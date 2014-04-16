@@ -12,6 +12,8 @@ module Combobiler {
 
 		private currentNode: TreeNode;
 
+		private astRootNode: TreeNode;
+
 		constructor(private rootNode: TreeNode, private rootScope: Scope) {
 			this.currentNode = this.rootNode;
 		}
@@ -22,11 +24,13 @@ module Combobiler {
 				sarcastic: '==== Semantic Analysis start ===='
 			});
 			try {
-				this.analyzeProgram(this.rootNode, this.rootScope);
+				this.analyzeProgram(this.rootNode, this.rootScope, this.astRootNode);
 				this.log({
 					standard: '==== Semantic Analysis end ====',
 					sarcastic: '==== Semantic Analysis end ===='
 				});
+				console.log(this.astRootNode);
+				return this.astRootNode;
 			} catch (error) {
 				this.error({
 					standard: error,
@@ -40,55 +44,69 @@ module Combobiler {
 			}
 		}
 
-		private analyzeProgram(node: TreeNode, scope: Scope) {
-			this.analyzeBlock(node.children[0], scope);
+		private analyzeProgram(node: TreeNode, scope: Scope, astNode: TreeNode) {
+			this.analyzeBlock(node.children[0], scope, astNode);
 		}
 
-		private analyzeBlock(node: TreeNode, scope: Scope) {
+		private analyzeBlock(node: TreeNode, scope: Scope, astNode: TreeNode) {
+			if (this.astRootNode == undefined) {
+				this.astRootNode = new TreeNode('Block', null);
+				astNode = this.astRootNode;
+			} else {
+				astNode.addChildNode(new TreeNode('Block', astNode));
+				astNode = astNode.getNewestChild();
+			}
 			// Since a block indicates a new Scope,
 			// we'll pass the first child of the current Scope in as an argument
 			for (var i in scope.children) {
-				this.analyzeStatementList(node.children[1], scope.children[i]);
+				this.analyzeStatementList(node.children[1], scope.children[i], astNode);
 			}
 		}
 
-		private analyzeStatementList(node: TreeNode, scope: Scope) {
+		private analyzeStatementList(node: TreeNode, scope: Scope, astNode: TreeNode) {
 			if (!node) {
 				// Epsilon production
 				return;
 			}
 			if (node.children.length > 0) {
-				this.analyzeStatement(node.children[0], scope);
-				this.analyzeStatementList(node.children[1], scope);
+				this.analyzeStatement(node.children[0], scope, astNode);
+				this.analyzeStatementList(node.children[1], scope, astNode);
 			}
 		}
 
-		private analyzeStatement(node: TreeNode, scope: Scope) {
+		private analyzeStatement(node: TreeNode, scope: Scope, astNode: TreeNode) {
 			if (node.value === 'PrintStatement') {
-				this.analyzePrintStatement(node, scope);
+				this.analyzePrintStatement(node, scope, astNode);
 			} else if (node.value === 'AssignmentStatement') {
-				this.analyzeAssignmentStatement(node, scope);
+				this.analyzeAssignmentStatement(node, scope, astNode);
 			} else if (node.value === 'VarDecl') {
-				this.analyzeVarDecl(node, scope);
+				this.analyzeVarDecl(node, scope, astNode);
 			} else if (node.value === 'WhileStatement') {
-				this.analyzeWhileStatement(node, scope);
+				this.analyzeWhileStatement(node, scope, astNode);
 			} else if (node.value === 'IfStatement') {
-				this.analyzeIfStatement(node, scope);
+				this.analyzeIfStatement(node, scope, astNode);
 			} else if (node.value === 'Block') {
-				this.analyzeBlock(node, scope);
+				this.analyzeBlock(node, scope, astNode);
 			} else {
 				// TODO: Handle error
 			}
 		}
 
-		private analyzeWhileStatement(node: TreeNode, scope: Scope) {
-			this.analyzeBooleanExpression(node.children[1], scope);
-			this.analyzeBlock(node.children[2], scope);
+		private analyzeWhileStatement(node: TreeNode, scope: Scope, astNode: TreeNode) {
+			// Add this node to the AST
+			astNode.addChildNode(new TreeNode('WhileStatement', astNode));
+			astNode = astNode.getNewestChild();
+
+			this.analyzeBooleanExpression(node.children[1], scope, astNode);
+			this.analyzeBlock(node.children[2], scope, astNode);
 		}
 
-		private analyzeAssignmentStatement(node: TreeNode, scope: Scope) {
+		private analyzeAssignmentStatement(node: TreeNode, scope: Scope, astNode: TreeNode) {
 			var currentId = node.children[0].value.value;
 			var scopeNode = Scope.findSymbolInScope(currentId, scope);
+
+			astNode.addChildNode(new TreeNode('AssignmentStatement', astNode));
+			astNode = astNode.getNewestChild();
 
 			if (scopeNode.type === 'int') {
 				// Create a test variable that we know is of type number
@@ -112,25 +130,33 @@ module Combobiler {
 				});
 			}
 
+			// Add the type and the value to the AST
+			astNode.addChildNode(new TreeNode(scopeNode.type, astNode));
+			astNode.addChildNode(new TreeNode(scopeNode.value, astNode));
+
 			this.log({
 				standard: 'VarId ' + currentId + ' was assigned a value with expected type ' + scopeNode.type,
 				sarcastic: 'VarId ' + currentId + ' was assigned a value with expected type ' + scopeNode.type,
 			});
 		}
 
-		private analyzeVarDecl(node: TreeNode, scope: Scope) {
+		private analyzeVarDecl(node: TreeNode, scope: Scope, astNode: TreeNode) {
+			astNode.addChildNode(new TreeNode('VarDecl', astNode));
+			astNode = astNode.getNewestChild();
+
+			astNode.addChildNode(new TreeNode(node.children[0].value, astNode));
+			astNode.addChildNode(new TreeNode(node.children[2].value, astNode));
+		}
+
+		private analyzeIfStatement(node: TreeNode, scope: Scope, astNode: TreeNode) {
 
 		}
 
-		private analyzeIfStatement(node: TreeNode, scope: Scope) {
+		private analyzePrintStatement(node: TreeNode, scope: Scope, astNode: TreeNode) {
 
 		}
 
-		private analyzePrintStatement(node: TreeNode, scope: Scope) {
-
-		}
-
-		private analyzeBooleanExpression(node: TreeNode, scope: Scope) {
+		private analyzeBooleanExpression(node: TreeNode, scope: Scope, astNode: TreeNode) {
 
 		}
 
