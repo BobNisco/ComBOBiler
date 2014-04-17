@@ -30,6 +30,10 @@
 				<div class="navbar-collapse collapse">
 					<ul class="nav navbar-nav">
 						<li><a href="#" id="compile-button">Compile</a></li>
+						<li><a href="#log">Log</a></li>
+						<li><a href="#syntax-trees">AST/CST</a></li>
+						<li><a href="#test-programs">Test Programs</a></li>
+						<li><a href="test.html">Unit Tester</a></li>
 					</ul>
 				</div>
 			</div>
@@ -45,7 +49,7 @@
 					<textarea id="taOutput" class="col-xs-12" rows="18"></textarea>
 				</div>
 			</div>
-			<div class="row">
+			<div class="row" id="log">
 				<div class="col-md-12">
 					<div class="row">
 						<div class="col-md-4">
@@ -81,7 +85,7 @@
 					<div id="logOutput" class="col-xs-12"></div>
 				</div>
 			</div>
-			<div class="row">
+			<div class="row" id="syntax-trees">
 				<div class="col-md-6">
 					<h5>AST</h5>
 					<div id="ast-tree-graph" class="overflow tree-graph"></div>
@@ -91,7 +95,7 @@
 					<div id="cst-tree-graph" class="overflow tree-graph"></div>
 				</div>
 			</div>
-			<div class="row">
+			<div class="row" id="test-programs">
 				<div class="col-md-6">
 					<h5>Test (Pass) Programs</h5>
 					<table class="table program-table">
