@@ -2,8 +2,6 @@
 ///<reference path="jquery.d.ts" />
 ///<reference path="include.ts" />
 ///<reference path="lexer.ts" />
-///<reference path="scope.ts" />
-///<reference path="scope_node.ts" />
 var Combobiler;
 (function (Combobiler) {
     var Parser = (function () {
@@ -15,7 +13,6 @@ var Combobiler;
             };
             this.tokens = tokens;
             this.current = -1;
-            this.currentScope = new Combobiler.Scope({}, null);
         }
         Parser.prototype.performParse = function () {
             this.log({
@@ -32,8 +29,7 @@ var Combobiler;
                         sarcastic: '==== Parse end ===='
                     });
                     return {
-                        rootNode: this.rootNode,
-                        currentScope: this.currentScope
+                        rootNode: this.rootNode
                     };
                 } catch (error) {
                     this.error({
@@ -47,16 +43,6 @@ var Combobiler;
                     });
                 }
             }
-        };
-
-        Parser.prototype.makeNewScope = function () {
-            var temp = new Combobiler.Scope({}, this.currentScope);
-            this.currentScope.children.push(temp);
-            this.currentScope = temp;
-        };
-
-        Parser.prototype.closeCurrentScope = function () {
-            this.currentScope = this.currentScope.parent;
         };
 
         Parser.prototype.parseProgram = function (node) {
@@ -86,32 +72,13 @@ var Combobiler;
 
             this.assertToken(token, Combobiler.OpenBrace);
             node.addChildNode(token);
-            this.makeNewScope();
-            this.log({
-                standard: 'Opening up a new scope block on line ' + token.line,
-                sarcastic: 'Opening up a new scope block on line ' + token.line
-            });
 
             var startLine = token.line;
             this.parseStatementList(node);
 
             token = this.getNextToken();
             this.assertToken(token, Combobiler.CloseBrace);
-
-            //this.makeNewSiblingNode(token);
             node.addChildNode(token);
-
-            // Log the block scope, if there was anything in there
-            if (Object.keys(this.currentScope.getSymbols()).length > 0) {
-                this.log({
-                    standard: 'The scope block being closed held the following info ' + this.currentScope.toString(),
-                    sarcastic: 'The scope block being closed held the following info ' + this.currentScope.toString()
-                });
-            }
-
-            // At this point, the block is closed, therefore we can move the currentScope
-            // pointer back to the currentScope's parent.
-            this.closeCurrentScope();
             this.log({
                 standard: 'Parsed a block that started on line ' + startLine + ' and ended on line ' + token.line,
                 sarcastic: 'I don\'t have something sarcastic to say, but yay we parsed a block on line ' + startLine + ' and ended on line ' + token.line
@@ -172,7 +139,7 @@ var Combobiler;
             node.addChildNode('AssignmentStatement');
             node = node.getNewestChild();
 
-            // Capture some variables so we can add to the symbol table/scope blocks
+            // Capture some variables
             var varId = token;
 
             this.assertToken(varId, Combobiler.VariableIdentifier);
@@ -184,26 +151,7 @@ var Combobiler;
 
             var exprToken = this.getNextToken();
             var value = this.parseExpression(node, exprToken);
-            var scopeNode;
 
-            if (exprToken instanceof Combobiler.IntValue) {
-                scopeNode = new Combobiler.ScopeNode(value, 'int');
-            } else if (exprToken instanceof Combobiler.StringValue) {
-                scopeNode = new Combobiler.ScopeNode(value, 'string');
-            } else if (exprToken instanceof Combobiler.True || exprToken instanceof Combobiler.False) {
-                scopeNode = new Combobiler.ScopeNode(value, 'bool');
-            } else if (exprToken instanceof Combobiler.VariableIdentifier) {
-                scopeNode = new Combobiler.ScopeNode(exprToken.value, 'varid');
-            } else if (exprToken instanceof Combobiler.LParen) {
-                scopeNode = new Combobiler.ScopeNode('bool expression', 'bool');
-            } else {
-                throw new Error('Unrecognized type');
-            }
-            this.currentScope.assignValue(varId.value, value);
-            this.log({
-                standard: 'Symbol ' + varId.value + ' was assigned value ' + scopeNode.getValue() + ' in symbol table',
-                sarcastic: 'Symbol ' + varId.value + ' was assigned value ' + scopeNode.getValue() + ' in symbol table'
-            });
             this.log({
                 standard: 'Parsed assignment statement on line ' + token.line,
                 sarcastic: 'Parsed assignment statement on line ' + token.line
@@ -316,19 +264,13 @@ var Combobiler;
             node.addChildNode('VarDecl');
             node = node.getNewestChild();
 
-            var scopeNode = new Combobiler.ScopeNode(null, token.symbol);
             this.assertTokenInSet(token, [Combobiler.String, Combobiler.Int, Combobiler.Boolean]);
             node.addChildNode(token);
 
             token = this.getNextToken();
             this.parseId(node, token);
-            this.currentScope.addSymbol(token.value, scopeNode);
             node.addChildNode(token);
 
-            this.log({
-                standard: 'Added symbol ' + token.value + ' of type ' + scopeNode.getType() + ' to symbol table',
-                sarcastic: 'Added symbol ' + token.value + ' of type ' + scopeNode.getType() + ' to symbol table'
-            });
             this.log({
                 standard: 'Parsed variable declaration statement on line ' + token.line,
                 sarcastic: 'Parsed variable declaration statement on line ' + token.line

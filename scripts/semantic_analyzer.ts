@@ -24,7 +24,11 @@ module Combobiler {
 				sarcastic: '==== Semantic Analysis start ===='
 			});
 			try {
+				// Refactoring the way we handle scope
+				this.rootScope = new Scope({}, null);
+
 				this.analyzeProgram(this.rootNode, this.rootScope, this.astRootNode);
+				console.log(this.rootScope);
 				this.drawTree(this.astRootNode, 'ast-tree-graph');
 				this.drawTree(this.rootNode, 'cst-tree-graph');
 				this.log({
@@ -35,6 +39,7 @@ module Combobiler {
 				console.log(this.rootNode);
 				return this.astRootNode;
 			} catch (error) {
+				console.log(this.rootScope);
 				this.error({
 					standard: error,
 					sarcastic: error,
@@ -60,10 +65,14 @@ module Combobiler {
 				astNode = astNode.getNewestChild();
 			}
 			// Since a block indicates a new Scope,
-			// we'll pass the first child of the current Scope in as an argument
-			for (var i in scope.children) {
-				this.analyzeStatementList(node.children[1], scope.children[i], astNode);
-			}
+			// we'll open up a new block of
+			// for (var i in scope.children) {
+			// 	this.analyzeStatementList(node.children[1], scope.children[i], astNode);
+			// }
+			// Since a block indicates a new Scope, we'll open up a new block of Scope
+			scope.addChildScope({});
+			scope = scope.getNewestChild();
+			this.analyzeStatementList(node.children[1], scope, astNode);
 		}
 
 		private analyzeStatementList(node: TreeNode, scope: Scope, astNode: TreeNode) {
@@ -106,6 +115,7 @@ module Combobiler {
 
 		private analyzeAssignmentStatement(node: TreeNode, scope: Scope, astNode: TreeNode) {
 			var currentId = node.children[0].value.value;
+			this.assignValue(node, scope, astNode, currentId);
 			var scopeNode = Scope.findSymbolInScope(currentId, scope);
 
 			astNode.addChildNode(new TreeNode('AssignmentStatement', astNode));
@@ -121,12 +131,13 @@ module Combobiler {
 				var stringTestType: string = 'test';
 				// Assert that the type is a string, since this is a statically typed language
 				this.assertType(scopeNode.value, stringTestType);
-			} else if (scopeNode.type === 'bool') {
+			} else if (scopeNode.type === 'boolean') {
 				// Create a test variable that we know is of type boolean
 				var booleanTestType: boolean = true;
 				// Assert that the type is a boolean, since this is a statically typed language
 				this.assertType(scopeNode.value, booleanTestType);
 			} else {
+				console.log(scopeNode);
 				this.error({
 					standard: 'Unknown type!',
 					sarcastic: 'Unknown type!',
@@ -143,9 +154,26 @@ module Combobiler {
 			});
 		}
 
+		private assignValue(node: TreeNode, scope: Scope, astNode: TreeNode, currentId) {
+			var exprType = node.children[2].children[0].value;
+			var potentialValue = node.children[2].children[0].children[0].value.value;
+			if (exprType === 'IntExpression') {
+				scope.assignValue(currentId, parseInt(potentialValue));
+			} else if (exprType === 'BooleanExpression') {
+				scope.assignValue(currentId, !!potentialValue);
+			} else if (exprType === 'StringExpression') {
+				scope.assignValue(currentId, potentialValue);
+			} else {
+				throw new Error('Unknown value type');
+			}
+		}
+
 		private analyzeVarDecl(node: TreeNode, scope: Scope, astNode: TreeNode) {
 			astNode.addChildNode(new TreeNode('VarDecl', astNode));
 			astNode = astNode.getNewestChild();
+
+			// Add this to the current scope
+			scope.addSymbol(node.children[2].value.value, new ScopeNode(null, node.children[0].value.symbol));
 
 			astNode.addChildNode(new TreeNode(node.children[0].value, astNode));
 			astNode.addChildNode(new TreeNode(node.children[2].value, astNode));

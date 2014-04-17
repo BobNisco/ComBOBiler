@@ -19,6 +19,14 @@ module Combobiler {
 			this.symbols[key] = value;
 		}
 
+		public addChildScope(value: any) {
+			this.children.push(new Scope({}, this));
+		}
+
+		public getNewestChild() {
+			return this.children[this.children.length - 1];
+		}
+
 		public assignValue(key: any, value: any) {
 			var scopeNode = Scope.findSymbolInScope(key, this);
 			if (scopeNode) {

@@ -18,6 +18,14 @@ var Combobiler;
             this.symbols[key] = value;
         };
 
+        Scope.prototype.addChildScope = function (value) {
+            this.children.push(new Scope({}, this));
+        };
+
+        Scope.prototype.getNewestChild = function () {
+            return this.children[this.children.length - 1];
+        };
+
         Scope.prototype.assignValue = function (key, value) {
             var scopeNode = Scope.findSymbolInScope(key, this);
             if (scopeNode) {

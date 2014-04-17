@@ -18,11 +18,10 @@ var Combobiler;
                     var parser = new Combobiler.Parser(tokens);
                     var parseData = parser.performParse();
                     var cstRootNode = parseData.rootNode;
-                    var currentScope = parseData.currentScope;
 
                     if (cstRootNode !== null) {
                         // Only move onto Semantic Analysis if the CST isn't null
-                        var semanticAnalyzer = new Combobiler.SemanticAnalyzer(cstRootNode, currentScope);
+                        var semanticAnalyzer = new Combobiler.SemanticAnalyzer(cstRootNode, null);
                         semanticAnalyzer.performSemanticAnalysis();
                     }
                 }
