@@ -5,6 +5,7 @@
 // NOTE: Any of these test samples can be ran again in 2 clicks from my compiler
 //       as there is a listing of test programs on the page that you can click to run.
 
+
 //-----------------------------------------
 // Test (Fail) Program #1
 //-----------------------------------------
@@ -39,3 +40,20 @@ Source
 Output Snippet
 =============
 Semantic Analysis Error: Redeclaring Identifier: a. It has already been declared in this scope
+
+
+//-----------------------------------------
+// Test (Fail) Program #7
+//-----------------------------------------
+
+Source
+======
+
+{
+    print(a)
+} $
+
+Output Snippet
+=============
+Semantic Analysis Error: Undeclared Identifier: a, was not found in symbol table
+
