@@ -11,7 +11,7 @@ module Combobiler {
 			header: 'Lexer',
 		};
 
-		constructor(s: string) {
+		constructor(s: string, private debug: boolean = false) {
 			this.source = $.trim(s);
 		}
 
@@ -92,7 +92,9 @@ module Combobiler {
 		 * @param message the text to be put into the output field
 		 */
 		private log(messages: Object) {
-			LOGGER.log($.extend({displayClass: 'label-info'}, this.loggerOptions), messages);
+			if (!this.debug) {
+				LOGGER.log($.extend({displayClass: 'label-info'}, this.loggerOptions), messages);
+			}
 		}
 
 		/**
@@ -102,7 +104,9 @@ module Combobiler {
 		 * @param message the text to be put into the output field
 		 */
 		private error(messages: Object) {
-			LOGGER.log($.extend({displayClass: 'label-danger'}, this.loggerOptions), messages);
+			if (!this.debug) {
+				LOGGER.log($.extend({displayClass: 'label-danger'}, this.loggerOptions), messages);
+			}
 		}
 	}
 }

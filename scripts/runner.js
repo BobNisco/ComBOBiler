@@ -3,11 +3,17 @@
 ///<reference path="include.ts" />
 ///<reference path="logger.ts" />
 ///<reference path="lexer.ts" />
+///<reference path="parser.ts" />
+///<reference path="semantic_analyzer.ts" />
 var Combobiler;
 (function (Combobiler) {
     var Runner = (function () {
         function Runner() {
         }
+        Runner.prototype.run = function (source) {
+            Runner.run(source);
+        };
+
         Runner.run = function (source) {
             try  {
                 var lexer = new Combobiler.Lexer(source);

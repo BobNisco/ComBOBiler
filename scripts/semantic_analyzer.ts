@@ -1,6 +1,8 @@
 ///<reference path="token.ts" />
 ///<reference path="jquery.d.ts" />
 ///<reference path="include.ts" />
+///<reference path="tree_node.ts" />
+///<reference path="scope.ts" />
 
 module Combobiler {
 	export class SemanticAnalyzer {

@@ -3,9 +3,19 @@
 ///<reference path="include.ts" />
 ///<reference path="logger.ts" />
 ///<reference path="lexer.ts" />
+///<reference path="parser.ts" />
+///<reference path="semantic_analyzer.ts" />
 
 module Combobiler {
 	export class Runner {
+
+		public constructor() {
+
+		}
+
+		public run(source: string) {
+			Runner.run(source);
+		}
 
 		public static run(source: string) {
 			try {

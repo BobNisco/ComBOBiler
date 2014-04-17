@@ -4,7 +4,9 @@
 var Combobiler;
 (function (Combobiler) {
     var Lexer = (function () {
-        function Lexer(s) {
+        function Lexer(s, debug) {
+            if (typeof debug === "undefined") { debug = false; }
+            this.debug = debug;
             // Define some default logger options for the lexer
             this.loggerOptions = {
                 type: 'lex',
@@ -92,7 +94,9 @@ var Combobiler;
         * @param message the text to be put into the output field
         */
         Lexer.prototype.log = function (messages) {
-            LOGGER.log($.extend({ displayClass: 'label-info' }, this.loggerOptions), messages);
+            if (!this.debug) {
+                LOGGER.log($.extend({ displayClass: 'label-info' }, this.loggerOptions), messages);
+            }
         };
 
         /**
@@ -102,7 +106,9 @@ var Combobiler;
         * @param message the text to be put into the output field
         */
         Lexer.prototype.error = function (messages) {
-            LOGGER.log($.extend({ displayClass: 'label-danger' }, this.loggerOptions), messages);
+            if (!this.debug) {
+                LOGGER.log($.extend({ displayClass: 'label-danger' }, this.loggerOptions), messages);
+            }
         };
         return Lexer;
     })();
