@@ -16,7 +16,7 @@ module Combobiler {
 		}
 
 		public addSymbol(key: any, value: ScopeNode) {
-			if (this.symbols[key]) {
+			if (this.symbols && this.symbols[key]) {
 				throw new Error('Redeclaring Identifier: ' + key + '. It has already been declared in this scope');
 			} else {
 				this.symbols[key] = value;
@@ -61,7 +61,7 @@ module Combobiler {
 			var scopeNode = Scope.findSymbolInScope(key, this);
 			if (scopeNode) {
 				scopeNode.value = value;
-				this.symbols[key].used = true;
+				scopeNode.used = true;
 			} else {
 				/* TODO: Think of how to handle this error
 				   Since this is a function that will primarily be used in Parse
