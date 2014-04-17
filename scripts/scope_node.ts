@@ -4,12 +4,10 @@
 
 module Combobiler {
 	export class ScopeNode {
-		private value: any;
-		private type: any;
+		private used: boolean;
 
-		constructor(value: any, type: any) {
-			this.value = value;
-			this.type = type;
+		constructor(private value: any, private type: any) {
+			this.used = false;
 		}
 
 		public setValue(value: any) {

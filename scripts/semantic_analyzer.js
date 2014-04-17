@@ -61,15 +61,23 @@ var Combobiler;
                 astNode = astNode.getNewestChild();
             }
 
-            // Since a block indicates a new Scope,
-            // we'll open up a new block of
-            // for (var i in scope.children) {
-            // 	this.analyzeStatementList(node.children[1], scope.children[i], astNode);
-            // }
-            // Since a block indicates a new Scope, we'll open up a new block of Scope
+            // Since a block indicates a new Scope, we'll open a new one up
             scope.addChildScope({});
             scope = scope.getNewestChild();
             this.analyzeStatementList(node.children[1], scope, astNode);
+
+            // Before this function breaks out of recursion,
+            // we'll check for some unused identifiers
+            if (scope.hasUnusedIdentifiers()) {
+                var list = scope.unusedIdentifierList();
+                for (var i in list) {
+                    // TODO: Add a warning function to the logger
+                    this.log({
+                        standard: 'Check yo self! You never used variable with identifier ' + i,
+                        sarcastic: 'Quit wasting my space with your unused identifier ' + i
+                    });
+                }
+            }
         };
 
         SemanticAnalyzer.prototype.analyzeStatementList = function (node, scope, astNode) {

@@ -15,7 +15,37 @@ var Combobiler;
         };
 
         Scope.prototype.addSymbol = function (key, value) {
-            this.symbols[key] = value;
+            if (this.symbols[key]) {
+                throw new Error('Redeclaring Identifier: ' + key + '. It has already been declared in this scope');
+            } else {
+                this.symbols[key] = value;
+            }
+        };
+
+        /**
+        * Checks the scope to see if there are any symbols that have not had
+        * their "used" attribute set to true.
+        * Used for providing nice warning messages to the user
+        *
+        * @return boolean
+        */
+        Scope.prototype.hasUnusedIdentifiers = function () {
+            for (var i in this.symbols) {
+                if (!this.symbols[i].used) {
+                    return true;
+                }
+            }
+            return false;
+        };
+
+        Scope.prototype.unusedIdentifierList = function () {
+            var list = {};
+            for (var i in this.symbols) {
+                if (!this.symbols[i].used) {
+                    list[i] = this.symbols[i];
+                }
+            }
+            return list;
         };
 
         Scope.prototype.addChildScope = function (value) {
@@ -30,6 +60,7 @@ var Combobiler;
             var scopeNode = Scope.findSymbolInScope(key, this);
             if (scopeNode) {
                 scopeNode.value = value;
+                this.symbols[key].used = true;
             } else {
                 /* TODO: Think of how to handle this error
                 Since this is a function that will primarily be used in Parse
@@ -39,7 +70,7 @@ var Combobiler;
 
         Scope.findSymbolInScope = function (symbol, scope) {
             if (!scope) {
-                throw new Error('Symbol ' + symbol + ' not found in symbol table');
+                throw new Error('Undeclared Identifier: ' + symbol + ', was not found in symbol table');
             }
             if (scope.symbols[symbol]) {
                 return scope.symbols[symbol];

@@ -7,6 +7,7 @@ var Combobiler;
         function ScopeNode(value, type) {
             this.value = value;
             this.type = type;
+            this.used = false;
         }
         ScopeNode.prototype.setValue = function (value) {
             this.value = value;
