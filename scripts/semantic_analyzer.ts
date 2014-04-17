@@ -28,18 +28,14 @@ module Combobiler {
 				this.rootScope = new Scope({}, null);
 
 				this.analyzeProgram(this.rootNode, this.rootScope, this.astRootNode);
-				console.log(this.rootScope);
 				this.drawTree(this.astRootNode, 'ast-tree-graph');
 				this.drawTree(this.rootNode, 'cst-tree-graph');
 				this.log({
 					standard: '==== Semantic Analysis end ====',
 					sarcastic: '==== Semantic Analysis end ===='
 				});
-				console.log(this.astRootNode);
-				console.log(this.rootNode);
 				return this.astRootNode;
 			} catch (error) {
-				console.log(this.rootScope);
 				this.error({
 					standard: error,
 					sarcastic: error,
@@ -143,11 +139,7 @@ module Combobiler {
 				// Assert that the type is a boolean, since this is a statically typed language
 				this.assertType(scopeNode.value, booleanTestType);
 			} else {
-				console.log(scopeNode);
-				this.error({
-					standard: 'Unknown type!',
-					sarcastic: 'Unknown type!',
-				});
+				throw new Error('Unknown type in Assignment Statement');
 			}
 
 			// Add the type and the value to the AST
