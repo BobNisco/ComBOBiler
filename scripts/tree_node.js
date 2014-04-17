@@ -72,38 +72,6 @@ var Combobiler;
             result += ']';
             return result;
         };
-
-        TreeNode.prototype.evaluateNode = function () {
-            if (this.value === 'PrintStatement') {
-                return [this.children[2].evaluateNode()];
-            } else if (this.value === 'AssignmentStatement') {
-                return [this.children[0].evaluateNode(), this.children[2].evaluateNode()];
-            } else if (this.value === 'VarDecl') {
-                return [this.children[0].evaluateNode(), this.children[1].evaluateNode()];
-            } else if (this.value === 'WhileStatement') {
-                return [this.children[1].evaluateNode(), this.children[2].evaluateNode()];
-            } else if (this.value === 'IfStatement') {
-                return [this.children[1].evaluateNode(), this.children[2].evaluateNode()];
-            } else if (this.value === 'Block') {
-                return [this.children[1].evaluateNode()];
-            } else if (this.value === 'Expression') {
-                return [this.children[0].evaluateNode()];
-            } else if (this.value === 'StringExpression') {
-                return [this.children[0].value.value];
-            } else if (this.value === 'IntExpression') {
-                // Handle 2 cases for int exprs
-                if (this.children.length == 1) {
-                    // The + unary operator is the equivalent of parseInt/parseFloat in JS
-                    return [+this.children[0].value.value];
-                } else if (this.children.length == 3) {
-                    var result = this.children[0].value.value + this.children[2].evaluateNode();
-                    console.log(result);
-                    return [result];
-                } else {
-                    throw new Error('Malformed Integer Expression');
-                }
-            }
-        };
         return TreeNode;
     })();
     Combobiler.TreeNode = TreeNode;

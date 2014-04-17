@@ -25,8 +25,8 @@ module Combobiler {
 			});
 			try {
 				this.analyzeProgram(this.rootNode, this.rootScope, this.astRootNode);
-				this.drawTree(this.rootNode, 'cst-tree-graph');
 				this.drawTree(this.astRootNode, 'ast-tree-graph');
+				this.drawTree(this.rootNode, 'cst-tree-graph');
 				this.log({
 					standard: '==== Semantic Analysis end ====',
 					sarcastic: '==== Semantic Analysis end ===='
@@ -135,7 +135,7 @@ module Combobiler {
 
 			// Add the type and the value to the AST
 			astNode.addChildNode(new TreeNode(currentId, astNode));
-			astNode.addChildNode(new TreeNode(scopeNode.value, astNode));
+			this.analyzeExpression(node.children[2], scope, astNode);
 
 			this.log({
 				standard: 'VarId ' + currentId + ' was assigned a value with expected type ' + scopeNode.type,
@@ -159,12 +159,45 @@ module Combobiler {
 			astNode.addChildNode(new TreeNode('PrintStatement', astNode));
 			astNode = astNode.getNewestChild();
 
-			//console.log(node);
-			//astNode.addChildNode(new TreeNode(node.children[2].value));
+			this.analyzeExpression(node.children[2], scope, astNode);
+		}
+
+		private analyzeExpression(node: TreeNode, scope: Scope, astNode: TreeNode) {
+			if (node.children[0].value === 'IntExpression') {
+				this.analyzeIntExpression(node.children[0], scope, astNode);
+			} else if (node.children[0].value === 'StringExpression') {
+				this.analyzeStringExpression(node.children[0], scope, astNode);
+			} else if (node.children[0].value === 'BooleanExpression') {
+				this.analyzeBooleanExpression(node.children[0], scope, astNode);
+			} else if (node.children[0].value === 'Id') {
+				this.analyzeId(node.children[0], scope, astNode);
+			}
+		}
+
+		private analyzeId(node: TreeNode, scope: Scope, astNode: TreeNode) {
+			astNode.addChildNode(new TreeNode(node.children[0].value.value, astNode));
+		}
+
+		private analyzeStringExpression(node: TreeNode, scope: Scope, astNode: TreeNode) {
+			astNode.addChildNode(new TreeNode(node.children[0].value, astNode));
+		}
+
+		private analyzeIntExpression(node: TreeNode, scope: Scope, astNode: TreeNode) {
+			astNode.addChildNode(new TreeNode(node.children[0].value.value, astNode));
+			if (node.children.length === 3) {
+				astNode.addChildNode(new TreeNode('+', astNode));
+				this.analyzeExpression(node.children[2], scope, astNode);
+			}
 		}
 
 		private analyzeBooleanExpression(node: TreeNode, scope: Scope, astNode: TreeNode) {
+				if (node.children.length === 1) {
 
+				} else if (node.children.length === 5) {
+
+				} else {
+					throw new Error('Malformed BooleanExpression');
+				}
 		}
 
 		private drawTree(node: TreeNode, id: string) {

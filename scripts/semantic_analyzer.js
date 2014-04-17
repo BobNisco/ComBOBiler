@@ -21,8 +21,8 @@ var Combobiler;
             });
             try  {
                 this.analyzeProgram(this.rootNode, this.rootScope, this.astRootNode);
-                this.drawTree(this.rootNode, 'cst-tree-graph');
                 this.drawTree(this.astRootNode, 'ast-tree-graph');
+                this.drawTree(this.rootNode, 'cst-tree-graph');
                 this.log({
                     standard: '==== Semantic Analysis end ====',
                     sarcastic: '==== Semantic Analysis end ===='
@@ -133,7 +133,7 @@ var Combobiler;
 
             // Add the type and the value to the AST
             astNode.addChildNode(new Combobiler.TreeNode(currentId, astNode));
-            astNode.addChildNode(new Combobiler.TreeNode(scopeNode.value, astNode));
+            this.analyzeExpression(node.children[2], scope, astNode);
 
             this.log({
                 standard: 'VarId ' + currentId + ' was assigned a value with expected type ' + scopeNode.type,
@@ -155,11 +155,44 @@ var Combobiler;
         SemanticAnalyzer.prototype.analyzePrintStatement = function (node, scope, astNode) {
             astNode.addChildNode(new Combobiler.TreeNode('PrintStatement', astNode));
             astNode = astNode.getNewestChild();
-            //console.log(node);
-            //astNode.addChildNode(new TreeNode(node.children[2].value));
+
+            this.analyzeExpression(node.children[2], scope, astNode);
+        };
+
+        SemanticAnalyzer.prototype.analyzeExpression = function (node, scope, astNode) {
+            if (node.children[0].value === 'IntExpression') {
+                this.analyzeIntExpression(node.children[0], scope, astNode);
+            } else if (node.children[0].value === 'StringExpression') {
+                this.analyzeStringExpression(node.children[0], scope, astNode);
+            } else if (node.children[0].value === 'BooleanExpression') {
+                this.analyzeBooleanExpression(node.children[0], scope, astNode);
+            } else if (node.children[0].value === 'Id') {
+                this.analyzeId(node.children[0], scope, astNode);
+            }
+        };
+
+        SemanticAnalyzer.prototype.analyzeId = function (node, scope, astNode) {
+            astNode.addChildNode(new Combobiler.TreeNode(node.children[0].value.value, astNode));
+        };
+
+        SemanticAnalyzer.prototype.analyzeStringExpression = function (node, scope, astNode) {
+            astNode.addChildNode(new Combobiler.TreeNode(node.children[0].value, astNode));
+        };
+
+        SemanticAnalyzer.prototype.analyzeIntExpression = function (node, scope, astNode) {
+            astNode.addChildNode(new Combobiler.TreeNode(node.children[0].value.value, astNode));
+            if (node.children.length === 3) {
+                astNode.addChildNode(new Combobiler.TreeNode('+', astNode));
+                this.analyzeExpression(node.children[2], scope, astNode);
+            }
         };
 
         SemanticAnalyzer.prototype.analyzeBooleanExpression = function (node, scope, astNode) {
+            if (node.children.length === 1) {
+            } else if (node.children.length === 5) {
+            } else {
+                throw new Error('Malformed BooleanExpression');
+            }
         };
 
         SemanticAnalyzer.prototype.drawTree = function (node, id) {
