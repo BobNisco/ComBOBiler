@@ -84,6 +84,11 @@ var Combobiler;
                     standard: 'The scope block being closed held the following info ' + scope.toString(),
                     sarcastic: 'The scope block being closed held the following info ' + scope.toString()
                 });
+            } else {
+                this.log({
+                    standard: 'Closing a scope block that held no symbols',
+                    sarcastic: 'Closing a scope block that held no symbols'
+                });
             }
         };
 
@@ -218,6 +223,9 @@ var Combobiler;
         };
 
         SemanticAnalyzer.prototype.analyzeId = function (node, scope, astNode) {
+            // Ensure that the id exists at least
+            Combobiler.Scope.findSymbolInScope(node.children[0].value.value, scope);
+
             astNode.addChildNode(new Combobiler.TreeNode(node.children[0].value.value, astNode));
         };
 

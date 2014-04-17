@@ -85,6 +85,11 @@ module Combobiler {
 					standard: 'The scope block being closed held the following info ' + scope.toString(),
 					sarcastic: 'The scope block being closed held the following info ' + scope.toString()
 				});
+			} else {
+				this.log({
+					standard: 'Closing a scope block that held no symbols',
+					sarcastic: 'Closing a scope block that held no symbols',
+				});
 			}
 		}
 
@@ -216,6 +221,9 @@ module Combobiler {
 		}
 
 		private analyzeId(node: TreeNode, scope: Scope, astNode: TreeNode) {
+			// Ensure that the id exists at least
+			Scope.findSymbolInScope(node.children[0].value.value, scope);
+
 			astNode.addChildNode(new TreeNode(node.children[0].value.value, astNode));
 		}
 
