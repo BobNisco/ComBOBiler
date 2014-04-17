@@ -244,9 +244,15 @@ module Combobiler {
 		}
 
 		private drawTree(node: TreeNode, id: string) {
-			var img = go(node.toSynTree(), 13, '', '', 40, 10, true, true);
-			$('#' + id).empty();
-			$('#' + id).append(img);
+			try {
+				var img = go(node.toSynTree(), 13, '', '', 40, 10, true, true);
+				$('#' + id).empty();
+				$('#' + id).append(img);
+			} catch (error) {
+				// Just let the error go
+				// Looks like the library has a problem when trying to draw a tree
+				// from the source code example: {}$
+			}
 		}
 
 		public static clearTreeDisplay() {

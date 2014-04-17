@@ -1,0 +1,41 @@
+// Compilers Project Two
+// Bob Nisco
+// Results + Test Case Samples
+
+// NOTE: Any of these test samples can be ran again in 2 clicks from my compiler
+//       as there is a listing of test programs on the page that you can click to run.
+
+//-----------------------------------------
+// Test (Fail) Program #1
+//-----------------------------------------
+
+Source
+======
+
+{
+    int a
+    a = "bob"
+} $
+
+Output Snippet
+=============
+Semantic Analysis Error: Expected number but got string instead
+
+
+//-----------------------------------------
+// Test (Fail) Program #6
+//-----------------------------------------
+
+Source
+======
+
+{
+    int a
+    a = 1
+    int a
+    a = 2
+} $
+
+Output Snippet
+=============
+Semantic Analysis Error: Redeclaring Identifier: a. It has already been declared in this scope
