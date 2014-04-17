@@ -20,7 +20,6 @@ var Combobiler;
                 sarcastic: '==== Semantic Analysis start ===='
             });
             try  {
-                // Refactoring the way we handle scope
                 this.rootScope = new Combobiler.Scope({}, null);
 
                 this.analyzeProgram(this.rootNode, this.rootScope, this.astRootNode);
@@ -60,6 +59,11 @@ var Combobiler;
             // Since a block indicates a new Scope, we'll open a new one up
             scope.addChildScope({});
             scope = scope.getNewestChild();
+            this.log({
+                standard: 'Opening up a new scope block',
+                sarcastic: 'Opening up a new scope block'
+            });
+
             this.analyzeStatementList(node.children[1], scope, astNode);
 
             // Before this function breaks out of recursion,
@@ -72,6 +76,14 @@ var Combobiler;
                         sarcastic: 'Quit wasting my space with your unused identifier ' + i
                     });
                 }
+            }
+
+            // Also, we'll log some info about what was in this scope block
+            if (Object.keys(scope.getSymbols()).length > 0) {
+                this.log({
+                    standard: 'The scope block being closed held the following info ' + scope.toString(),
+                    sarcastic: 'The scope block being closed held the following info ' + scope.toString()
+                });
             }
         };
 
