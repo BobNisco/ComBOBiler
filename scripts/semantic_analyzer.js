@@ -150,6 +150,11 @@ var Combobiler;
         };
 
         SemanticAnalyzer.prototype.analyzeIfStatement = function (node, scope, astNode) {
+            astNode.addChildNode(new Combobiler.TreeNode(node.value, astNode));
+            astNode = astNode.getNewestChild();
+
+            this.analyzeBooleanExpression(node.children[1], scope, astNode);
+            this.analyzeBlock(node.children[2], scope, astNode);
         };
 
         SemanticAnalyzer.prototype.analyzePrintStatement = function (node, scope, astNode) {
