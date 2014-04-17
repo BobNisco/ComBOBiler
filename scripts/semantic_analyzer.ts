@@ -32,6 +32,7 @@ module Combobiler {
 					sarcastic: '==== Semantic Analysis end ===='
 				});
 				console.log(this.astRootNode);
+				console.log(this.rootNode);
 				return this.astRootNode;
 			} catch (error) {
 				this.error({
@@ -133,7 +134,7 @@ module Combobiler {
 			}
 
 			// Add the type and the value to the AST
-			astNode.addChildNode(new TreeNode(scopeNode.type, astNode));
+			astNode.addChildNode(new TreeNode(currentId, astNode));
 			astNode.addChildNode(new TreeNode(scopeNode.value, astNode));
 
 			this.log({
@@ -155,7 +156,11 @@ module Combobiler {
 		}
 
 		private analyzePrintStatement(node: TreeNode, scope: Scope, astNode: TreeNode) {
+			astNode.addChildNode(new TreeNode('PrintStatement', astNode));
+			astNode = astNode.getNewestChild();
 
+			//console.log(node);
+			//astNode.addChildNode(new TreeNode(node.children[2].value));
 		}
 
 		private analyzeBooleanExpression(node: TreeNode, scope: Scope, astNode: TreeNode) {
@@ -163,7 +168,7 @@ module Combobiler {
 		}
 
 		private drawTree(node: TreeNode, id: string) {
-			var img = go(node.toSynTree(), 13, '', '', 30, 10, true, true);
+			var img = go(node.toSynTree(), 13, '', '', 40, 10, true, true);
 			$('#' + id).empty();
 			$('#' + id).append(img);
 		}

@@ -28,6 +28,7 @@ var Combobiler;
                     sarcastic: '==== Semantic Analysis end ===='
                 });
                 console.log(this.astRootNode);
+                console.log(this.rootNode);
                 return this.astRootNode;
             } catch (error) {
                 this.error({
@@ -131,7 +132,7 @@ var Combobiler;
             }
 
             // Add the type and the value to the AST
-            astNode.addChildNode(new Combobiler.TreeNode(scopeNode.type, astNode));
+            astNode.addChildNode(new Combobiler.TreeNode(currentId, astNode));
             astNode.addChildNode(new Combobiler.TreeNode(scopeNode.value, astNode));
 
             this.log({
@@ -152,13 +153,17 @@ var Combobiler;
         };
 
         SemanticAnalyzer.prototype.analyzePrintStatement = function (node, scope, astNode) {
+            astNode.addChildNode(new Combobiler.TreeNode('PrintStatement', astNode));
+            astNode = astNode.getNewestChild();
+            //console.log(node);
+            //astNode.addChildNode(new TreeNode(node.children[2].value));
         };
 
         SemanticAnalyzer.prototype.analyzeBooleanExpression = function (node, scope, astNode) {
         };
 
         SemanticAnalyzer.prototype.drawTree = function (node, id) {
-            var img = go(node.toSynTree(), 13, '', '', 30, 10, true, true);
+            var img = go(node.toSynTree(), 13, '', '', 40, 10, true, true);
             $('#' + id).empty();
             $('#' + id).append(img);
         };
