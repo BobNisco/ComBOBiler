@@ -73,8 +73,7 @@ module Combobiler {
 			if (scope.hasUnusedIdentifiers()) {
 				var list = scope.unusedIdentifierList();
 				for (var i in list) {
-					// TODO: Add a warning function to the logger
-					this.log({
+					this.warning({
 						standard: 'Check yo self! You never used variable with identifier ' + i,
 						sarcastic: 'Quit wasting my space with your unused identifier ' + i,
 					});
@@ -277,6 +276,10 @@ module Combobiler {
 		 */
 		private error(messages: Object) {
 			LOGGER.log($.extend({displayClass: 'label-danger'}, this.loggerOptions), messages);
+		}
+
+		private warning(messages: Object) {
+			LOGGER.log($.extend({displayClass: 'label-warning'}, this.loggerOptions), messages);
 		}
 	}
 }
