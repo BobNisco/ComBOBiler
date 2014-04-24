@@ -143,7 +143,6 @@ var Combobiler;
             if (scopeNode.value.value === 'Id') {
                 // Find the var we're working with in the symbol table
                 var possibleVariable = Combobiler.Scope.findSymbolInScope(scopeNode.value.children[0].value.value, scope);
-                console.log(possibleVariable);
 
                 // Assert that the value we're setting to is of the same type
                 if (scopeNode.type !== possibleVariable.type) {
