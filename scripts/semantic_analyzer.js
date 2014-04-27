@@ -247,9 +247,16 @@ var Combobiler;
 
         SemanticAnalyzer.prototype.analyzeIntExpression = function (node, scope, astNode) {
             astNode.addChildNode(new Combobiler.TreeNode(node.children[0].value.value, astNode));
+
             if (node.children.length === 3) {
                 astNode.addChildNode(new Combobiler.TreeNode('+', astNode));
+                astNode = astNode.getNewestChild();
                 this.analyzeExpression(node.children[2], scope, astNode);
+
+                //debugger;
+                if (node.children[2].children[0].value !== 'IntExpression') {
+                    throw new Error('Expected an IntExpression but got ' + node.children[2].children[0].value + ' instead');
+                }
             }
         };
 
