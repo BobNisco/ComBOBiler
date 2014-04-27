@@ -148,6 +148,12 @@ module Combobiler {
 				if (scopeNode.type !== possibleVariable.type) {
 					throw new Error('Expected ' + scopeNode.type + ' but got ' + possibleVariable.type + ' instead');
 				}
+				if (possibleVariable.value === null) {
+					this.warning({
+                        standard: 'Assigning variable ' + currentId + ' to a variable that has no value',
+                        sarcastic: 'Assigning variable ' + currentId + ' to a variable that has no value'
+                    });
+				}
 			} else if (scopeNode.type === 'int') {
 				// Create a test variable that we know is of type number
 				var numberTestType: number = 1;
