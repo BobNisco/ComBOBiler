@@ -249,7 +249,6 @@ module Combobiler {
 				astNode.addChildNode(new TreeNode('+', astNode));
 				astNode = astNode.getNewestChild();
 				this.analyzeExpression(node.children[2], scope, astNode);
-				//debugger;
 				if (node.children[2].children[0].value !== 'IntExpression') {
 					throw new Error('Expected an IntExpression but got ' + node.children[2].children[0].value + ' instead');
 				}
