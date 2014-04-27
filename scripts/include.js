@@ -89,7 +89,10 @@ $(document).ready(function () {
         new Combobiler.TestProgram('Invalid Statement List', '{&#10;    int a&#10;    a == 6&#10;} $'),
         new Combobiler.TestProgram('Undeclared Identifier', '{&#10;    a = 1&#10;} $'),
         new Combobiler.TestProgram('Redeclared Identifier in Same Scope', '{&#10;    int a&#10;    a = 1&#10;    int a&#10;    a = 2&#10;} $'),
-        new Combobiler.TestProgram('Undeclared Identifier in Print Statement', '{&#10;    print(a)&#10;} $')
+        new Combobiler.TestProgram('Undeclared Identifier in Print Statement', '{&#10;    print(a)&#10;} $'),
+        new Combobiler.TestProgram('Type Mismatch 2', '{&#10    int a&#10    string b&#10    b = a&#10} $'),
+        new Combobiler.TestProgram('Type Mismatch 3', '{&#10    int a&#10    a = 2 + &quot;what&quot;&#10} $'),
+        new Combobiler.TestProgram('Access Var Out Of Scope', '{&#10    int a&#10    {&#10        int b&#10        b = 2&#10    }&#10    a = b&#10} $')
     ];
 
     var addProgramsToTable = function (table, type, programs) {
