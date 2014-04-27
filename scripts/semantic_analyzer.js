@@ -252,8 +252,15 @@ var Combobiler;
                 astNode.addChildNode(new Combobiler.TreeNode('+', astNode));
                 astNode = astNode.getNewestChild();
                 this.analyzeExpression(node.children[2], scope, astNode);
-                if (node.children[2].children[0].value !== 'IntExpression') {
-                    throw new Error('Expected an IntExpression but got ' + node.children[2].children[0].value + ' instead');
+                var nodeValue = node.children[2].children[0].value;
+                if (nodeValue === 'Id') {
+                    // Type check this Id
+                    var sym = Combobiler.Scope.findSymbolInScope(node.children[2].children[0].children[0].value.value, scope);
+                    if (sym.type !== 'int') {
+                        throw new Error('Expected an int but got ' + sym.type + ' instead');
+                    }
+                } else if (nodeValue !== 'IntExpression') {
+                    throw new Error('Expected an IntExpression but got ' + nodeValue + ' instead');
                 }
             }
         };
