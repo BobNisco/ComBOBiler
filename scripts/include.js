@@ -71,7 +71,7 @@ $(document).ready(function () {
     });
 
     var passPrograms = [
-        new Combobiler.TestProgram('Non While', '{&#10;    int a&#10;    a = &quot;bob&quot;&#10;} $'),
+        new Combobiler.TestProgram('Non While', '{&#10;    while false {&#10;        print(&quot;a&quot;)&#10;    }&#10;    &#10;    print(&quot;done&quot;)&#10;} $&#10;'),
         new Combobiler.TestProgram('Everything 1', '{&#10;    int a&#10;    a = 1&#10;    {&#10;        int a&#10;        a = 2&#10;        print(a)&#10;    }&#10;    &#10;    string b&#10;    b = &quot;alan&quot;&#10;    &#10;    if(a == 1) {&#10;        print(b)&#10;    }&#10;    &#10;    string c&#10;    c = &quot;james&quot;&#10;    b = &quot;blackstone&quot;&#10;    print(b)&#10;} $&#10;'),
         new Combobiler.TestProgram('While/Print/If', '{&#10;    int a&#10;    int b&#10;    int c&#10;    a = 1&#10;    b = 1&#10;    c = 1&#10;    while(a == 1) {&#10;        print(b)&#10;        if(c == 2) {&#10;            a = 2&#10;        }&#10;        if(b == 2) {&#10;            b = 3&#10;            c = 2&#10;        }&#10;        if(b == 1) {&#10;            b = 2&#10;        }&#10;    }&#10;} $'),
         new Combobiler.TestProgram('Complex If Statements', '{&#10;    int a&#10;    a = 6&#10;    if(a == 2 + 4) {&#10;        print(a)&#10;    }&#10;    if(5 + 4 == 7 + 2) {&#10;        print(a)&#10;    }&#10;} $'),
