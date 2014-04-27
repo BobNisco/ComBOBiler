@@ -98,6 +98,8 @@ $(document).ready(function(){
 		warningPrograms = [
 			new Combobiler.TestProgram('Unused Identifier', '{&#10;    int a&#10;} $'),
 			new Combobiler.TestProgram('Assignment to var with no value', '{&#10    int a&#10    int b&#10    b = a&#10} $'),
+			new Combobiler.TestProgram('Unused Variable', '{&#10    int a&#10    int b&#10    b = 2&#10    print(b)&#10} $'),
+			new Combobiler.TestProgram('Redeclaring Var without Using it', '{&#10    int a&#10    {&#10        a = 5&#10        string a&#10    }&#10} $'),
 		],
 		failPrograms = [
 			new Combobiler.TestProgram('Type Mismatch', '{&#10;    int a&#10;    a = &quot;bob&quot;&#10;} $'),
