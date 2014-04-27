@@ -16,6 +16,8 @@ var Combobiler;
 
         Runner.run = function (source) {
             try  {
+                // Clear the tree displays so that the user is not shown improper trees
+                Combobiler.SemanticAnalyzer.clearTreeDisplay();
                 var lexer = new Combobiler.Lexer(source);
                 var tokens = lexer.performLexicalAnalysis();
 
@@ -32,8 +34,6 @@ var Combobiler;
                     }
                 }
             } catch (error) {
-                // Clear the tree displays so that the user is not shown improper trees
-                Combobiler.SemanticAnalyzer.clearTreeDisplay();
                 return false;
             }
             return true;
