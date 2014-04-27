@@ -60,12 +60,16 @@ var Combobiler;
             var scopeNode = Scope.findSymbolInScope(key, this);
             if (scopeNode) {
                 scopeNode.value = value;
-                scopeNode.used = true;
             } else {
                 /* TODO: Think of how to handle this error
                 Since this is a function that will primarily be used in Parse
                 we shouldn't be checking if the value exists yet. */
             }
+        };
+
+        Scope.markVarAsUsed = function (key, scope) {
+            var scopeNode = Scope.findSymbolInScope(key, scope);
+            scopeNode.used = true;
         };
 
         Scope.findSymbolInScope = function (symbol, scope) {
