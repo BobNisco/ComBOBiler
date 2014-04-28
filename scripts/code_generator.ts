@@ -10,6 +10,11 @@ module Combobiler {
 			header: 'Code Generator',
 		};
 
+		private codeTable: Array<string>;
+		// Set the expected size of the code table. This should match up with the
+		// program size on the OS. Since MS-BOS has a default program size of 256,
+		// we will match that for our compiler.
+		private CODE_TABLE_SIZE = 256;
 
 		constructor(private astRootNode: TreeNode) {
 
@@ -28,6 +33,7 @@ module Combobiler {
 					standard: '==== Code Generator end ====',
 					sarcastic: '==== Code Generator end ===='
 				});
+				return this.codeTable;
 			} catch (error) {
 				this.error({
 					standard: error,
@@ -38,7 +44,28 @@ module Combobiler {
 					standard: '==== Code Generator ended due to error ====',
 					sarcastic: '==== Code Generator ended due to error ===='
 				});
+				return;
 			}
+		}
+
+		/**
+		 * Internal handler for adding code to the table.
+		 * Performs special checking to ensure code that is added is valid
+		 *
+		 * @param data the data (hex) to be added to the code table
+		 * @param position the position (base-10, 0-indexed) in the codeTable to add the data to
+		 */
+		private addToCodeTable(data: string, position: number) {
+			// Uppercase all the letters so that it's uniform regardless
+			data.toUpperCase();
+
+			if (!data.match(/^[0-9A-G]{2}/)) {
+				throw new Error('Tried to place the data string ' + data + ' in code table, but it is not 2 valid hex characters');
+			}
+			if (position >= this.CODE_TABLE_SIZE || position < 0) {
+				throw new Error('Position ' + position + ' is invalid for our code table');
+			}
+			this.codeTable[position] = data;
 		}
 
 		/**
