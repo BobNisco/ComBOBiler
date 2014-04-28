@@ -30,11 +30,18 @@ module Combobiler {
 					var parseData = parser.performParse();
 					var cstRootNode = parseData.rootNode;
 
-					if (cstRootNode !== null) {
-						// Only move onto Semantic Analysis if the CST isn't null
-						var semanticAnalyzer = new Combobiler.SemanticAnalyzer(cstRootNode, null);
-						semanticAnalyzer.performSemanticAnalysis();
+					if (cstRootNode === null) {
+						throw new Error('Parse did not return any nodes, so Semantic Analysis can not start');
 					}
+
+					var semanticAnalyzer = new Combobiler.SemanticAnalyzer(cstRootNode, null);
+					var astRootNode = semanticAnalyzer.performSemanticAnalysis();
+					if (astRootNode === null) {
+						throw new Error('Semantic Analysis returned a null AST, so Code Gen can not start');
+					}
+
+					var codeGenerator = new Combobiler.CodeGenerator(astRootNode);
+					codeGenerator.performCodeGeneration();
 				}
 			} catch (error) {
 				return false;
