@@ -38,12 +38,12 @@ var Combobiler;
                     }
 
                     var codeGenerator = new Combobiler.CodeGenerator(astRootNode);
-                    codeGenerator.performCodeGeneration();
+                    var generatedCode = codeGenerator.performCodeGeneration();
+                    return generatedCode;
                 }
             } catch (error) {
-                return false;
+                return;
             }
-            return true;
         };
         return Runner;
     })();

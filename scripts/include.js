@@ -18,7 +18,8 @@ $(document).ready(function () {
             standard: 'Compilation started',
             sarcastic: 'Compilation started'
         });
-        Combobiler.Runner.run(taSourceCode.val());
+        var generatedCode = Combobiler.Runner.run(taSourceCode.val());
+        taOutput.val(generatedCode);
     });
 
     programTables.on('click', '.user-program', function (e) {
