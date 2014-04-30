@@ -14,8 +14,11 @@ module Combobiler {
 
 		private staticTable: StaticTable;
 
+		private jumpTable: JumpTable;
+
 		constructor(private astRootNode: TreeNode) {
 			this.codeTable = new CodeTable();
+			this.jumpTable = new JumpTable();
 		}
 
 		public performCodeGeneration() {

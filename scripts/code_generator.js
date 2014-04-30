@@ -12,6 +12,7 @@ var Combobiler;
                 header: 'Code Generator'
             };
             this.codeTable = new Combobiler.CodeTable();
+            this.jumpTable = new Combobiler.JumpTable();
         }
         CodeGenerator.prototype.performCodeGeneration = function () {
             try  {
