@@ -10,16 +10,12 @@ module Combobiler {
 			header: 'Code Generator',
 		};
 
-		private codeTable: Array<string>;
-		// Set the expected size of the code table. This should match up with the
-		// program size on the OS. Since MS-BOS has a default program size of 256,
-		// we will match that for our compiler.
-		private CODE_TABLE_SIZE = 256;
+		private codeTable: CodeTable;
 
 		private staticTable: StaticTable;
 
 		constructor(private astRootNode: TreeNode) {
-			this.codeTable = new Array<string>(this.CODE_TABLE_SIZE);
+			this.codeTable = new CodeTable();
 		}
 
 		public performCodeGeneration() {
@@ -32,12 +28,12 @@ module Combobiler {
 					throw new Error('Null AST passed into code generator, can not start code generation');
 				}
 				this.generateCodeForNode(this.astRootNode);
-				this.finalizeCodeTable();
+				this.codeTable.finalizeCodeTable();
 				this.log({
 					standard: '==== Code Generator end ====',
 					sarcastic: '==== Code Generator end ===='
 				});
-				return this.createCodeTableStringForDisplay();
+				return this.codeTable.createStringForDisplay();
 			} catch (error) {
 				this.error({
 					standard: error,
@@ -108,54 +104,6 @@ module Combobiler {
 				standard: 'Generated code for if statement',
 				sarcastic: 'Generated code for if statement',
 			});
-		}
-
-		/**
-		 * Finalizes the code table by putting 0x00 into each spot that isn't occupied.
-		 * Should be run after back-patching is completed
-		 */
-		private finalizeCodeTable() {
-			for (var i = 0; i < this.CODE_TABLE_SIZE; i++) {
-				if (this.codeTable[i] === null || this.codeTable[i] === undefined) {
-					this.codeTable[i] = "00";
-				}
-			}
-		}
-
-		/**
-		 * Generates a nicely formatted string version of the code table (8 x 32)
-		 *
-		 * @return string version of the code table
-		 */
-		private createCodeTableStringForDisplay() {
-			var returnString = '';
-			for (var i = 0; i < this.CODE_TABLE_SIZE; i++) {
-				if (i % 8 === 0 && i !== 0) {
-					returnString += '\n';
-				}
-				returnString += this.codeTable[i] + ' ';
-			}
-			return returnString;
-		}
-
-		/**
-		 * Internal handler for adding code to the table.
-		 * Performs special checking to ensure code that is added is valid
-		 *
-		 * @param data the data (hex) to be added to the code table
-		 * @param position the position (base-10, 0-indexed) in the codeTable to add the data to
-		 */
-		private addToCodeTable(data: string, position: number) {
-			// Uppercase all the letters so that it's uniform regardless
-			data.toUpperCase();
-
-			if (!data.match(/^[0-9A-G]{2}/)) {
-				throw new Error('Tried to place the data string ' + data + ' in code table, but it is not 2 valid hex characters');
-			}
-			if (position >= this.CODE_TABLE_SIZE || position < 0) {
-				throw new Error('Position ' + position + ' is invalid for our code table');
-			}
-			this.codeTable[position] = data;
 		}
 
 		/**
