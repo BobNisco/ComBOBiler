@@ -16,6 +16,8 @@ module Combobiler {
 		// we will match that for our compiler.
 		private CODE_TABLE_SIZE = 256;
 
+		private staticTable: StaticTable;
+
 		constructor(private astRootNode: TreeNode) {
 			this.codeTable = new Array<string>(this.CODE_TABLE_SIZE);
 		}
