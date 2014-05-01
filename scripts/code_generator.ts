@@ -18,6 +18,7 @@ module Combobiler {
 
 		constructor(private astRootNode: TreeNode) {
 			this.codeTable = new CodeTable();
+			this.staticTable = new StaticTable();
 			this.jumpTable = new JumpTable();
 		}
 
@@ -75,6 +76,9 @@ module Combobiler {
 		}
 
 		private generateBlock(node: TreeNode) {
+			for (var child in node.children) {
+				this.generateCodeForNode(node.children[child]);
+			}
 			this.log({
 				standard: 'Generated code for block',
 				sarcastic: 'Generated code for block',

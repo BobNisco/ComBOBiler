@@ -226,6 +226,8 @@ module Combobiler {
 		}
 
 		private analyzeExpression(node: TreeNode, scope: Scope, astNode: TreeNode) {
+			astNode.addChildNode(new TreeNode(node.children[0].value, astNode));
+			astNode = astNode.getNewestChild();
 			if (node.children[0].value === 'IntExpression') {
 				this.analyzeIntExpression(node.children[0], scope, astNode);
 			} else if (node.children[0].value === 'StringExpression') {

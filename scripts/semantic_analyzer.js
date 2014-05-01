@@ -229,6 +229,8 @@ var Combobiler;
         };
 
         SemanticAnalyzer.prototype.analyzeExpression = function (node, scope, astNode) {
+            astNode.addChildNode(new Combobiler.TreeNode('Expression', astNode));
+            astNode = astNode.getNewestChild();
             if (node.children[0].value === 'IntExpression') {
                 this.analyzeIntExpression(node.children[0], scope, astNode);
             } else if (node.children[0].value === 'StringExpression') {

@@ -12,6 +12,7 @@ var Combobiler;
                 header: 'Code Generator'
             };
             this.codeTable = new Combobiler.CodeTable();
+            this.staticTable = new Combobiler.StaticTable();
             this.jumpTable = new Combobiler.JumpTable();
         }
         CodeGenerator.prototype.performCodeGeneration = function () {
@@ -68,6 +69,9 @@ var Combobiler;
         };
 
         CodeGenerator.prototype.generateBlock = function (node) {
+            for (var child in node.children) {
+                this.generateCodeForNode(node.children[child]);
+            }
             this.log({
                 standard: 'Generated code for block',
                 sarcastic: 'Generated code for block'
