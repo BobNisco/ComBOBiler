@@ -16,6 +16,23 @@ module Combobiler {
 
 		private jumpTable: JumpTable;
 
+		public static operations = {
+			'lda-const': 'A9',
+			'lda-mem': 'AD',
+			'sta': '8D',
+			'adc': '6D',
+			'ldx-const': 'A2',
+			'ldx-mem': 'AE',
+			'ldy-const': 'A0',
+			'ldy-mem': 'AC',
+			'nop': 'EA',
+			'brk': '00',
+			'cpx': 'EC',
+			'bne': 'D0',
+			'inc': 'EE',
+			'sys': 'FF',
+		};
+
 		constructor(private astRootNode: TreeNode) {
 			this.codeTable = new CodeTable();
 			this.staticTable = new StaticTable();
@@ -53,17 +70,23 @@ module Combobiler {
 		}
 
 		private generateCodeForNode(node: TreeNode) {
-			if (node.value === 'Block') {
+			var value;
+			if (typeof node.value === 'object') {
+				value = node.value.value;
+			} else {
+				value = node.value;
+			}
+			if (value === 'Block') {
 				this.generateBlock(node);
-			} else if (node.value === 'WhileStatement') {
+			} else if (value === 'WhileStatement') {
 				this.generateWhileStatement(node);
-			} else if (node.value === 'PrintStatement') {
+			} else if (value === 'PrintStatement') {
 				this.generatePrintStatement(node);
-			} else if (node.value === 'VarDecl') {
+			} else if (value === 'VarDecl') {
 				this.generateVarDecl(node);
-			} else if (node.value === 'AssignmentStatement') {
+			} else if (value === 'AssignmentStatement') {
 				this.generateAssignmentStatement(node);
-			} else if (node.value === 'IfStatement') {
+			} else if (value === 'IfStatement') {
 				this.generateIfStatement(node);
 			}
 		}
@@ -86,6 +109,35 @@ module Combobiler {
 		}
 
 		private generatePrintStatement(node: TreeNode) {
+			var type = node.children[0];
+			if (type.value.value === 'StringExpression') {
+				// 1. Put the String into the Heap
+				var position = this.codeTable.addString(type.children[0].value);
+				// 2. Load the accumulator with the address
+				this.codeTable.addCode(CodeGenerator.operations['lda-const']);
+				this.codeTable.addCode(position.toString(16));
+				// 3. Set up registers to prepare for a system call
+				this.codeTable.addCode(CodeGenerator.operations['sta']);
+				this.codeTable.addCode('FF');
+				this.codeTable.addCode('00');
+				this.codeTable.addCode(CodeGenerator.operations['ldx-const']);
+				this.codeTable.addCode('02');
+				this.codeTable.addCode(CodeGenerator.operations['ldy-mem']);
+				this.codeTable.addCode('FF');
+				this.codeTable.addCode('00');
+				this.codeTable.addCode(CodeGenerator.operations['sys']);
+			} else if (type.value.value === 'IntExpression') {
+
+			} else if (type.value.value === 'BooleanExpression') {
+
+			} else if (type.value.value === 'Id') {
+
+			} else {
+				// Throw an error, although we should NEVER get here
+				// since the front-end of the compiler should have done the checking
+				throw new Error('Expected an expression in the Print Statement but got ' + type.value.value + ' instead');
+			}
+
 			this.log({
 				standard: 'Generated code for print statement',
 				sarcastic: 'Generated code for print statement',

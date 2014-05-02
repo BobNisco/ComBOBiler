@@ -5,9 +5,14 @@ module Combobiler {
 		// we will match that for our compiler.
 		public static CODE_TABLE_SIZE = 256;
 		public entries: Array<string>;
+		// Keep track of what positions we are currently writing to
+		public currentPosition: number;
+		public currentHeapPosition: number;
 
 		constructor() {
 			this.entries = new Array<string>(CodeTable.CODE_TABLE_SIZE);
+			this.currentPosition = 0;
+			this.currentHeapPosition = this.entries.length - 1;
 		}
 
 		/**
@@ -38,6 +43,42 @@ module Combobiler {
 			return returnString;
 		}
 
+		public addCode(data: string) {
+			this.add(data, this.currentPosition);
+			return this.currentPosition++;
+		}
+
+		public addHeapData(data: string) {
+			this.add(data, this.currentHeapPosition);
+			return this.currentHeapPosition--;
+		}
+
+		public addString(str: string) {
+			// Strip the double quotes
+			var theString = str.value.value.replace(/\"/g, '');
+			if (theString.length <= 0) {
+				throw new Error('No string to put into heap');
+			}
+			var position;
+			// Null terminated string
+			this.addHeapData('00');
+			for (var i = theString.length - 1; i >= 0; i--) {
+				var hex = theString.charCodeAt(i).toString(16);
+				position = this.addHeapData(hex);
+			}
+			return position;
+		}
+
+		/**
+		 * Check to ensure that our heap/static/code sections haven't collided
+		 * If they have collided, we'll throw an exception
+		 */
+		private checkForCollision() {
+			if (this.currentPosition >= this.currentHeapPosition) {
+				throw new Error('Ran out of space in our code table! Program too long!');
+			}
+		}
+
 		/**
 		 * Internal handler for adding code to the table.
 		 * Performs special checking to ensure code that is added is valid
@@ -45,9 +86,9 @@ module Combobiler {
 		 * @param data the data (hex) to be added to the code table
 		 * @param position the position (base-10, 0-indexed) in the codeTable to add the data to
 		 */
-		public add(data: string, position: number) {
+		private add(data: string, position: number) {
 			// Uppercase all the letters so that it's uniform regardless
-			data.toUpperCase();
+			data = data.toUpperCase();
 
 			if (!data.match(/^[0-9A-G]{2}/)) {
 				throw new Error('Tried to place the data string ' + data + ' in code table, but it is not 2 valid hex characters');
@@ -55,7 +96,9 @@ module Combobiler {
 			if (position >= CodeTable.CODE_TABLE_SIZE || position < 0) {
 				throw new Error('Position ' + position + ' is invalid for our code table');
 			}
+			this.checkForCollision();
 			this.entries[position] = data;
+			return position;
 		}
 	}
 }
