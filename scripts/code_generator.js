@@ -91,19 +91,13 @@ var Combobiler;
                 var position = this.codeTable.addString(type.children[0].value);
 
                 // 2. Load the accumulator with the address
-                this.codeTable.addCode(CodeGenerator.operations['lda-const']);
-                this.codeTable.addCode(position.toString(16));
+                this.ldaConst(position.toString(16));
 
                 // 3. Set up registers to prepare for a system call
-                this.codeTable.addCode(CodeGenerator.operations['sta']);
-                this.codeTable.addCode('FF');
-                this.codeTable.addCode('00');
-                this.codeTable.addCode(CodeGenerator.operations['ldx-const']);
-                this.codeTable.addCode('02');
-                this.codeTable.addCode(CodeGenerator.operations['ldy-mem']);
-                this.codeTable.addCode('FF');
-                this.codeTable.addCode('00');
-                this.codeTable.addCode(CodeGenerator.operations['sys']);
+                this.sta('FF', '00');
+                this.ldxConst('02');
+                this.ldyMem('FF', '00');
+                this.sys();
             } else if (type.value.value === 'IntExpression') {
             } else if (type.value.value === 'BooleanExpression') {
             } else if (type.value.value === 'Id') {
@@ -136,6 +130,80 @@ var Combobiler;
                 standard: 'Generated code for if statement',
                 sarcastic: 'Generated code for if statement'
             });
+        };
+
+        CodeGenerator.prototype.ldaConst = function (byte1) {
+            this.codeTable.addCode('A9');
+            this.codeTable.addCode(byte1);
+        };
+
+        CodeGenerator.prototype.ldaMem = function (byte1, byte2) {
+            this.codeTable.addCode('AD');
+            this.codeTable.addCode(byte1);
+            this.codeTable.addCode(byte2);
+        };
+
+        CodeGenerator.prototype.sta = function (byte1, byte2) {
+            this.codeTable.addCode('8D');
+            this.codeTable.addCode(byte1);
+            this.codeTable.addCode(byte2);
+        };
+
+        CodeGenerator.prototype.adc = function (byte1, byte2) {
+            this.codeTable.addCode('6D');
+            this.codeTable.addCode(byte1);
+            this.codeTable.addCode(byte2);
+        };
+
+        CodeGenerator.prototype.ldxConst = function (byte1) {
+            this.codeTable.addCode('A2');
+            this.codeTable.addCode(byte1);
+        };
+
+        CodeGenerator.prototype.ldxMem = function (byte1, byte2) {
+            this.codeTable.addCode('01');
+            this.codeTable.addCode(byte1);
+            this.codeTable.addCode(byte2);
+        };
+
+        CodeGenerator.prototype.ldyConst = function (byte1) {
+            this.codeTable.addCode('A0');
+            this.codeTable.addCode(byte1);
+        };
+
+        CodeGenerator.prototype.ldyMem = function (byte1, byte2) {
+            this.codeTable.addCode('AC');
+            this.codeTable.addCode(byte1);
+            this.codeTable.addCode(byte2);
+        };
+
+        CodeGenerator.prototype.nop = function () {
+            this.codeTable.addCode('EA');
+        };
+
+        CodeGenerator.prototype.break = function () {
+            this.codeTable.addCode('00');
+        };
+
+        CodeGenerator.prototype.cpx = function (byte1, byte2) {
+            this.codeTable.addCode('EC');
+            this.codeTable.addCode(byte1);
+            this.codeTable.addCode(byte2);
+        };
+
+        CodeGenerator.prototype.bne = function (byte1) {
+            this.codeTable.addCode('F0');
+            this.codeTable.addCode(byte1);
+        };
+
+        CodeGenerator.prototype.inc = function (byte1, byte2) {
+            this.codeTable.addCode('EE');
+            this.codeTable.addCode(byte1);
+            this.codeTable.addCode(byte2);
+        };
+
+        CodeGenerator.prototype.sys = function () {
+            this.codeTable.addCode('FF');
         };
 
         /**
