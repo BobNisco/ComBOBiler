@@ -17,5 +17,19 @@ module Combobiler {
 		public getNextTempId() {
 			return 'T' + this.currentTempNumber++;
 		}
+
+		/**
+		 * Finds an entry in the array of entries by variable id
+		 * @param varId the variable id to search for
+		 * @return the StaticTableEntry instance if found, null otherwise
+		 */
+		public findByVarId(varId: string) {
+			for (var entry in this.entries) {
+				if (this.entries[entry].varId === varId) {
+					return this.entries[entry];
+				}
+			}
+			return null;
+		}
 	}
 }

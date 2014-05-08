@@ -157,9 +157,44 @@ var Combobiler;
         };
 
         CodeGenerator.prototype.generateAssignmentStatement = function (node) {
+            var varIdNode = node.children[0];
+            var valueNode = node.children[1];
+
+            if (valueNode.value.value === 'IntExpression') {
+                this.generateIntAssignmentStatement(varIdNode, valueNode);
+            } else if (valueNode.value.value === 'StringExpression') {
+                this.generateStringAssignmentStatement(varIdNode, valueNode);
+            } else if (valueNode.value.value === 'BooleanExpression') {
+                this.generateBooleanAssignmentStatement(varIdNode, valueNode);
+            } else {
+                throw new Error('Front-end compiler, ARE YOU EVEN DOING YOUR JOB!?');
+            }
+        };
+
+        CodeGenerator.prototype.generateIntAssignmentStatement = function (varIdNode, valueNode) {
+            // 1. Load the value into our accumulator
+            this.ldaConst(this.leftPad(valueNode.children[0].value.value, 2));
+
+            // 2. Store the accumulator into memory at the temp position
+            var staticTableEntry = this.staticTable.findByVarId(varIdNode.value.value);
+            this.sta(staticTableEntry.temp, 'XX');
             this.log({
-                standard: 'Generated code for assignment statement',
-                sarcastic: 'Generated code for assignment statement'
+                standard: 'Generated code for int assignment statement',
+                sarcastic: 'Generated code for int assignment statement'
+            });
+        };
+
+        CodeGenerator.prototype.generateStringAssignmentStatement = function (varIdNode, valueNode) {
+            this.log({
+                standard: 'Generated code for string assignment statement',
+                sarcastic: 'Generated code for string assignment statement'
+            });
+        };
+
+        CodeGenerator.prototype.generateBooleanAssignmentStatement = function (varIdNode, valueNode) {
+            this.log({
+                standard: 'Generated code for boolean assignment statement',
+                sarcastic: 'Generated code for boolean assignment statement'
             });
         };
 
@@ -242,6 +277,14 @@ var Combobiler;
 
         CodeGenerator.prototype.sys = function () {
             this.codeTable.addCode('FF');
+        };
+
+        CodeGenerator.prototype.leftPad = function (data, length) {
+            var temp = '' + data;
+            while (temp.length < length) {
+                temp = '0' + temp;
+            }
+            return temp;
         };
 
         /**

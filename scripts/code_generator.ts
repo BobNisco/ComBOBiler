@@ -182,9 +182,47 @@ module Combobiler {
 		}
 
 		private generateAssignmentStatement(node: TreeNode) {
+			var varIdNode = node.children[0];
+			var valueNode = node.children[1];
+
+			if (valueNode.value.value === 'IntExpression') {
+				this.generateIntAssignmentStatement(varIdNode, valueNode);
+			} else if (valueNode.value.value === 'StringExpression') {
+				this.generateStringAssignmentStatement(varIdNode, valueNode);
+			} else if (valueNode.value.value === 'BooleanExpression') {
+				this.generateBooleanAssignmentStatement(varIdNode, valueNode);
+			} else {
+				// We should never get here since the front-end of the compiler
+				// should have taken care of these types of issues.
+				// But, if we were to ever get in this situation, it's fair to
+				// get angry and start yelling at the front-end compiler
+				throw new Error('Front-end compiler, ARE YOU EVEN DOING YOUR JOB!?');
+			}
+		}
+
+		private generateIntAssignmentStatement(varIdNode: TreeNode, valueNode: TreeNode) {
+			// 1. Load the value into our accumulator
+			this.ldaConst(this.leftPad(valueNode.children[0].value.value, 2));
+			// 2. Store the accumulator into memory at the temp position
+			var staticTableEntry = this.staticTable.findByVarId(varIdNode.value.value);
+			this.sta(staticTableEntry.temp, 'XX');
 			this.log({
-				standard: 'Generated code for assignment statement',
-				sarcastic: 'Generated code for assignment statement',
+				standard: 'Generated code for int assignment statement',
+				sarcastic: 'Generated code for int assignment statement',
+			});
+		}
+
+		private generateStringAssignmentStatement(varIdNode: TreeNode, valueNode: TreeNode) {
+			this.log({
+				standard: 'Generated code for string assignment statement',
+				sarcastic: 'Generated code for string assignment statement',
+			});
+		}
+
+		private generateBooleanAssignmentStatement(varIdNode: TreeNode, valueNode: TreeNode) {
+			this.log({
+				standard: 'Generated code for boolean assignment statement',
+				sarcastic: 'Generated code for boolean assignment statement',
 			});
 		}
 
@@ -267,6 +305,14 @@ module Combobiler {
 
 		private sys() {
 			this.codeTable.addCode('FF');
+		}
+
+		private leftPad(data: string, length: number) {
+			var temp = '' + data;
+			while (temp.length < length) {
+				temp = '0' + temp;
+			}
+			return temp;
 		}
 
 		/**
