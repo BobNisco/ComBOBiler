@@ -112,9 +112,47 @@ var Combobiler;
         };
 
         CodeGenerator.prototype.generateVarDecl = function (node) {
+            var varTypeNode = node.children[0];
+            var varIdNode = node.children[1];
+
+            if (varTypeNode.value.value.symbol === 'int') {
+                this.generateIntVarDecl(varTypeNode, varIdNode);
+            } else if (varTypeNode.value.value.symbol === 'string') {
+                this.generateStringVarDecl(varTypeNode, varIdNode);
+            } else if (varTypeNode.value.value.symbol === 'bool') {
+                this.generateBoolVarDecl(varTypeNode, varIdNode);
+            } else {
+                throw new Error('Unknown type! How did you let this happen, front-end compiler!?');
+            }
+        };
+
+        CodeGenerator.prototype.generateIntVarDecl = function (varTypeNode, varIdNode) {
+            // 1. Generate code to initialize our integers to 0
+            this.ldaConst('00');
+
+            // 2. Make an entry in the static table
+            var tempId = this.staticTable.getNextTempId();
+            this.staticTable.add(new Combobiler.StaticTableEntry(tempId, varIdNode.value.value.value, 0));
+
+            // 3. Store the temp address in the code table
+            this.sta(tempId, 'XX');
             this.log({
-                standard: 'Generated code for variable declaration',
-                sarcastic: 'Generated code for variable declaration'
+                standard: 'Generated code for int variable declaration',
+                sarcastic: 'Generated code for int variable declaration'
+            });
+        };
+
+        CodeGenerator.prototype.generateStringVarDecl = function (varTypeNode, varIdNode) {
+            this.log({
+                standard: 'Generated code for string variable declaration',
+                sarcastic: 'Generated code for string variable declaration'
+            });
+        };
+
+        CodeGenerator.prototype.generateBoolVarDecl = function (varTypeNode, varIdNode) {
+            this.log({
+                standard: 'Generated code for boolean variable declaration',
+                sarcastic: 'Generated code for boolean variable declaration'
             });
         };
 
