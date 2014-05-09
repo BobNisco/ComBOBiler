@@ -166,6 +166,8 @@ var Combobiler;
                 this.generateStringAssignmentStatement(varIdNode, valueNode);
             } else if (valueNode.value.value === 'BooleanExpression') {
                 this.generateBooleanAssignmentStatement(varIdNode, valueNode);
+            } else if (valueNode.value.value === 'Id') {
+                this.generateIdAssignmentStatement(varIdNode, valueNode);
             } else {
                 throw new Error('Front-end compiler, ARE YOU EVEN DOING YOUR JOB!?');
             }
@@ -195,6 +197,24 @@ var Combobiler;
             this.log({
                 standard: 'Generated code for boolean assignment statement',
                 sarcastic: 'Generated code for boolean assignment statement'
+            });
+        };
+
+        CodeGenerator.prototype.generateIdAssignmentStatement = function (varIdNode, valueNode) {
+            // 1. Find the variable we are setting it to in the static table
+            var valueStaticTableEntry = this.staticTable.findByVarId(valueNode.children[0].value.value);
+
+            // 2. Load the pointer into accumulator
+            this.ldaMem(valueStaticTableEntry.temp, 'XX');
+
+            // 3. Find the variable in the static table
+            var varIdStaticTableEntry = this.staticTable.findByVarId(varIdNode.value.value);
+
+            // 4. Store what's in the accumulator into memory
+            this.sta(varIdStaticTableEntry.temp, 'XX');
+            this.log({
+                standard: 'Generated code for id assignment statement',
+                sarcastic: 'Generated code for id assignment statement'
             });
         };
 
