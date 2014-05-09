@@ -277,8 +277,9 @@ var Combobiler;
             if (node.children.length === 1) {
                 astNode.addChildNode(new Combobiler.TreeNode(node.children[0].value, astNode));
             } else if (node.children.length === 5) {
-                this.analyzeExpression(node.children[1], scope, astNode);
                 astNode.addChildNode(new Combobiler.TreeNode(node.children[2].value, astNode));
+                astNode = astNode.getNewestChild();
+                this.analyzeExpression(node.children[1], scope, astNode);
                 this.analyzeExpression(node.children[3], scope, astNode);
             } else {
                 throw new Error('Malformed BooleanExpression');
