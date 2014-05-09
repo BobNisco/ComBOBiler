@@ -4,8 +4,9 @@
 var Combobiler;
 (function (Combobiler) {
     var CodeGenerator = (function () {
-        function CodeGenerator(astRootNode) {
+        function CodeGenerator(astRootNode, rootScope) {
             this.astRootNode = astRootNode;
+            this.rootScope = rootScope;
             // Define some default logger options for the Code Generator
             this.loggerOptions = {
                 type: 'code-generator',

@@ -33,7 +33,7 @@ module Combobiler {
 			'sys': 'FF',
 		};
 
-		constructor(private astRootNode: TreeNode) {
+		constructor(private astRootNode: TreeNode, private rootScope: Scope) {
 			this.codeTable = new CodeTable();
 			this.staticTable = new StaticTable();
 			this.jumpTable = new JumpTable();

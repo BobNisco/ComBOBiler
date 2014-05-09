@@ -35,7 +35,10 @@ module Combobiler {
 					standard: '==== Semantic Analysis end ====',
 					sarcastic: '==== Semantic Analysis end ===='
 				});
-				return this.astRootNode;
+				return {
+					astRootNode: this.astRootNode,
+					rootScope: this.rootScope
+				}
 			} catch (error) {
 				this.error({
 					standard: error,

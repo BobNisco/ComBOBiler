@@ -35,12 +35,15 @@ module Combobiler {
 					}
 
 					var semanticAnalyzer = new Combobiler.SemanticAnalyzer(cstRootNode, null);
-					var astRootNode = semanticAnalyzer.performSemanticAnalysis();
-					if (astRootNode === null) {
+					var semanticAnalyzerResults = semanticAnalyzer.performSemanticAnalysis();
+					if (semanticAnalyzerResults.astRootNode === null) {
 						throw new Error('Semantic Analysis returned a null AST, so Code Gen can not start');
 					}
+					if (semanticAnalyzerResults.rootScope === null) {
+						throw new Error('Semantic Analysis returned no scope data, so Code Gen can not start');
+					}
 
-					var codeGenerator = new Combobiler.CodeGenerator(astRootNode);
+					var codeGenerator = new Combobiler.CodeGenerator(semanticAnalyzerResults.astRootNode, semanticAnalyzerResults.rootScope);
 					var generatedCode = codeGenerator.performCodeGeneration();
 					return generatedCode;
 				}
