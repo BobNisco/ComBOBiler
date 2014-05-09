@@ -48,7 +48,7 @@ module Combobiler {
 				if (this.astRootNode === null) {
 					throw new Error('Null AST passed into code generator, can not start code generation');
 				}
-				this.generateCodeForNode(this.astRootNode);
+				this.generateCodeForNode(this.astRootNode, this.rootScope);
 				this.codeTable.finalizeCodeTable();
 				this.log({
 					standard: '==== Code Generator end ====',
@@ -69,38 +69,47 @@ module Combobiler {
 			}
 		}
 
-		private generateCodeForNode(node: TreeNode) {
+		private generateCodeForNode(node: TreeNode, scope: Scope) {
+			var value = this.determineTypeOfNode(node);
+			if (value === 'Block') {
+				this.generateBlock(node, scope);
+			} else if (value === 'WhileStatement') {
+				this.generateWhileStatement(node, scope);
+			} else if (value === 'PrintStatement') {
+				this.generatePrintStatement(node, scope);
+			} else if (value === 'VarDecl') {
+				this.generateVarDecl(node, scope);
+			} else if (value === 'AssignmentStatement') {
+				this.generateAssignmentStatement(node, scope);
+			} else if (value === 'IfStatement') {
+				this.generateIfStatement(node, scope);
+			}
+		}
+
+		private determineTypeOfNode(node: TreeNode) {
 			var value;
 			if (typeof node.value === 'object') {
 				value = node.value.value;
 			} else {
 				value = node.value;
 			}
-			if (value === 'Block') {
-				this.generateBlock(node);
-			} else if (value === 'WhileStatement') {
-				this.generateWhileStatement(node);
-			} else if (value === 'PrintStatement') {
-				this.generatePrintStatement(node);
-			} else if (value === 'VarDecl') {
-				this.generateVarDecl(node);
-			} else if (value === 'AssignmentStatement') {
-				this.generateAssignmentStatement(node);
-			} else if (value === 'IfStatement') {
-				this.generateIfStatement(node);
-			}
+			return value;
 		}
 
-		private generateWhileStatement(node: TreeNode) {
+		private generateWhileStatement(node: TreeNode, scope: Scope) {
 			this.log({
 				standard: 'Generated code for While Statement',
 				sarcastic: 'Generated code for While Statement',
 			});
 		}
 
-		private generateBlock(node: TreeNode) {
+		private generateBlock(node: TreeNode, scope: Scope) {
+			var currentScope = 0;
 			for (var child in node.children) {
-				this.generateCodeForNode(node.children[child]);
+				if (this.determineTypeOfNode(node.children[child]) === 'Block') {
+					scope = scope.children[currentScope++];
+				}
+				this.generateCodeForNode(node.children[child], scope);
 			}
 			this.log({
 				standard: 'Generated code for block',
@@ -108,7 +117,7 @@ module Combobiler {
 			});
 		}
 
-		private generatePrintStatement(node: TreeNode) {
+		private generatePrintStatement(node: TreeNode, scope: Scope) {
 			var type = node.children[0];
 			if (type.value.value === 'StringExpression') {
 				// 1. Put the String into the Heap
@@ -145,27 +154,27 @@ module Combobiler {
 			});
 		}
 
-		private generateVarDecl(node: TreeNode) {
+		private generateVarDecl(node: TreeNode, scope: Scope) {
 			var varTypeNode = node.children[0];
 			var varIdNode = node.children[1];
 
 			if (varTypeNode.value.value.symbol === 'int') {
-				this.generateIntVarDecl(varTypeNode, varIdNode);
+				this.generateIntVarDecl(varTypeNode, varIdNode, scope);
 			} else if (varTypeNode.value.value.symbol === 'string') {
-				this.generateStringVarDecl(varTypeNode, varIdNode);
+				this.generateStringVarDecl(varTypeNode, varIdNode, scope);
 			} else if (varTypeNode.value.value.symbol === 'bool') {
-				this.generateBoolVarDecl(varTypeNode, varIdNode);
+				this.generateBoolVarDecl(varTypeNode, varIdNode, scope);
 			} else {
 				throw new Error('Unknown type! How did you let this happen, front-end compiler!?');
 			}
 		}
 
-		private generateIntVarDecl(varTypeNode: TreeNode, varIdNode: TreeNode) {
+		private generateIntVarDecl(varTypeNode: TreeNode, varIdNode: TreeNode, scope: Scope) {
 			// 1. Generate code to initialize our integers to 0
 			this.ldaConst('00');
 			// 2. Make an entry in the static table
 			var tempId = this.staticTable.getNextTempId();
-			this.staticTable.add(new StaticTableEntry(tempId, varIdNode.value.value.value, 0));
+			this.staticTable.add(new StaticTableEntry(tempId, varIdNode.value.value.value, 0, scope));
 			// 3. Store the temp address in the code table
 			this.sta(tempId, 'XX');
 			this.log({
@@ -174,32 +183,32 @@ module Combobiler {
 			});
 		}
 
-		private generateStringVarDecl(varTypeNode: TreeNode, varIdNode: TreeNode) {
+		private generateStringVarDecl(varTypeNode: TreeNode, varIdNode: TreeNode, scope: Scope) {
 			this.log({
 				standard: 'Generated code for string variable declaration',
 				sarcastic: 'Generated code for string variable declaration',
 			});
 		}
 
-		private generateBoolVarDecl(varTypeNode: TreeNode, varIdNode: TreeNode) {
+		private generateBoolVarDecl(varTypeNode: TreeNode, varIdNode: TreeNode, scope: Scope) {
 			this.log({
 				standard: 'Generated code for boolean variable declaration',
 				sarcastic: 'Generated code for boolean variable declaration',
 			});
 		}
 
-		private generateAssignmentStatement(node: TreeNode) {
+		private generateAssignmentStatement(node: TreeNode, scope: Scope) {
 			var varIdNode = node.children[0];
 			var valueNode = node.children[1];
 
 			if (valueNode.value.value === 'IntExpression') {
-				this.generateIntAssignmentStatement(varIdNode, valueNode);
+				this.generateIntAssignmentStatement(varIdNode, valueNode, scope);
 			} else if (valueNode.value.value === 'StringExpression') {
-				this.generateStringAssignmentStatement(varIdNode, valueNode);
+				this.generateStringAssignmentStatement(varIdNode, valueNode, scope);
 			} else if (valueNode.value.value === 'BooleanExpression') {
-				this.generateBooleanAssignmentStatement(varIdNode, valueNode);
+				this.generateBooleanAssignmentStatement(varIdNode, valueNode, scope);
 			} else if (valueNode.value.value === 'Id') {
-				this.generateIdAssignmentStatement(varIdNode, valueNode);
+				this.generateIdAssignmentStatement(varIdNode, valueNode, scope);
 			} else {
 				// We should never get here since the front-end of the compiler
 				// should have taken care of these types of issues.
@@ -209,7 +218,7 @@ module Combobiler {
 			}
 		}
 
-		private generateIntAssignmentStatement(varIdNode: TreeNode, valueNode: TreeNode) {
+		private generateIntAssignmentStatement(varIdNode: TreeNode, valueNode: TreeNode, scope: Scope) {
 			// 1. Load the value into our accumulator
 			this.ldaConst(this.leftPad(valueNode.children[0].value.value, 2));
 			// 2. Store the accumulator into memory at the temp position
@@ -221,21 +230,21 @@ module Combobiler {
 			});
 		}
 
-		private generateStringAssignmentStatement(varIdNode: TreeNode, valueNode: TreeNode) {
+		private generateStringAssignmentStatement(varIdNode: TreeNode, valueNode: TreeNode, scope: Scope) {
 			this.log({
 				standard: 'Generated code for string assignment statement',
 				sarcastic: 'Generated code for string assignment statement',
 			});
 		}
 
-		private generateBooleanAssignmentStatement(varIdNode: TreeNode, valueNode: TreeNode) {
+		private generateBooleanAssignmentStatement(varIdNode: TreeNode, valueNode: TreeNode, scope: Scope) {
 			this.log({
 				standard: 'Generated code for boolean assignment statement',
 				sarcastic: 'Generated code for boolean assignment statement',
 			});
 		}
 
-		private generateIdAssignmentStatement(varIdNode: TreeNode, valueNode: TreeNode) {
+		private generateIdAssignmentStatement(varIdNode: TreeNode, valueNode: TreeNode, scope: Scope) {
 			// 1. Find the variable we are setting it to in the static table
 			var valueStaticTableEntry = this.staticTable.findByVarId(valueNode.children[0].value.value);
 			// 2. Load the pointer into accumulator
@@ -250,7 +259,7 @@ module Combobiler {
 			});
 		}
 
-		private generateIfStatement(node: TreeNode) {
+		private generateIfStatement(node: TreeNode, scope: Scope) {
 			this.log({
 				standard: 'Generated code for if statement',
 				sarcastic: 'Generated code for if statement',

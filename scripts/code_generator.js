@@ -25,7 +25,7 @@ var Combobiler;
                 if (this.astRootNode === null) {
                     throw new Error('Null AST passed into code generator, can not start code generation');
                 }
-                this.generateCodeForNode(this.astRootNode);
+                this.generateCodeForNode(this.astRootNode, this.rootScope);
                 this.codeTable.finalizeCodeTable();
                 this.log({
                     standard: '==== Code Generator end ====',
@@ -46,38 +46,47 @@ var Combobiler;
             }
         };
 
-        CodeGenerator.prototype.generateCodeForNode = function (node) {
+        CodeGenerator.prototype.generateCodeForNode = function (node, scope) {
+            var value = this.determineTypeOfNode(node);
+            if (value === 'Block') {
+                this.generateBlock(node, scope);
+            } else if (value === 'WhileStatement') {
+                this.generateWhileStatement(node, scope);
+            } else if (value === 'PrintStatement') {
+                this.generatePrintStatement(node, scope);
+            } else if (value === 'VarDecl') {
+                this.generateVarDecl(node, scope);
+            } else if (value === 'AssignmentStatement') {
+                this.generateAssignmentStatement(node, scope);
+            } else if (value === 'IfStatement') {
+                this.generateIfStatement(node, scope);
+            }
+        };
+
+        CodeGenerator.prototype.determineTypeOfNode = function (node) {
             var value;
             if (typeof node.value === 'object') {
                 value = node.value.value;
             } else {
                 value = node.value;
             }
-            if (value === 'Block') {
-                this.generateBlock(node);
-            } else if (value === 'WhileStatement') {
-                this.generateWhileStatement(node);
-            } else if (value === 'PrintStatement') {
-                this.generatePrintStatement(node);
-            } else if (value === 'VarDecl') {
-                this.generateVarDecl(node);
-            } else if (value === 'AssignmentStatement') {
-                this.generateAssignmentStatement(node);
-            } else if (value === 'IfStatement') {
-                this.generateIfStatement(node);
-            }
+            return value;
         };
 
-        CodeGenerator.prototype.generateWhileStatement = function (node) {
+        CodeGenerator.prototype.generateWhileStatement = function (node, scope) {
             this.log({
                 standard: 'Generated code for While Statement',
                 sarcastic: 'Generated code for While Statement'
             });
         };
 
-        CodeGenerator.prototype.generateBlock = function (node) {
+        CodeGenerator.prototype.generateBlock = function (node, scope) {
+            var currentScope = 0;
             for (var child in node.children) {
-                this.generateCodeForNode(node.children[child]);
+                if (this.determineTypeOfNode(node.children[child]) === 'Block') {
+                    scope = scope.children[currentScope++];
+                }
+                this.generateCodeForNode(node.children[child], scope);
             }
             this.log({
                 standard: 'Generated code for block',
@@ -85,7 +94,7 @@ var Combobiler;
             });
         };
 
-        CodeGenerator.prototype.generatePrintStatement = function (node) {
+        CodeGenerator.prototype.generatePrintStatement = function (node, scope) {
             var type = node.children[0];
             if (type.value.value === 'StringExpression') {
                 // 1. Put the String into the Heap
@@ -123,28 +132,28 @@ var Combobiler;
             });
         };
 
-        CodeGenerator.prototype.generateVarDecl = function (node) {
+        CodeGenerator.prototype.generateVarDecl = function (node, scope) {
             var varTypeNode = node.children[0];
             var varIdNode = node.children[1];
 
             if (varTypeNode.value.value.symbol === 'int') {
-                this.generateIntVarDecl(varTypeNode, varIdNode);
+                this.generateIntVarDecl(varTypeNode, varIdNode, scope);
             } else if (varTypeNode.value.value.symbol === 'string') {
-                this.generateStringVarDecl(varTypeNode, varIdNode);
+                this.generateStringVarDecl(varTypeNode, varIdNode, scope);
             } else if (varTypeNode.value.value.symbol === 'bool') {
-                this.generateBoolVarDecl(varTypeNode, varIdNode);
+                this.generateBoolVarDecl(varTypeNode, varIdNode, scope);
             } else {
                 throw new Error('Unknown type! How did you let this happen, front-end compiler!?');
             }
         };
 
-        CodeGenerator.prototype.generateIntVarDecl = function (varTypeNode, varIdNode) {
+        CodeGenerator.prototype.generateIntVarDecl = function (varTypeNode, varIdNode, scope) {
             // 1. Generate code to initialize our integers to 0
             this.ldaConst('00');
 
             // 2. Make an entry in the static table
             var tempId = this.staticTable.getNextTempId();
-            this.staticTable.add(new Combobiler.StaticTableEntry(tempId, varIdNode.value.value.value, 0));
+            this.staticTable.add(new Combobiler.StaticTableEntry(tempId, varIdNode.value.value.value, 0, scope));
 
             // 3. Store the temp address in the code table
             this.sta(tempId, 'XX');
@@ -154,38 +163,38 @@ var Combobiler;
             });
         };
 
-        CodeGenerator.prototype.generateStringVarDecl = function (varTypeNode, varIdNode) {
+        CodeGenerator.prototype.generateStringVarDecl = function (varTypeNode, varIdNode, scope) {
             this.log({
                 standard: 'Generated code for string variable declaration',
                 sarcastic: 'Generated code for string variable declaration'
             });
         };
 
-        CodeGenerator.prototype.generateBoolVarDecl = function (varTypeNode, varIdNode) {
+        CodeGenerator.prototype.generateBoolVarDecl = function (varTypeNode, varIdNode, scope) {
             this.log({
                 standard: 'Generated code for boolean variable declaration',
                 sarcastic: 'Generated code for boolean variable declaration'
             });
         };
 
-        CodeGenerator.prototype.generateAssignmentStatement = function (node) {
+        CodeGenerator.prototype.generateAssignmentStatement = function (node, scope) {
             var varIdNode = node.children[0];
             var valueNode = node.children[1];
 
             if (valueNode.value.value === 'IntExpression') {
-                this.generateIntAssignmentStatement(varIdNode, valueNode);
+                this.generateIntAssignmentStatement(varIdNode, valueNode, scope);
             } else if (valueNode.value.value === 'StringExpression') {
-                this.generateStringAssignmentStatement(varIdNode, valueNode);
+                this.generateStringAssignmentStatement(varIdNode, valueNode, scope);
             } else if (valueNode.value.value === 'BooleanExpression') {
-                this.generateBooleanAssignmentStatement(varIdNode, valueNode);
+                this.generateBooleanAssignmentStatement(varIdNode, valueNode, scope);
             } else if (valueNode.value.value === 'Id') {
-                this.generateIdAssignmentStatement(varIdNode, valueNode);
+                this.generateIdAssignmentStatement(varIdNode, valueNode, scope);
             } else {
                 throw new Error('Front-end compiler, ARE YOU EVEN DOING YOUR JOB!?');
             }
         };
 
-        CodeGenerator.prototype.generateIntAssignmentStatement = function (varIdNode, valueNode) {
+        CodeGenerator.prototype.generateIntAssignmentStatement = function (varIdNode, valueNode, scope) {
             // 1. Load the value into our accumulator
             this.ldaConst(this.leftPad(valueNode.children[0].value.value, 2));
 
@@ -198,21 +207,21 @@ var Combobiler;
             });
         };
 
-        CodeGenerator.prototype.generateStringAssignmentStatement = function (varIdNode, valueNode) {
+        CodeGenerator.prototype.generateStringAssignmentStatement = function (varIdNode, valueNode, scope) {
             this.log({
                 standard: 'Generated code for string assignment statement',
                 sarcastic: 'Generated code for string assignment statement'
             });
         };
 
-        CodeGenerator.prototype.generateBooleanAssignmentStatement = function (varIdNode, valueNode) {
+        CodeGenerator.prototype.generateBooleanAssignmentStatement = function (varIdNode, valueNode, scope) {
             this.log({
                 standard: 'Generated code for boolean assignment statement',
                 sarcastic: 'Generated code for boolean assignment statement'
             });
         };
 
-        CodeGenerator.prototype.generateIdAssignmentStatement = function (varIdNode, valueNode) {
+        CodeGenerator.prototype.generateIdAssignmentStatement = function (varIdNode, valueNode, scope) {
             // 1. Find the variable we are setting it to in the static table
             var valueStaticTableEntry = this.staticTable.findByVarId(valueNode.children[0].value.value);
 
@@ -230,7 +239,7 @@ var Combobiler;
             });
         };
 
-        CodeGenerator.prototype.generateIfStatement = function (node) {
+        CodeGenerator.prototype.generateIfStatement = function (node, scope) {
             this.log({
                 standard: 'Generated code for if statement',
                 sarcastic: 'Generated code for if statement'
