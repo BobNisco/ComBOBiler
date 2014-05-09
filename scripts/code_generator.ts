@@ -125,7 +125,14 @@ module Combobiler {
 			} else if (type.value.value === 'BooleanExpression') {
 
 			} else if (type.value.value === 'Id') {
-
+				// 1. Find the variable we'll be printing
+				var varIdStaticTableEntry = this.staticTable.findByVarId(type.children[0].value.value);
+				// 2. Load the Y register with contents of the variable
+				this.ldyMem(varIdStaticTableEntry.temp, 'XX');
+				// 3. Load the X register with 1
+				this.ldxConst('01');
+				// 4. System call
+				this.sys();
 			} else {
 				// Throw an error, although we should NEVER get here
 				// since the front-end of the compiler should have done the checking
