@@ -24,8 +24,8 @@ module Combobiler {
 		 * @return the StaticTableEntry instance if found, null otherwise
 		 */
 		public findByVarIdAndScope(varId: string, scope: Scope) {
-			for (var entry in this.entries) {
-				var currentEntry = this.entries[entry];
+			for (var i = 0; i < this.entries.length; i++) {
+				var currentEntry = this.entries[i];
 				// Match on the variable ID
 				if (currentEntry.varId === varId) {
 					// Check if the passed in scope matches this entry

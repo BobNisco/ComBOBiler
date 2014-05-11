@@ -184,6 +184,8 @@ module Combobiler {
 		}
 
 		private generateStringVarDecl(varTypeNode: TreeNode, varIdNode: TreeNode, scope: Scope) {
+			var tempId = this.staticTable.getNextTempId();
+			this.staticTable.add(new StaticTableEntry(tempId, varIdNode.value.value.value, 0, scope));
 			this.log({
 				standard: 'Generated code for string variable declaration',
 				sarcastic: 'Generated code for string variable declaration',
@@ -231,6 +233,13 @@ module Combobiler {
 		}
 
 		private generateStringAssignmentStatement(varIdNode: TreeNode, valueNode: TreeNode, scope: Scope) {
+			// 1. Put the string into the heap
+			var position = this.codeTable.addString(valueNode.children[0].value);
+			// 2. Load the accumulator with the address of the string
+			this.ldaConst(position.toString(16));
+			// 3. Store the accumulator into memory at the temp position
+			var staticTableEntry = this.staticTable.findByVarIdAndScope(varIdNode.value.value, scope);
+			this.sta(staticTableEntry.temp, 'XX');
 			this.log({
 				standard: 'Generated code for string assignment statement',
 				sarcastic: 'Generated code for string assignment statement',
