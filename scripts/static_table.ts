@@ -23,10 +23,24 @@ module Combobiler {
 		 * @param varId the variable id to search for
 		 * @return the StaticTableEntry instance if found, null otherwise
 		 */
-		public findByVarId(varId: string) {
+		public findByVarIdAndScope(varId: string, scope: Scope) {
 			for (var entry in this.entries) {
-				if (this.entries[entry].varId === varId) {
-					return this.entries[entry];
+				var currentEntry = this.entries[entry];
+				// Match on the variable ID
+				if (currentEntry.varId === varId) {
+					// Check if the passed in scope matches this entry
+					if (currentEntry.scope == scope) {
+						return currentEntry;
+					} else {
+						// Walk the tree until we find it, or hit the root,
+						// or we don't find it at all.
+						while (scope.parent !== null) {
+							scope = scope.parent;
+							if (currentEntry.scope == scope) {
+								return currentEntry;
+							}
+						}
+					}
 				}
 			}
 			return null;

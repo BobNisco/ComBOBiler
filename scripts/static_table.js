@@ -19,10 +19,23 @@ var Combobiler;
         * @param varId the variable id to search for
         * @return the StaticTableEntry instance if found, null otherwise
         */
-        StaticTable.prototype.findByVarId = function (varId) {
+        StaticTable.prototype.findByVarIdAndScope = function (varId, scope) {
             for (var entry in this.entries) {
-                if (this.entries[entry].varId === varId) {
-                    return this.entries[entry];
+                var currentEntry = this.entries[entry];
+
+                // Match on the variable ID
+                if (currentEntry.varId === varId) {
+                    // Check if the passed in scope matches this entry
+                    if (currentEntry.scope == scope) {
+                        return currentEntry;
+                    } else {
+                        while (scope.parent !== null) {
+                            scope = scope.parent;
+                            if (currentEntry.scope == scope) {
+                                return currentEntry;
+                            }
+                        }
+                    }
                 }
             }
             return null;

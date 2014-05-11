@@ -112,7 +112,7 @@ var Combobiler;
             } else if (type.value.value === 'BooleanExpression') {
             } else if (type.value.value === 'Id') {
                 // 1. Find the variable we'll be printing
-                var varIdStaticTableEntry = this.staticTable.findByVarId(type.children[0].value.value);
+                var varIdStaticTableEntry = this.staticTable.findByVarIdAndScope(type.children[0].value.value, scope);
 
                 // 2. Load the Y register with contents of the variable
                 this.ldyMem(varIdStaticTableEntry.temp, 'XX');
@@ -199,7 +199,7 @@ var Combobiler;
             this.ldaConst(this.leftPad(valueNode.children[0].value.value, 2));
 
             // 2. Store the accumulator into memory at the temp position
-            var staticTableEntry = this.staticTable.findByVarId(varIdNode.value.value);
+            var staticTableEntry = this.staticTable.findByVarIdAndScope(varIdNode.value.value, scope);
             this.sta(staticTableEntry.temp, 'XX');
             this.log({
                 standard: 'Generated code for int assignment statement',
@@ -223,13 +223,13 @@ var Combobiler;
 
         CodeGenerator.prototype.generateIdAssignmentStatement = function (varIdNode, valueNode, scope) {
             // 1. Find the variable we are setting it to in the static table
-            var valueStaticTableEntry = this.staticTable.findByVarId(valueNode.children[0].value.value);
+            var valueStaticTableEntry = this.staticTable.findByVarIdAndScope(valueNode.children[0].value.value, scope);
 
             // 2. Load the pointer into accumulator
             this.ldaMem(valueStaticTableEntry.temp, 'XX');
 
             // 3. Find the variable in the static table
-            var varIdStaticTableEntry = this.staticTable.findByVarId(varIdNode.value.value);
+            var varIdStaticTableEntry = this.staticTable.findByVarIdAndScope(varIdNode.value.value, scope);
 
             // 4. Store what's in the accumulator into memory
             this.sta(varIdStaticTableEntry.temp, 'XX');
