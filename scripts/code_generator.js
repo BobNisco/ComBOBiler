@@ -387,22 +387,6 @@ var Combobiler;
         CodeGenerator.prototype.warning = function (messages) {
             LOGGER.log($.extend({ displayClass: 'label-warning' }, this.loggerOptions), messages);
         };
-        CodeGenerator.operations = {
-            'lda-const': 'A9',
-            'lda-mem': 'AD',
-            'sta': '8D',
-            'adc': '6D',
-            'ldx-const': 'A2',
-            'ldx-mem': 'AE',
-            'ldy-const': 'A0',
-            'ldy-mem': 'AC',
-            'nop': 'EA',
-            'brk': '00',
-            'cpx': 'EC',
-            'bne': 'D0',
-            'inc': 'EE',
-            'sys': 'FF'
-        };
         return CodeGenerator;
     })();
     Combobiler.CodeGenerator = CodeGenerator;

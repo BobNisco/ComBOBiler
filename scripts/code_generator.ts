@@ -16,23 +16,6 @@ module Combobiler {
 
 		private jumpTable: JumpTable;
 
-		public static operations = {
-			'lda-const': 'A9',
-			'lda-mem': 'AD',
-			'sta': '8D',
-			'adc': '6D',
-			'ldx-const': 'A2',
-			'ldx-mem': 'AE',
-			'ldy-const': 'A0',
-			'ldy-mem': 'AC',
-			'nop': 'EA',
-			'brk': '00',
-			'cpx': 'EC',
-			'bne': 'D0',
-			'inc': 'EE',
-			'sys': 'FF',
-		};
-
 		constructor(private astRootNode: TreeNode, private rootScope: Scope) {
 			this.codeTable = new CodeTable();
 			this.staticTable = new StaticTable();
