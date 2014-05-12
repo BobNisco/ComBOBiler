@@ -86,7 +86,7 @@ module Combobiler {
 		 * @param data the data (hex) to be added to the code table
 		 * @param position the position (base-10, 0-indexed) in the codeTable to add the data to
 		 */
-		private add(data: string, position: number) {
+		public add(data: string, position: number) {
 			// Uppercase all the letters so that it's uniform regardless
 			data = data.toUpperCase();
 

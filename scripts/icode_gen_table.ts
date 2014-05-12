@@ -10,5 +10,6 @@ module Combobiler {
 		add(entry: E): E;
 		getNextTempId(): string;
 		backpatch(codeTable: CodeTable): void;
+		findByTempId(tempId: string): E;
 	}
 }

@@ -2,10 +2,10 @@
 var Combobiler;
 (function (Combobiler) {
     var StaticTableEntry = (function () {
-        function StaticTableEntry(temp, varId, address, scope) {
+        function StaticTableEntry(temp, varId, offset, scope) {
             this.temp = temp;
             this.varId = varId;
-            this.address = address;
+            this.offset = offset;
             this.scope = scope;
         }
         return StaticTableEntry;

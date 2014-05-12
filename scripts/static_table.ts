@@ -5,10 +5,12 @@ module Combobiler {
 		public entries: Array<StaticTableEntry>;
 		public currentTempNumber: number;
 		public tempIdRegex = /^(T[0-9])/;
+		private currentOffsetNumber: number;
 
 		constructor() {
 			this.entries = new Array<StaticTableEntry>();
 			this.currentTempNumber = 0;
+			this.currentOffsetNumber = 0;
 		}
 
 		public add(entry: StaticTableEntry) {
@@ -18,6 +20,10 @@ module Combobiler {
 
 		public getNextTempId() {
 			return 'T' + this.currentTempNumber++;
+		}
+
+		public getNextOffsetNumber() {
+			return this.currentOffsetNumber++;
 		}
 
 		/**
@@ -48,8 +54,27 @@ module Combobiler {
 			return null;
 		}
 
-		public backpatch(codeTable: CodeTable) {
+		public findByTempId(tempId: string) {
+			for (var i = 0; i < this.entries.length; i++) {
+				if (this.entries[i].temp === tempId) {
+					return this.entries[i];
+				}
+			}
+			return null;
+		}
 
+		public backpatch(codeTable: CodeTable) {
+			var currentEntry;
+			var regexMatch;
+			for (var i = 0; i < codeTable.entries.length; i++) {
+				currentEntry = codeTable.entries[i];
+				regexMatch = currentEntry.match(this.tempIdRegex);
+				if (regexMatch) {
+					var entry = this.findByTempId(regexMatch[1]);
+					codeTable.add(CodeGenerator.leftPad((entry.offset + codeTable.currentPosition++).toString(16), 2), i);
+					codeTable.add('00', i + 1);
+				}
+			}
 		}
 	}
 }

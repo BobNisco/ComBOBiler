@@ -34,7 +34,7 @@ var Combobiler;
                 regexMatch = currentEntry.match(this.tempIdRegex);
                 if (regexMatch) {
                     var entry = this.findByTempId(regexMatch[1]);
-                    codeTable.entries[i] = Combobiler.CodeGenerator.leftPad(entry.distance.toString(16), 2);
+                    codeTable.add(Combobiler.CodeGenerator.leftPad(entry.distance.toString(16), 2), i);
                 }
             }
         };

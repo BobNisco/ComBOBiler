@@ -6,6 +6,7 @@ var Combobiler;
             this.tempIdRegex = /^(T[0-9])/;
             this.entries = new Array();
             this.currentTempNumber = 0;
+            this.currentOffsetNumber = 0;
         }
         StaticTable.prototype.add = function (entry) {
             this.entries.push(entry);
@@ -14,6 +15,10 @@ var Combobiler;
 
         StaticTable.prototype.getNextTempId = function () {
             return 'T' + this.currentTempNumber++;
+        };
+
+        StaticTable.prototype.getNextOffsetNumber = function () {
+            return this.currentOffsetNumber++;
         };
 
         /**
@@ -43,7 +48,27 @@ var Combobiler;
             return null;
         };
 
+        StaticTable.prototype.findByTempId = function (tempId) {
+            for (var i = 0; i < this.entries.length; i++) {
+                if (this.entries[i].temp === tempId) {
+                    return this.entries[i];
+                }
+            }
+            return null;
+        };
+
         StaticTable.prototype.backpatch = function (codeTable) {
+            var currentEntry;
+            var regexMatch;
+            for (var i = 0; i < codeTable.entries.length; i++) {
+                currentEntry = codeTable.entries[i];
+                regexMatch = currentEntry.match(this.tempIdRegex);
+                if (regexMatch) {
+                    var entry = this.findByTempId(regexMatch[1]);
+                    codeTable.add(Combobiler.CodeGenerator.leftPad((entry.offset + codeTable.currentPosition++).toString(16), 2), i);
+                    codeTable.add('00', i + 1);
+                }
+            }
         };
         return StaticTable;
     })();

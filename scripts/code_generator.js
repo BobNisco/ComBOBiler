@@ -28,6 +28,7 @@ var Combobiler;
                 this.generateCodeForNode(this.astRootNode, this.rootScope);
                 this.codeTable.finalizeCodeTable();
                 this.jumpTable.backpatch(this.codeTable);
+                this.staticTable.backpatch(this.codeTable);
                 this.log({
                     standard: '==== Code Generator end ====',
                     sarcastic: '==== Code Generator end ===='
@@ -154,7 +155,7 @@ var Combobiler;
 
             // 2. Make an entry in the static table
             var tempId = this.staticTable.getNextTempId();
-            this.staticTable.add(new Combobiler.StaticTableEntry(tempId, varIdNode.value.value.value, 0, scope));
+            this.staticTable.add(new Combobiler.StaticTableEntry(tempId, varIdNode.value.value.value, this.staticTable.getNextOffsetNumber(), scope));
 
             // 3. Store the temp address in the code table
             this.sta(tempId, 'XX');
@@ -166,7 +167,7 @@ var Combobiler;
 
         CodeGenerator.prototype.generateStringVarDecl = function (varTypeNode, varIdNode, scope) {
             var tempId = this.staticTable.getNextTempId();
-            this.staticTable.add(new Combobiler.StaticTableEntry(tempId, varIdNode.value.value.value, 0, scope));
+            this.staticTable.add(new Combobiler.StaticTableEntry(tempId, varIdNode.value.value.value, this.staticTable.getNextOffsetNumber(), scope));
             this.log({
                 standard: 'Generated code for string variable declaration',
                 sarcastic: 'Generated code for string variable declaration'
