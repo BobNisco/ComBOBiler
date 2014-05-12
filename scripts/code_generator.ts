@@ -269,10 +269,38 @@ module Combobiler {
 		}
 
 		private generateIfStatement(node: TreeNode, scope: Scope) {
+			// 1. The if statement
+			var ifStatement = node.children[0];
+			// Writing an if statement to check equality of equality statements, so meta
+			if (ifStatement.value.value.symbol === "==") {
+				this.generateEqual(ifStatement, scope);
+			} else if (ifStatement.value.value.symbol === "!=") {
+
+			} else {
+				// We should never get here if the front-end compiler is working properly!
+				throw new Error('Malformed if statement');
+			}
+			this.generateBlock(node.children[1], scope);
 			this.log({
 				standard: 'Generated code for if statement',
 				sarcastic: 'Generated code for if statement',
 			});
+		}
+
+		private generateEqual(node: TreeNode, scope: Scope) {
+			this.checkForNestedComparison(node.children[1], scope);
+			//this.ldxConst(node.children)
+		}
+
+		private checkForNestedComparison(node: TreeNode, scope: Scope) {
+			// TODO: Make nested equality work
+			//       but for now, throw an error
+			for (var i = 0; i < node.children.length; i++) {
+				var value = this.determineTypeOfNode(node.children[i]);
+				if (value === "==" || value === "!=") {
+					throw new Error('Sorry, right now ComBOBiler can not generate code for nested if statements. If you would like to purchase him a beverage, he will consider adding in support.');
+				}
+			}
 		}
 
 		private ldaConst(byte1: string) {
