@@ -269,8 +269,42 @@ var Combobiler;
         };
 
         CodeGenerator.prototype.generateEqual = function (node, scope) {
+            // 0. We're not handling nested comparison right now
             this.checkForNestedComparison(node.children[1], scope);
-            //this.ldxConst(node.children)
+
+            // 1. Determine left side values
+            var leftSideValue = this.determineTypeOfNode(node.children[0]);
+            if (leftSideValue === 'Id') {
+                var idStaticTableEntry = this.staticTable.findByVarIdAndScope(node.children[0].children[0].value.value, scope);
+                this.ldxMem(idStaticTableEntry.temp, 'XX');
+            } else if (leftSideValue === 'IntExpression') {
+                this.ldaConst(node.children[0].children[0].value.value);
+            } else if (leftSideValue === 'BooleanExpression') {
+                if (node.children[0].value.value === 'true') {
+                    this.ldxConst('01');
+                } else {
+                    this.ldxConst('00');
+                }
+            } else if (leftSideValue === 'StringExpression') {
+                // TODO: Figure out WTF to do here
+            }
+
+            // 2. Determine right side values
+            var rightSideValue = this.determineTypeOfNode(node.children[1]);
+            if (rightSideValue === 'Id') {
+                var idStaticTableEntry = this.staticTable.findByVarIdAndScope(node.children[1].children[0].value.value, scope);
+                this.cpx(idStaticTableEntry.temp, 'XX');
+            } else if (rightSideValue === 'IntExpression') {
+            } else if (rightSideValue === 'BooleanExpression') {
+                if (node.children[0].value.value === 'true') {
+                } else {
+                }
+            } else if (rightSideValue === 'StringExpression') {
+                // TODO: Figure out WTF to do here
+            }
+            // 3. Set up a jump!
+            //this.jumpTable
+            //this.bne();
         };
 
         CodeGenerator.prototype.checkForNestedComparison = function (node, scope) {

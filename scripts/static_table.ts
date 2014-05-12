@@ -1,7 +1,7 @@
 ///<reference path="static_table_entry.ts" />
 
 module Combobiler {
-	export class StaticTable {
+	export class StaticTable implements ICodeGenTable<StaticTableEntry> {
 		public entries: Array<StaticTableEntry>;
 		public currentTempNumber: number;
 
