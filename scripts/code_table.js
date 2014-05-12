@@ -82,7 +82,7 @@ var Combobiler;
             // Uppercase all the letters so that it's uniform regardless
             data = data.toUpperCase();
 
-            if (!(data.match(/^[0-9A-G]{2}/) || data.match(/^T[0-9]/) || data.match(/^XX$/))) {
+            if (!(data.match(/^[0-9A-G]{2}/) || data.match(/^T[0-9]/) || data.match(/^J[0-9]/) || data.match(/^XX$/))) {
                 throw new Error('Tried to place the data string ' + data + ' in code table, but it is not 2 valid hex characters nor is it valid temp variable data');
             }
             if (position >= CodeTable.CODE_TABLE_SIZE || position < 0) {

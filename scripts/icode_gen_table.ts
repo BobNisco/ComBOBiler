@@ -6,7 +6,7 @@ module Combobiler {
 		entries: Array<E>;
 		currentTempNumber: number;
 
-		add(entry: E): void;
+		add(entry: E): E;
 		getNextTempId(): string;
 	}
 }

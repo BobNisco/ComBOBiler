@@ -8,6 +8,7 @@ var Combobiler;
         }
         StaticTable.prototype.add = function (entry) {
             this.entries.push(entry);
+            return entry;
         };
 
         StaticTable.prototype.getNextTempId = function () {

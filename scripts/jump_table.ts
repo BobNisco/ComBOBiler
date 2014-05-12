@@ -13,10 +13,20 @@ module Combobiler {
 
 		public add(entry: JumpTableEntry) {
 			this.entries.push(entry);
+			return entry;
 		}
 
 		public getNextTempId() {
 			return 'J' + this.currentTempNumber++;
+		}
+
+		public findByTempId(tempId: string) {
+			for (var i = 0; i < this.entries.length; i++) {
+				if (this.entries[i].temp === tempId) {
+					return this.entries[i];
+				}
+			}
+			return null;
 		}
 	}
 }

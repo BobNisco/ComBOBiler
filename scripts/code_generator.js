@@ -302,9 +302,11 @@ var Combobiler;
             } else if (rightSideValue === 'StringExpression') {
                 // TODO: Figure out WTF to do here
             }
+
             // 3. Set up a jump!
-            //this.jumpTable
-            //this.bne();
+            var jumpTempId = this.jumpTable.getNextTempId();
+            var jumpEntry = this.jumpTable.add(new Combobiler.JumpTableEntry(jumpTempId, 0));
+            this.bne(jumpEntry.temp);
         };
 
         CodeGenerator.prototype.checkForNestedComparison = function (node, scope) {
@@ -376,7 +378,7 @@ var Combobiler;
         };
 
         CodeGenerator.prototype.bne = function (byte1) {
-            this.codeTable.addCode('F0');
+            this.codeTable.addCode('D0');
             this.codeTable.addCode(byte1);
         };
 

@@ -9,10 +9,20 @@ var Combobiler;
         }
         JumpTable.prototype.add = function (entry) {
             this.entries.push(entry);
+            return entry;
         };
 
         JumpTable.prototype.getNextTempId = function () {
             return 'J' + this.currentTempNumber++;
+        };
+
+        JumpTable.prototype.findByTempId = function (tempId) {
+            for (var i = 0; i < this.entries.length; i++) {
+                if (this.entries[i].temp === tempId) {
+                    return this.entries[i];
+                }
+            }
+            return null;
         };
         return JumpTable;
     })();

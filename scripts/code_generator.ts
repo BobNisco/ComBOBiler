@@ -307,8 +307,9 @@ module Combobiler {
 			}
 
 			// 3. Set up a jump!
-			//this.jumpTable
-			//this.bne();
+			var jumpTempId = this.jumpTable.getNextTempId();
+			var jumpEntry = this.jumpTable.add(new JumpTableEntry(jumpTempId, 0));
+			this.bne(jumpEntry.temp);
 		}
 
 		private checkForNestedComparison(node: TreeNode, scope: Scope) {
@@ -382,7 +383,7 @@ module Combobiler {
 		}
 
 		private bne(byte1: string) {
-			this.codeTable.addCode('F0');
+			this.codeTable.addCode('D0');
 			this.codeTable.addCode(byte1);
 		}
 

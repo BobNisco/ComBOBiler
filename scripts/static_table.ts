@@ -12,6 +12,7 @@ module Combobiler {
 
 		public add(entry: StaticTableEntry) {
 			this.entries.push(entry);
+			return entry;
 		}
 
 		public getNextTempId() {
