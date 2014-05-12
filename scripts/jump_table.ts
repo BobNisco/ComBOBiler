@@ -5,6 +5,7 @@ module Combobiler {
 	export class JumpTable implements ICodeGenTable<JumpTableEntry> {
 		public entries: Array<JumpTableEntry>;
 		public currentTempNumber: number;
+		public tempIdRegex = /^(J[0-9])/;
 
 		constructor () {
 			this.entries = new Array<JumpTableEntry>();
@@ -27,6 +28,19 @@ module Combobiler {
 				}
 			}
 			return null;
+		}
+
+		public backpatch(codeTable: CodeTable) {
+			var currentEntry;
+			var regexMatch;
+			for (var i = 0; i < codeTable.entries.length; i++) {
+				currentEntry = codeTable.entries[i];
+				regexMatch = currentEntry.match(this.tempIdRegex);
+				if (regexMatch) {
+					var entry = this.findByTempId(regexMatch[1]);
+					codeTable.entries[i] = CodeGenerator.leftPad(entry.distance.toString(16), 2);
+				}
+			}
 		}
 	}
 }

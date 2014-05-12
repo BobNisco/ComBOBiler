@@ -5,8 +5,10 @@ module Combobiler {
 	export interface ICodeGenTable<E> {
 		entries: Array<E>;
 		currentTempNumber: number;
+		tempIdRegex: RegExp;
 
 		add(entry: E): E;
 		getNextTempId(): string;
+		backpatch(codeTable: CodeTable): void;
 	}
 }

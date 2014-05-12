@@ -33,6 +33,7 @@ module Combobiler {
 				}
 				this.generateCodeForNode(this.astRootNode, this.rootScope);
 				this.codeTable.finalizeCodeTable();
+				this.jumpTable.backpatch(this.codeTable);
 				this.log({
 					standard: '==== Code Generator end ====',
 					sarcastic: '==== Code Generator end ===='
@@ -205,7 +206,7 @@ module Combobiler {
 
 		private generateIntAssignmentStatement(varIdNode: TreeNode, valueNode: TreeNode, scope: Scope) {
 			// 1. Load the value into our accumulator
-			this.ldaConst(this.leftPad(valueNode.children[0].value.value, 2));
+			this.ldaConst(CodeGenerator.leftPad(valueNode.children[0].value.value, 2));
 			// 2. Store the accumulator into memory at the temp position
 			var staticTableEntry = this.staticTable.findByVarIdAndScope(varIdNode.value.value, scope);
 			this.sta(staticTableEntry.temp, 'XX');
@@ -401,7 +402,11 @@ module Combobiler {
 			this.codeTable.addCode('FF');
 		}
 
-		private leftPad(data: string, length: number) {
+		public leftPad(data: string, length: number) {
+			CodeGenerator.leftPad(data, length);
+		}
+
+		public static leftPad(data: string, length: number) {
 			var temp = '' + data;
 			while (temp.length < length) {
 				temp = '0' + temp;

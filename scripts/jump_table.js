@@ -4,6 +4,7 @@ var Combobiler;
 (function (Combobiler) {
     var JumpTable = (function () {
         function JumpTable() {
+            this.tempIdRegex = /^(J[0-9])/;
             this.entries = new Array();
             this.currentTempNumber = 0;
         }
@@ -23,6 +24,19 @@ var Combobiler;
                 }
             }
             return null;
+        };
+
+        JumpTable.prototype.backpatch = function (codeTable) {
+            var currentEntry;
+            var regexMatch;
+            for (var i = 0; i < codeTable.entries.length; i++) {
+                currentEntry = codeTable.entries[i];
+                regexMatch = currentEntry.match(this.tempIdRegex);
+                if (regexMatch) {
+                    var entry = this.findByTempId(regexMatch[1]);
+                    codeTable.entries[i] = Combobiler.CodeGenerator.leftPad(entry.distance.toString(16), 2);
+                }
+            }
         };
         return JumpTable;
     })();

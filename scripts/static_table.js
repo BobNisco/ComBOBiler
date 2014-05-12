@@ -3,6 +3,7 @@ var Combobiler;
 (function (Combobiler) {
     var StaticTable = (function () {
         function StaticTable() {
+            this.tempIdRegex = /^(T[0-9])/;
             this.entries = new Array();
             this.currentTempNumber = 0;
         }
@@ -40,6 +41,9 @@ var Combobiler;
                 }
             }
             return null;
+        };
+
+        StaticTable.prototype.backpatch = function (codeTable) {
         };
         return StaticTable;
     })();

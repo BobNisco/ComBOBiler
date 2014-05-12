@@ -4,6 +4,7 @@ module Combobiler {
 	export class StaticTable implements ICodeGenTable<StaticTableEntry> {
 		public entries: Array<StaticTableEntry>;
 		public currentTempNumber: number;
+		public tempIdRegex = /^(T[0-9])/;
 
 		constructor() {
 			this.entries = new Array<StaticTableEntry>();
@@ -45,6 +46,10 @@ module Combobiler {
 				}
 			}
 			return null;
+		}
+
+		public backpatch(codeTable: CodeTable) {
+
 		}
 	}
 }
