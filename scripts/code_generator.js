@@ -251,7 +251,11 @@ var Combobiler;
         };
 
         CodeGenerator.prototype.generateIfStatement = function (node, scope) {
-            // 1. The if statement
+            // 1. Set up a jump entry
+            var jumpTempId = this.jumpTable.getNextTempId();
+            var jumpEntry = this.jumpTable.add(new Combobiler.JumpTableEntry(jumpTempId, 0));
+
+            // 2. The if statement
             var ifStatement = node.children[0];
 
             // Writing an if statement to check equality of equality statements, so meta
@@ -261,7 +265,16 @@ var Combobiler;
             } else {
                 throw new Error('Malformed if statement');
             }
+            var startOfJump = this.codeTable.currentPosition;
+
+            // 3. Put in the jump statement
+            this.bne(jumpEntry.temp);
+
+            // 4. Generate code for the block
             this.generateBlock(node.children[1], scope);
+
+            // 5. Calculate the jump distance
+            jumpEntry.distance = this.codeTable.currentPosition - startOfJump;
             this.log({
                 standard: 'Generated code for if statement',
                 sarcastic: 'Generated code for if statement'
@@ -302,11 +315,6 @@ var Combobiler;
             } else if (rightSideValue === 'StringExpression') {
                 // TODO: Figure out WTF to do here
             }
-
-            // 3. Set up a jump!
-            var jumpTempId = this.jumpTable.getNextTempId();
-            var jumpEntry = this.jumpTable.add(new Combobiler.JumpTableEntry(jumpTempId, 0));
-            this.bne(jumpEntry.temp);
         };
 
         CodeGenerator.prototype.checkForNestedComparison = function (node, scope) {

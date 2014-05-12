@@ -252,7 +252,10 @@ module Combobiler {
 		}
 
 		private generateIfStatement(node: TreeNode, scope: Scope) {
-			// 1. The if statement
+			// 1. Set up a jump entry
+			var jumpTempId = this.jumpTable.getNextTempId();
+			var jumpEntry = this.jumpTable.add(new JumpTableEntry(jumpTempId, 0));
+			// 2. The if statement
 			var ifStatement = node.children[0];
 			// Writing an if statement to check equality of equality statements, so meta
 			if (ifStatement.value.value.symbol === "==") {
@@ -263,7 +266,13 @@ module Combobiler {
 				// We should never get here if the front-end compiler is working properly!
 				throw new Error('Malformed if statement');
 			}
+			var startOfJump = this.codeTable.currentPosition;
+			// 3. Put in the jump statement
+			this.bne(jumpEntry.temp);
+			// 4. Generate code for the block
 			this.generateBlock(node.children[1], scope);
+			// 5. Calculate the jump distance
+			jumpEntry.distance = this.codeTable.currentPosition - startOfJump;
 			this.log({
 				standard: 'Generated code for if statement',
 				sarcastic: 'Generated code for if statement',
@@ -305,11 +314,6 @@ module Combobiler {
 			} else if (rightSideValue === 'StringExpression') {
 				// TODO: Figure out WTF to do here
 			}
-
-			// 3. Set up a jump!
-			var jumpTempId = this.jumpTable.getNextTempId();
-			var jumpEntry = this.jumpTable.add(new JumpTableEntry(jumpTempId, 0));
-			this.bne(jumpEntry.temp);
 		}
 
 		private checkForNestedComparison(node: TreeNode, scope: Scope) {
