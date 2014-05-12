@@ -26,6 +26,9 @@ var Combobiler;
                     throw new Error('Null AST passed into code generator, can not start code generation');
                 }
                 this.generateCodeForNode(this.astRootNode, this.rootScope);
+
+                // Manually put a break in for the end of code just to be safe
+                this.break();
                 this.codeTable.finalizeCodeTable();
                 this.jumpTable.backpatch(this.codeTable);
                 this.staticTable.backpatch(this.codeTable);
@@ -276,7 +279,8 @@ var Combobiler;
             this.generateBlock(node.children[1], scope);
 
             // 5. Calculate the jump distance
-            jumpEntry.distance = this.codeTable.currentPosition - startOfJump;
+            //    Subtract one due to the way jumps are handled
+            jumpEntry.distance = this.codeTable.currentPosition - startOfJump - 1;
             this.log({
                 standard: 'Generated code for if statement',
                 sarcastic: 'Generated code for if statement'

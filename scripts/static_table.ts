@@ -71,7 +71,7 @@ module Combobiler {
 				regexMatch = currentEntry.match(this.tempIdRegex);
 				if (regexMatch) {
 					var entry = this.findByTempId(regexMatch[1]);
-					codeTable.add(CodeGenerator.leftPad((entry.offset + codeTable.currentPosition++).toString(16), 2), i);
+					codeTable.add(CodeGenerator.leftPad((entry.offset + codeTable.currentPosition + 1).toString(16), 2), i);
 					codeTable.add('00', i + 1);
 				}
 			}
