@@ -33,14 +33,16 @@ var Combobiler;
                 // Match on the variable ID
                 if (currentEntry.varId === varId) {
                     // Check if the passed in scope matches this entry
-                    if (currentEntry.scope == scope) {
+                    if (currentEntry.scope === scope) {
                         return currentEntry;
                     } else {
-                        while (scope.parent !== null) {
-                            scope = scope.parent;
-                            if (currentEntry.scope == scope) {
+                        var curScope = scope.parent;
+
+                        while (curScope != null) {
+                            if (currentEntry.scope === scope) {
                                 return currentEntry;
                             }
+                            curScope = curScope.parent;
                         }
                     }
                 }

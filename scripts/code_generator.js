@@ -25,7 +25,7 @@ var Combobiler;
                 if (this.astRootNode === null) {
                     throw new Error('Null AST passed into code generator, can not start code generation');
                 }
-                this.generateCodeForNode(this.astRootNode, this.rootScope);
+                this.generateCodeForNode(this.astRootNode, this.rootScope.children[0]);
 
                 // Manually put a break in for the end of code just to be safe
                 this.break();
@@ -87,11 +87,11 @@ var Combobiler;
 
         CodeGenerator.prototype.generateBlock = function (node, scope) {
             var currentScope = 0;
-            for (var child in node.children) {
-                if (this.determineTypeOfNode(node.children[child]) === 'Block') {
+            for (var i = 0; i < node.children.length; i++) {
+                if (this.determineTypeOfNode(node.children[i]) === 'Block') {
                     scope = scope.children[currentScope++];
                 }
-                this.generateCodeForNode(node.children[child], scope);
+                this.generateCodeForNode(node.children[i], scope);
             }
             this.log({
                 standard: 'Generated code for block',
@@ -122,8 +122,12 @@ var Combobiler;
                 // 2. Load the Y register with contents of the variable
                 this.ldyMem(varIdStaticTableEntry.temp, 'XX');
 
-                // 3. Load the X register with 1
-                this.ldxConst('01');
+                // 3. Load the X register with a value based on type of Id
+                if (Combobiler.Scope.findSymbolInScope(type.children[0].value.value, scope).type === 'int') {
+                    this.ldxConst('01');
+                } else {
+                    this.ldxConst('02');
+                }
 
                 // 4. System call
                 this.sys();
@@ -219,7 +223,7 @@ var Combobiler;
             var position = this.codeTable.addString(valueNode.children[0].value);
 
             // 2. Load the accumulator with the address of the string
-            this.ldaConst(position.toString(16));
+            this.ldaConst(CodeGenerator.leftPad(position.toString(16), 2));
 
             // 3. Store the accumulator into memory at the temp position
             var staticTableEntry = this.staticTable.findByVarIdAndScope(varIdNode.value.value, scope);
@@ -287,6 +291,17 @@ var Combobiler;
             });
         };
 
+        CodeGenerator.prototype.getNextSiblingScope = function (scope) {
+            for (var i = 0; i < scope.parent.children.length; i++) {
+                if (scope.parent.children[i] === scope) {
+                    if (scope.parent.children[i + 1] != null) {
+                        return scope.parent.children[i + 1];
+                    }
+                }
+            }
+            return null;
+        };
+
         CodeGenerator.prototype.generateEqual = function (node, scope) {
             // 0. We're not handling nested comparison right now
             this.checkForNestedComparison(node.children[1], scope);
@@ -297,7 +312,7 @@ var Combobiler;
                 var idStaticTableEntry = this.staticTable.findByVarIdAndScope(node.children[0].children[0].value.value, scope);
                 this.ldxMem(idStaticTableEntry.temp, 'XX');
             } else if (leftSideValue === 'IntExpression') {
-                this.ldaConst(node.children[0].children[0].value.value);
+                this.ldxConst(CodeGenerator.leftPad(node.children[0].children[0].value.value, 2));
             } else if (leftSideValue === 'BooleanExpression') {
                 if (node.children[0].value.value === 'true') {
                     this.ldxConst('01');

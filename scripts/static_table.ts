@@ -37,16 +37,17 @@ module Combobiler {
 				// Match on the variable ID
 				if (currentEntry.varId === varId) {
 					// Check if the passed in scope matches this entry
-					if (currentEntry.scope == scope) {
+					if (currentEntry.scope === scope) {
 						return currentEntry;
 					} else {
+						var curScope = scope.parent;
 						// Walk the tree until we find it, or hit the root,
 						// or we don't find it at all.
-						while (scope.parent !== null) {
-							scope = scope.parent;
-							if (currentEntry.scope == scope) {
+						while (curScope != null) {
+							if (currentEntry.scope === scope) {
 								return currentEntry;
 							}
+							curScope = curScope.parent;
 						}
 					}
 				}
