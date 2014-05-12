@@ -56,10 +56,10 @@ module Combobiler {
 		public addString(str: string) {
 			// Strip the double quotes
 			var theString = str.value.value.replace(/\"/g, '');
-			if (theString.length <= 0) {
-				throw new Error('No string to put into heap');
-			}
 			var position;
+			if (theString.length <= 0) {
+				position = this.addHeapData('00');
+			}
 			// Null terminated string
 			this.addHeapData('00');
 			for (var i = theString.length - 1; i >= 0; i--) {

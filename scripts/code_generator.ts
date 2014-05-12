@@ -307,6 +307,7 @@ module Combobiler {
 				var idStaticTableEntry = this.staticTable.findByVarIdAndScope(node.children[1].children[0].value.value, scope);
 				this.cpx(idStaticTableEntry.temp, 'XX');
 			} else if (rightSideValue === 'IntExpression') {
+				this.ldxConst(CodeGenerator.leftPad(node.children[1].children[0].value.value.toString(16), 2));
 			} else if (rightSideValue === 'BooleanExpression') {
 				if (node.children[0].value.value === 'true') {
 
@@ -358,7 +359,7 @@ module Combobiler {
 		}
 
 		private ldxMem(byte1: string, byte2: string) {
-			this.codeTable.addCode('01');
+			this.codeTable.addCode('AE');
 			this.codeTable.addCode(byte1);
 			this.codeTable.addCode(byte2);
 		}
