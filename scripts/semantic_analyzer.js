@@ -15,6 +15,7 @@ var Combobiler;
                 header: 'Semantic Analysis'
             };
             this.currentNode = this.rootNode;
+            this.currentScopeNumber = 0;
         }
         SemanticAnalyzer.prototype.performSemanticAnalysis = function () {
             this.log({
@@ -22,7 +23,7 @@ var Combobiler;
                 sarcastic: '==== Semantic Analysis start ===='
             });
             try  {
-                this.rootScope = new Combobiler.Scope({}, null);
+                this.rootScope = new Combobiler.Scope({}, null, this.currentScopeNumber++);
 
                 this.analyzeProgram(this.rootNode, this.rootScope, this.astRootNode);
                 this.drawTree(this.astRootNode, 'ast-tree-graph');
@@ -62,7 +63,7 @@ var Combobiler;
             }
 
             // Since a block indicates a new Scope, we'll open a new one up
-            scope.addChildScope({});
+            scope.addChildScope({}, this.currentScopeNumber++);
             scope = scope.getNewestChild();
             this.log({
                 standard: 'Opening up a new scope block',

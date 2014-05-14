@@ -15,6 +15,7 @@ var Combobiler;
             this.codeTable = new Combobiler.CodeTable();
             this.staticTable = new Combobiler.StaticTable();
             this.jumpTable = new Combobiler.JumpTable();
+            this.currentBlock = 0;
         }
         CodeGenerator.prototype.performCodeGeneration = function () {
             try  {
@@ -86,14 +87,13 @@ var Combobiler;
         };
 
         CodeGenerator.prototype.generateBlock = function (node, scope, descendScope) {
-            if (descendScope) {
-                scope = scope.children[0];
-            }
+            this.currentBlock++;
+            scope = this.findScopeByCurrentId();
             for (var i = 0; i < node.children.length; i++) {
                 this.generateCodeForNode(node.children[i], scope);
             }
-            this.lastScope = scope;
-            scope = scope.parent;
+            this.currentBlock = scope.parent.id;
+            scope = this.findScopeByCurrentId();
             this.log({
                 standard: 'Generated code for block',
                 sarcastic: 'Generated code for block'
@@ -281,7 +281,7 @@ var Combobiler;
             this.bne(jumpEntry.temp);
 
             // 4. Generate code for the block
-            this.generateBlock(node.children[1], this.getNextSiblingScope(this.lastScope), false);
+            this.generateBlock(node.children[1], scope, false);
 
             // 5. Calculate the jump distance
             //    Subtract one due to the way jumps are handled
@@ -351,6 +351,20 @@ var Combobiler;
                     throw new Error('Sorry, right now ComBOBiler can not generate code for nested if statements. If you would like to purchase him a beverage, he will consider adding in support.');
                 }
             }
+        };
+
+        CodeGenerator.prototype.findScopeByCurrentId = function () {
+            return this.findScopeByIdHandler(this.rootScope);
+        };
+
+        CodeGenerator.prototype.findScopeByIdHandler = function (scope) {
+            if (scope.id === this.currentBlock) {
+                return scope;
+            }
+            for (var i = 0; i < scope.children.length; i++) {
+                return this.findScopeByIdHandler(scope.children[i]);
+            }
+            return null;
         };
 
         CodeGenerator.prototype.ldaConst = function (byte1) {

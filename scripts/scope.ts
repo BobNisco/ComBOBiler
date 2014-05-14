@@ -7,7 +7,7 @@ module Combobiler {
 	export class Scope {
 		public children: Array<Scope>;
 
-		constructor(public symbols: Object, public parent: Scope) {
+		constructor(public symbols: Object, public parent: Scope, public id: number) {
 			this.children = new Array<Scope>();
 		}
 
@@ -49,8 +49,8 @@ module Combobiler {
 			return list;
 		}
 
-		public addChildScope(value: any) {
-			this.children.push(new Scope({}, this));
+		public addChildScope(value: any, id: number) {
+			this.children.push(new Scope({}, this, id));
 		}
 
 		public getNewestChild() {

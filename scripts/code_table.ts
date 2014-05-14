@@ -53,6 +53,20 @@ module Combobiler {
 			return this.currentHeapPosition--;
 		}
 
+		private findStringInHeap(data: string) {
+			var curString = '';
+			for (var i = CodeTable.CODE_TABLE_SIZE - 1; i >= this.currentHeapPosition - 1; i--) {
+				if (this.entries[i] === '00') {
+					if (curString === data) {
+						return curString;
+					}
+				} else {
+					//curString = curString + String.fromCharCode(parseInt(this.entries[i], 16));
+				}
+			}
+			return null;
+ 		}
+
 		public addString(str: string) {
 			// Strip the double quotes
 			var theString = str.value.value.replace(/\"/g, '');

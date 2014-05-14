@@ -44,6 +44,20 @@ var Combobiler;
             return this.currentHeapPosition--;
         };
 
+        CodeTable.prototype.findStringInHeap = function (data) {
+            var curString = '';
+            for (var i = CodeTable.CODE_TABLE_SIZE - 1; i >= this.currentHeapPosition - 1; i--) {
+                if (this.entries[i] === '00') {
+                    if (curString === data) {
+                        return curString;
+                    }
+                } else {
+                    //curString = curString + String.fromCharCode(parseInt(this.entries[i], 16));
+                }
+            }
+            return null;
+        };
+
         CodeTable.prototype.addString = function (str) {
             // Strip the double quotes
             var theString = str.value.value.replace(/\"/g, '');

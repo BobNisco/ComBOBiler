@@ -5,9 +5,10 @@
 var Combobiler;
 (function (Combobiler) {
     var Scope = (function () {
-        function Scope(symbols, parent) {
+        function Scope(symbols, parent, id) {
             this.symbols = symbols;
             this.parent = parent;
+            this.id = id;
             this.children = new Array();
         }
         Scope.prototype.getParent = function () {
@@ -48,8 +49,8 @@ var Combobiler;
             return list;
         };
 
-        Scope.prototype.addChildScope = function (value) {
-            this.children.push(new Scope({}, this));
+        Scope.prototype.addChildScope = function (value, id) {
+            this.children.push(new Scope({}, this, id));
         };
 
         Scope.prototype.getNewestChild = function () {

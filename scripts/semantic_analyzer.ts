@@ -16,8 +16,11 @@ module Combobiler {
 
 		private astRootNode: TreeNode;
 
+		private currentScopeNumber: number;
+
 		constructor(private rootNode: TreeNode, private rootScope: Scope) {
 			this.currentNode = this.rootNode;
+			this.currentScopeNumber = 0;
 		}
 
 		public performSemanticAnalysis() {
@@ -26,7 +29,7 @@ module Combobiler {
 				sarcastic: '==== Semantic Analysis start ===='
 			});
 			try {
-				this.rootScope = new Scope({}, null);
+				this.rootScope = new Scope({}, null, this.currentScopeNumber++);
 
 				this.analyzeProgram(this.rootNode, this.rootScope, this.astRootNode);
 				this.drawTree(this.astRootNode, 'ast-tree-graph');
@@ -65,7 +68,7 @@ module Combobiler {
 				astNode = astNode.getNewestChild();
 			}
 			// Since a block indicates a new Scope, we'll open a new one up
-			scope.addChildScope({});
+			scope.addChildScope({}, this.currentScopeNumber++);
 			scope = scope.getNewestChild();
 			this.log({
 				standard: 'Opening up a new scope block',

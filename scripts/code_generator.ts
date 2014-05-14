@@ -16,12 +16,13 @@ module Combobiler {
 
 		private jumpTable: JumpTable;
 
-		private lastScope: Scope;
+		private currentBlock: number;
 
 		constructor(private astRootNode: TreeNode, private rootScope: Scope) {
 			this.codeTable = new CodeTable();
 			this.staticTable = new StaticTable();
 			this.jumpTable = new JumpTable();
+			this.currentBlock = 0;
 		}
 
 		public performCodeGeneration() {
@@ -93,14 +94,13 @@ module Combobiler {
 		}
 
 		private generateBlock(node: TreeNode, scope: Scope, descendScope: boolean) {
-			if (descendScope) {
-				scope = scope.children[0];
-			}
+			this.currentBlock++;
+			scope = this.findScopeByCurrentId();
 			for (var i = 0; i < node.children.length; i++) {
 				this.generateCodeForNode(node.children[i], scope);
 			}
-			this.lastScope = scope;
-			scope = scope.parent;
+			this.currentBlock = scope.parent.id;
+			scope = this.findScopeByCurrentId();
 			this.log({
 				standard: 'Generated code for block',
 				sarcastic: 'Generated code for block',
@@ -281,7 +281,7 @@ module Combobiler {
 			// 3. Put in the jump statement
 			this.bne(jumpEntry.temp);
 			// 4. Generate code for the block
-			this.generateBlock(node.children[1], this.getNextSiblingScope(this.lastScope), false);
+			this.generateBlock(node.children[1], scope, false);
 			// 5. Calculate the jump distance
 			//    Subtract one due to the way jumps are handled
 			jumpEntry.distance = this.codeTable.currentPosition - startOfJump - 1;
@@ -352,6 +352,20 @@ module Combobiler {
 					throw new Error('Sorry, right now ComBOBiler can not generate code for nested if statements. If you would like to purchase him a beverage, he will consider adding in support.');
 				}
 			}
+		}
+
+		private findScopeByCurrentId() {
+			return this.findScopeByIdHandler(this.rootScope);
+		}
+
+		private findScopeByIdHandler(scope: Scope) {
+			if (scope.id === this.currentBlock) {
+				return scope;
+			}
+			for (var i = 0; i < scope.children.length; i++) {
+				return this.findScopeByIdHandler(scope.children[i]);
+			}
+			return null;
 		}
 
 		private ldaConst(byte1: string) {
