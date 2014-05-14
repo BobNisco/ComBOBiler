@@ -55,7 +55,7 @@ var Combobiler;
         CodeGenerator.prototype.generateCodeForNode = function (node, scope) {
             var value = this.determineTypeOfNode(node);
             if (value === 'Block') {
-                this.generateBlock(node, scope, true);
+                this.generateBlock(node, scope);
             } else if (value === 'WhileStatement') {
                 this.generateWhileStatement(node, scope);
             } else if (value === 'PrintStatement') {
@@ -80,13 +80,18 @@ var Combobiler;
         };
 
         CodeGenerator.prototype.generateWhileStatement = function (node, scope) {
+            // 1. Generate the boolean expression
+            this.generateBooleanExpression(node.children[0], scope);
+
+            // 2. Handle the block
+            this.generateBlock(node.children[1], scope);
             this.log({
                 standard: 'Generated code for While Statement',
                 sarcastic: 'Generated code for While Statement'
             });
         };
 
-        CodeGenerator.prototype.generateBlock = function (node, scope, descendScope) {
+        CodeGenerator.prototype.generateBlock = function (node, scope) {
             this.currentBlock++;
             scope = this.findScopeByCurrentId();
             for (var i = 0; i < node.children.length; i++) {
@@ -265,23 +270,15 @@ var Combobiler;
             var jumpTempId = this.jumpTable.getNextTempId();
             var jumpEntry = this.jumpTable.add(new Combobiler.JumpTableEntry(jumpTempId, 0));
 
-            // 2. The if statement
-            var ifStatement = node.children[0];
-
-            // Writing an if statement to check equality of equality statements, so meta
-            if (ifStatement.value.value.symbol === "==") {
-                this.generateEqual(ifStatement, scope);
-            } else if (ifStatement.value.value.symbol === "!=") {
-            } else {
-                throw new Error('Malformed if statement');
-            }
+            // 2. The boolean expression of the if statement
+            this.generateBooleanExpression(node.children[0], scope);
             var startOfJump = this.codeTable.currentPosition;
 
             // 3. Put in the jump statement
             this.bne(jumpEntry.temp);
 
             // 4. Generate code for the block
-            this.generateBlock(node.children[1], scope, false);
+            this.generateBlock(node.children[1], scope);
 
             // 5. Calculate the jump distance
             //    Subtract one due to the way jumps are handled
@@ -290,6 +287,18 @@ var Combobiler;
                 standard: 'Generated code for if statement',
                 sarcastic: 'Generated code for if statement'
             });
+        };
+
+        CodeGenerator.prototype.generateBooleanExpression = function (node, scope) {
+            // Writing an if statement to check equality of equality statements, so meta
+            if (node.value.value.symbol === "==") {
+                this.generateEqual(node, scope);
+            } else if (node.value.value.symbol === "!=") {
+            } else if (node.value.value.symbol === "true") {
+            } else if (node.value.value.symbol === "false") {
+            } else {
+                throw new Error('Malformed if statement');
+            }
         };
 
         CodeGenerator.prototype.getNextSiblingScope = function (scope) {

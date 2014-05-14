@@ -62,7 +62,7 @@ module Combobiler {
 		private generateCodeForNode(node: TreeNode, scope: Scope) {
 			var value = this.determineTypeOfNode(node);
 			if (value === 'Block') {
-				this.generateBlock(node, scope, true);
+				this.generateBlock(node, scope);
 			} else if (value === 'WhileStatement') {
 				this.generateWhileStatement(node, scope);
 			} else if (value === 'PrintStatement') {
@@ -87,13 +87,17 @@ module Combobiler {
 		}
 
 		private generateWhileStatement(node: TreeNode, scope: Scope) {
+			// 1. Generate the boolean expression
+			this.generateBooleanExpression(node.children[0], scope);
+			// 2. Handle the block
+			this.generateBlock(node.children[1], scope);
 			this.log({
 				standard: 'Generated code for While Statement',
 				sarcastic: 'Generated code for While Statement',
 			});
 		}
 
-		private generateBlock(node: TreeNode, scope: Scope, descendScope: boolean) {
+		private generateBlock(node: TreeNode, scope: Scope) {
 			this.currentBlock++;
 			scope = this.findScopeByCurrentId();
 			for (var i = 0; i < node.children.length; i++) {
@@ -266,22 +270,13 @@ module Combobiler {
 			// 1. Set up a jump entry
 			var jumpTempId = this.jumpTable.getNextTempId();
 			var jumpEntry = this.jumpTable.add(new JumpTableEntry(jumpTempId, 0));
-			// 2. The if statement
-			var ifStatement = node.children[0];
-			// Writing an if statement to check equality of equality statements, so meta
-			if (ifStatement.value.value.symbol === "==") {
-				this.generateEqual(ifStatement, scope);
-			} else if (ifStatement.value.value.symbol === "!=") {
-
-			} else {
-				// We should never get here if the front-end compiler is working properly!
-				throw new Error('Malformed if statement');
-			}
+			// 2. The boolean expression of the if statement
+			this.generateBooleanExpression(node.children[0], scope);
 			var startOfJump = this.codeTable.currentPosition;
 			// 3. Put in the jump statement
 			this.bne(jumpEntry.temp);
 			// 4. Generate code for the block
-			this.generateBlock(node.children[1], scope, false);
+			this.generateBlock(node.children[1], scope);
 			// 5. Calculate the jump distance
 			//    Subtract one due to the way jumps are handled
 			jumpEntry.distance = this.codeTable.currentPosition - startOfJump - 1;
@@ -289,6 +284,22 @@ module Combobiler {
 				standard: 'Generated code for if statement',
 				sarcastic: 'Generated code for if statement',
 			});
+		}
+
+		private generateBooleanExpression(node: TreeNode, scope: Scope) {
+			// Writing an if statement to check equality of equality statements, so meta
+			if (node.value.value.symbol === "==") {
+				this.generateEqual(node, scope);
+			} else if (node.value.value.symbol === "!=") {
+
+			} else if (node.value.value.symbol === "true") {
+
+			} else if (node.value.value.symbol === "false") {
+
+			} else {
+				// We should never get here if the front-end compiler is working properly!
+				throw new Error('Malformed if statement');
+			}
 		}
 
 		private getNextSiblingScope(scope: Scope) {
