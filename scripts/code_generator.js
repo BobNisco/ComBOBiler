@@ -331,6 +331,10 @@ var Combobiler;
                 this.cpx(idStaticTableEntry.temp, 'XX');
             } else if (rightSideValue === 'IntExpression') {
                 this.ldxConst(CodeGenerator.leftPad(node.children[1].children[0].value.value.toString(16), 2));
+
+                // TODO: Fix this. How do we handle various types of comparisons?
+                var idStaticTableEntry = this.staticTable.findByVarIdAndScope(node.children[0].children[0].value.value, scope);
+                this.cpx(idStaticTableEntry.temp, 'XX');
             } else if (rightSideValue === 'BooleanExpression') {
                 if (node.children[0].value.value === 'true') {
                 } else {
