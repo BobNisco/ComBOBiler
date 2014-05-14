@@ -32,7 +32,7 @@ module Combobiler {
 		 * @return the StaticTableEntry instance if found, null otherwise
 		 */
 		public findByVarIdAndScope(varId: string, scope: Scope) {
-			for (var i = 0; i < this.entries.length; i++) {
+			for (var i = this.entries.length - 1; i >= 0; i--) {
 				var currentEntry = this.entries[i];
 				// Match on the variable ID
 				if (currentEntry.varId === varId) {
@@ -44,7 +44,7 @@ module Combobiler {
 						// Walk the tree until we find it, or hit the root,
 						// or we don't find it at all.
 						while (curScope != null) {
-							if (currentEntry.scope === scope) {
+							if (currentEntry.scope === curScope) {
 								return currentEntry;
 							}
 							curScope = curScope.parent;

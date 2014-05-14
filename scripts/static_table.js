@@ -27,7 +27,7 @@ var Combobiler;
         * @return the StaticTableEntry instance if found, null otherwise
         */
         StaticTable.prototype.findByVarIdAndScope = function (varId, scope) {
-            for (var i = 0; i < this.entries.length; i++) {
+            for (var i = this.entries.length - 1; i >= 0; i--) {
                 var currentEntry = this.entries[i];
 
                 // Match on the variable ID
@@ -39,7 +39,7 @@ var Combobiler;
                         var curScope = scope.parent;
 
                         while (curScope != null) {
-                            if (currentEntry.scope === scope) {
+                            if (currentEntry.scope === curScope) {
                                 return currentEntry;
                             }
                             curScope = curScope.parent;

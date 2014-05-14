@@ -16,6 +16,8 @@ module Combobiler {
 
 		private jumpTable: JumpTable;
 
+		private lastScope: Scope;
+
 		constructor(private astRootNode: TreeNode, private rootScope: Scope) {
 			this.codeTable = new CodeTable();
 			this.staticTable = new StaticTable();
@@ -31,7 +33,7 @@ module Combobiler {
 				if (this.astRootNode === null) {
 					throw new Error('Null AST passed into code generator, can not start code generation');
 				}
-				this.generateCodeForNode(this.astRootNode, this.rootScope.children[0]);
+				this.generateCodeForNode(this.astRootNode, this.rootScope);
 				// Manually put a break in for the end of code just to be safe
 				this.break();
 				this.codeTable.finalizeCodeTable();
@@ -59,7 +61,7 @@ module Combobiler {
 		private generateCodeForNode(node: TreeNode, scope: Scope) {
 			var value = this.determineTypeOfNode(node);
 			if (value === 'Block') {
-				this.generateBlock(node, scope);
+				this.generateBlock(node, scope, true);
 			} else if (value === 'WhileStatement') {
 				this.generateWhileStatement(node, scope);
 			} else if (value === 'PrintStatement') {
@@ -90,14 +92,15 @@ module Combobiler {
 			});
 		}
 
-		private generateBlock(node: TreeNode, scope: Scope) {
-			var currentScope = 0;
+		private generateBlock(node: TreeNode, scope: Scope, descendScope: boolean) {
+			if (descendScope) {
+				scope = scope.children[0];
+			}
 			for (var i = 0; i < node.children.length; i++) {
-				if (this.determineTypeOfNode(node.children[i]) === 'Block') {
-					scope = scope.children[currentScope++];
-				}
 				this.generateCodeForNode(node.children[i], scope);
 			}
+			this.lastScope = scope;
+			scope = scope.parent;
 			this.log({
 				standard: 'Generated code for block',
 				sarcastic: 'Generated code for block',
@@ -278,7 +281,7 @@ module Combobiler {
 			// 3. Put in the jump statement
 			this.bne(jumpEntry.temp);
 			// 4. Generate code for the block
-			this.generateBlock(node.children[1], scope);
+			this.generateBlock(node.children[1], this.getNextSiblingScope(this.lastScope), false);
 			// 5. Calculate the jump distance
 			//    Subtract one due to the way jumps are handled
 			jumpEntry.distance = this.codeTable.currentPosition - startOfJump - 1;
