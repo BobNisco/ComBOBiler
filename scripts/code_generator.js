@@ -126,6 +126,19 @@ var Combobiler;
                 this.ldyMem('00', '00');
                 this.sys();
             } else if (type.value.value === 'BooleanExpression') {
+                var boolVal = type.children[0].value.value.symbol;
+                var location;
+                var stringInHeap = this.codeTable.findStringInHeap(boolVal);
+                if (stringInHeap === null) {
+                    location = this.codeTable.addRawString(boolVal);
+                } else {
+                    location = stringInHeap;
+                }
+                this.ldaConst(location.toString(16));
+                this.sta('00', '00');
+                this.ldxConst('02');
+                this.ldyMem('00', '00');
+                this.sys();
             } else if (type.value.value === 'Id') {
                 // 1. Find the variable we'll be printing
                 var varIdStaticTableEntry = this.staticTable.findByVarIdAndScope(type.children[0].value.value, scope);

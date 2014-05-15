@@ -53,12 +53,12 @@ module Combobiler {
 			return this.currentHeapPosition--;
 		}
 
-		private findStringInHeap(data: string) {
+		public findStringInHeap(data: string) {
 			var curString = '';
 			for (var i = CodeTable.CODE_TABLE_SIZE - 1; i >= this.currentHeapPosition - 1; i--) {
 				if (this.entries[i] === '00') {
 					if (curString === data) {
-						return curString;
+						return i;
 					}
 				} else {
 					curString = curString + String.fromCharCode(parseInt(this.entries[i], 16));
@@ -67,20 +67,24 @@ module Combobiler {
 			return null;
  		}
 
-		public addString(str: string) {
-			// Strip the double quotes
-			var theString = str.value.value.replace(/\"/g, '');
-			var position;
-			if (theString.length <= 0) {
+ 		public addRawString(str: string) {
+ 			var position;
+			if (str.length <= 0) {
 				position = this.addHeapData('00');
 			}
 			// Null terminated string
 			this.addHeapData('00');
-			for (var i = theString.length - 1; i >= 0; i--) {
-				var hex = theString.charCodeAt(i).toString(16);
+			for (var i = str.length - 1; i >= 0; i--) {
+				var hex = str.charCodeAt(i).toString(16);
 				position = this.addHeapData(hex);
 			}
 			return position;
+ 		}
+
+		public addString(str: string) {
+			// Strip the double quotes
+			var theString = str.value.value.replace(/\"/g, '');
+			return this.addRawString(theString);
 		}
 
 		/**
