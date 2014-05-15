@@ -87,10 +87,23 @@ module Combobiler {
 		}
 
 		private generateWhileStatement(node: TreeNode, scope: Scope) {
-			// 1. Generate the boolean expression
+			// 1. Get our current address
+			var startAddress = this.codeTable.currentPosition;
+			// 2. Generate the boolean expression
 			this.generateBooleanExpression(node.children[0], scope);
-			// 2. Handle the block
+			// 3. Set up the jump entry
+			var jumpTempId = this.jumpTable.getNextTempId();
+			var jumpEntry = this.jumpTable.add(new JumpTableEntry(jumpTempId, 0));
+			// 4. Handle the block
 			this.generateBlock(node.children[1], scope);
+			// 5. Unconditional jump
+			this.ldaConst('00');
+			this.sta('00', '00');
+			this.ldxConst('01');
+			this.cpx('00', '00');
+			this.bne(CodeGenerator.leftPad((CodeTable.CODE_TABLE_SIZE - (this.codeTable.currentPosition - startAddress + 2)).toString(16), 2));
+			// 6. Jump address
+			jumpEntry.distance = this.codeTable.currentPosition - startAddress + 1;
 			this.log({
 				standard: 'Generated code for While Statement',
 				sarcastic: 'Generated code for While Statement',
@@ -319,8 +332,8 @@ module Combobiler {
 			// 4. Generate code for the block
 			this.generateBlock(node.children[1], scope);
 			// 5. Calculate the jump distance
-			//    Subtract one due to the way jumps are handled
-			jumpEntry.distance = this.codeTable.currentPosition - startOfJump - 1;
+			//    Add one due to the way jumps are handled
+			jumpEntry.distance = this.codeTable.currentPosition - startOfJump + 1;
 			this.log({
 				standard: 'Generated code for if statement',
 				sarcastic: 'Generated code for if statement',
