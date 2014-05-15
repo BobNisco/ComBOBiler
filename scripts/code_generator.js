@@ -113,11 +113,11 @@ var Combobiler;
 
                 // 2. Load the accumulator with the address
                 this.ldaConst(position.toString(16));
+                this.sta('00', '00');
 
                 // 3. Set up registers to prepare for a system call
-                this.sta('FF', '00');
                 this.ldxConst('02');
-                this.ldyMem('FF', '00');
+                this.ldyMem('00', '00');
                 this.sys();
             } else if (type.value.value === 'IntExpression') {
             } else if (type.value.value === 'BooleanExpression') {
