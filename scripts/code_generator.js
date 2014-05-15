@@ -266,6 +266,11 @@ var Combobiler;
         };
 
         CodeGenerator.prototype.generateIfStatement = function (node, scope) {
+            // Don't even bother generating code if we're going to compare on false
+            if (node.children[0].value.value.symbol === "false") {
+                return;
+            }
+
             // 1. Set up a jump entry
             var jumpTempId = this.jumpTable.getNextTempId();
             var jumpEntry = this.jumpTable.add(new Combobiler.JumpTableEntry(jumpTempId, 0));
@@ -317,7 +322,9 @@ var Combobiler;
             this.checkForNestedComparison(node.children[1], scope);
 
             // 1. Determine left side values
+            //    and put those values into the X register
             var leftSideValue = this.determineTypeOfNode(node.children[0]);
+            var valueForX;
             if (leftSideValue === 'Id') {
                 var idStaticTableEntry = this.staticTable.findByVarIdAndScope(node.children[0].children[0].value.value, scope);
                 this.ldxMem(idStaticTableEntry.temp, 'XX');
@@ -334,20 +341,28 @@ var Combobiler;
             }
 
             // 2. Determine right side values
+            //    and either compare their memory location with X
+            //    or put their value at 00 and compare with X
             var rightSideValue = this.determineTypeOfNode(node.children[1]);
             if (rightSideValue === 'Id') {
                 var idStaticTableEntry = this.staticTable.findByVarIdAndScope(node.children[1].children[0].value.value, scope);
-                this.cpx(idStaticTableEntry.temp, 'XX');
+                this.cpx(idStaticTableEntry.temp, '00');
             } else if (rightSideValue === 'IntExpression') {
-                this.ldxConst(CodeGenerator.leftPad(node.children[1].children[0].value.value.toString(16), 2));
+                this.ldaConst(CodeGenerator.leftPad(node.children[1].children[0].value.value.toString(16), 2));
 
-                // TODO: Fix this. How do we handle various types of comparisons?
-                var idStaticTableEntry = this.staticTable.findByVarIdAndScope(node.children[0].children[0].value.value, scope);
-                this.cpx(idStaticTableEntry.temp, 'XX');
+                // Store the value at 00
+                this.sta('00', '00');
+
+                // Compare
+                this.cpx('00', '00');
             } else if (rightSideValue === 'BooleanExpression') {
                 if (node.children[0].value.value === 'true') {
+                    this.ldaConst('01');
                 } else {
+                    this.ldaConst('00');
                 }
+                this.sta('00', '00');
+                this.cpx('00', '00');
             } else if (rightSideValue === 'StringExpression') {
                 // TODO: Figure out WTF to do here
             }
