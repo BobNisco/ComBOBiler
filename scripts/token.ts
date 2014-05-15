@@ -42,7 +42,7 @@ module Combobiler {
 				'false': function() { return new False(line); }(),
 				'int': function() { return new Int(line); }(),
 				'if': function() { return new If(line); }(),
-				'string': function() { return new String(line); }(),
+				'string': function() { return new MyString(line); }(),
 				'boolean': function() { return new Boolean(line); }(),
 				'==': function() { return new Equality(line); }(),
 				'!=': function() { return new NonEquality(line); }(),
@@ -163,7 +163,7 @@ module Combobiler {
 		}
 	}
 
-	export class String extends Token {
+	export class MyString extends Token {
 		constructor(line) {
 			super('string', line);
 		}

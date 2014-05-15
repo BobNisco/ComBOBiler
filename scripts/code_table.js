@@ -52,7 +52,7 @@ var Combobiler;
                         return curString;
                     }
                 } else {
-                    //curString = curString + String.fromCharCode(parseInt(this.entries[i], 16));
+                    curString = curString + String.fromCharCode(parseInt(this.entries[i], 16));
                 }
             }
             return null;

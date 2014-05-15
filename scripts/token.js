@@ -95,7 +95,7 @@ var Combobiler;
                     return new If(line);
                 }(),
                 'string': function () {
-                    return new String(line);
+                    return new MyString(line);
                 }(),
                 'boolean': function () {
                     return new Boolean(line);
@@ -245,14 +245,14 @@ var Combobiler;
     })(Token);
     Combobiler.If = If;
 
-    var String = (function (_super) {
-        __extends(String, _super);
-        function String(line) {
+    var MyString = (function (_super) {
+        __extends(MyString, _super);
+        function MyString(line) {
             _super.call(this, 'string', line);
         }
-        return String;
+        return MyString;
     })(Token);
-    Combobiler.String = String;
+    Combobiler.MyString = MyString;
 
     var Boolean = (function (_super) {
         __extends(Boolean, _super);

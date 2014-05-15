@@ -102,7 +102,7 @@ module Combobiler {
 					this.parsePrintStatement(node, token);
 				} else if (token instanceof VariableIdentifier && this.peekNextToken() instanceof Assignment) {
 					this.parseAssignmentStatement(node, token);
-				} else if (token instanceof Combobiler.Int || token instanceof Combobiler.String || token instanceof Combobiler.Boolean) {
+				} else if (token instanceof Combobiler.Int || token instanceof Combobiler.MyString || token instanceof Combobiler.Boolean) {
 					this.parseVariableDeclaration(node, token);
 				} else if (token instanceof While) {
 					this.parseWhileStatement(node, token);
@@ -271,7 +271,7 @@ module Combobiler {
 			node.addChildNode('VarDecl');
 			node = node.getNewestChild();
 
-			this.assertTokenInSet(token, [Combobiler.String, Combobiler.Int, Combobiler.Boolean]);
+			this.assertTokenInSet(token, [Combobiler.MyString, Combobiler.Int, Combobiler.Boolean]);
 			node.addChildNode(token);
 
 			token = this.getNextToken();
