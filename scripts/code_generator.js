@@ -89,6 +89,7 @@ var Combobiler;
             // 3. Set up the jump entry
             var jumpTempId = this.jumpTable.getNextTempId();
             var jumpEntry = this.jumpTable.add(new Combobiler.JumpTableEntry(jumpTempId, 0));
+            this.bne(CodeGenerator.leftPad((this.codeTable.currentPosition).toString(16), 2));
 
             // 4. Handle the block
             this.generateBlock(node.children[1], scope);
@@ -265,19 +266,21 @@ var Combobiler;
                 this.generateIntExpression(node.children[0], scope);
             } else if (node.value.value === '-') {
                 throw new Error('The minus operator is not supported at this time.');
-            } else if (node.children.length == 1) {
+            } else if (node.children.length === 1) {
                 // We have a single number, put that into the accumulator
                 this.ldaConst(CodeGenerator.leftPad(node.children[0].value.value, 2));
             } else {
                 // We have an expression we need to evaluate
-                // Put the first number into accumulator
-                this.ldaConst(CodeGenerator.leftPad(node.children[0].value.value, 2));
+                // Recurse down - result to be in accumulator
+                this.generateIntExpression(node.children[1], scope);
 
-                // And store it in location 00
+                // Store it in 00
                 this.sta('00', '00');
 
-                // Recurse down
-                this.generateIntExpression(node.children[1], scope);
+                // Put this number into accumulator
+                this.ldaConst(CodeGenerator.leftPad(node.children[0].value.value, 2));
+
+                // Do the addition, leaving result in accumulator
                 this.adc('00', '00');
             }
         };
@@ -359,6 +362,10 @@ var Combobiler;
             } else if (node.value.value.symbol === "!=") {
             } else if (node.value.value.symbol === "true") {
             } else if (node.value.value.symbol === "false") {
+                this.ldxConst('01');
+                this.ldaConst('00');
+                this.sta('00', '00');
+                this.cpx('00', '00');
             } else {
                 throw new Error('Malformed if statement');
             }

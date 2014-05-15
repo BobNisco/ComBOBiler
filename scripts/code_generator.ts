@@ -94,6 +94,7 @@ module Combobiler {
 			// 3. Set up the jump entry
 			var jumpTempId = this.jumpTable.getNextTempId();
 			var jumpEntry = this.jumpTable.add(new JumpTableEntry(jumpTempId, 0));
+			this.bne(CodeGenerator.leftPad((this.codeTable.currentPosition).toString(16), 2));
 			// 4. Handle the block
 			this.generateBlock(node.children[1], scope);
 			// 5. Unconditional jump
@@ -265,17 +266,18 @@ module Combobiler {
 				this.generateIntExpression(node.children[0], scope);
 			} else if (node.value.value === '-') {
 				throw new Error('The minus operator is not supported at this time.');
-			} else if (node.children.length == 1) {
+			} else if (node.children.length === 1) {
 				// We have a single number, put that into the accumulator
 				this.ldaConst(CodeGenerator.leftPad(node.children[0].value.value, 2));
 			} else {
 				// We have an expression we need to evaluate
-				// Put the first number into accumulator
-				this.ldaConst(CodeGenerator.leftPad(node.children[0].value.value, 2));
-				// And store it in location 00
-				this.sta('00', '00');
-				// Recurse down
+				// Recurse down - result to be in accumulator
 				this.generateIntExpression(node.children[1], scope);
+				// Store it in 00
+				this.sta('00', '00');
+				// Put this number into accumulator
+				this.ldaConst(CodeGenerator.leftPad(node.children[0].value.value, 2));
+				// Do the addition, leaving result in accumulator
 				this.adc('00', '00');
 			}
 		}
@@ -349,7 +351,10 @@ module Combobiler {
 			} else if (node.value.value.symbol === "true") {
 
 			} else if (node.value.value.symbol === "false") {
-
+				this.ldxConst('01');
+				this.ldaConst('00');
+				this.sta('00', '00');
+				this.cpx('00', '00');
 			} else {
 				// We should never get here if the front-end compiler is working properly!
 				throw new Error('Malformed if statement');
