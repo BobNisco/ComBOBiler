@@ -61,7 +61,7 @@ module Combobiler {
 						return i;
 					}
 				} else {
-					curString = curString + String.fromCharCode(parseInt(this.entries[i], 16));
+					curString = String.fromCharCode(parseInt(this.entries[i], 16)) + curString;
 				}
 			}
 			return null;
