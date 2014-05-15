@@ -120,6 +120,11 @@ var Combobiler;
                 this.ldyMem('00', '00');
                 this.sys();
             } else if (type.value.value === 'IntExpression') {
+                this.generateIntExpression(node.children[0], scope);
+                this.sta('00', '00');
+                this.ldxConst('01');
+                this.ldyMem('00', '00');
+                this.sys();
             } else if (type.value.value === 'BooleanExpression') {
             } else if (type.value.value === 'Id') {
                 // 1. Find the variable we'll be printing
@@ -212,8 +217,9 @@ var Combobiler;
         };
 
         CodeGenerator.prototype.generateIntAssignmentStatement = function (varIdNode, valueNode, scope) {
-            // 1. Load the value into our accumulator
-            this.ldaConst(CodeGenerator.leftPad(valueNode.children[0].value.value, 2));
+            // 1. Handle any addition that may need to be done
+            //    and the result will be in the accumulator
+            this.generateIntExpression(valueNode, scope);
 
             // 2. Store the accumulator into memory at the temp position
             var staticTableEntry = this.staticTable.findByVarIdAndScope(varIdNode.value.value, scope);
@@ -222,6 +228,28 @@ var Combobiler;
                 standard: 'Generated code for int assignment statement',
                 sarcastic: 'Generated code for int assignment statement'
             });
+        };
+
+        CodeGenerator.prototype.generateIntExpression = function (node, scope) {
+            if (node.value.value === '+') {
+                this.generateIntExpression(node.children[0], scope);
+            } else if (node.value.value === '-') {
+                throw new Error('The minus operator is not supported at this time.');
+            } else if (node.children.length == 1) {
+                // We have a single number, put that into the accumulator
+                this.ldaConst(CodeGenerator.leftPad(node.children[0].value.value, 2));
+            } else {
+                // We have an expression we need to evaluate
+                // Put the first number into accumulator
+                this.ldaConst(CodeGenerator.leftPad(node.children[0].value.value, 2));
+
+                // And store it in location 00
+                this.sta('00', '00');
+
+                // Recurse down
+                this.generateIntExpression(node.children[1], scope);
+                this.adc('00', '00');
+            }
         };
 
         CodeGenerator.prototype.generateStringAssignmentStatement = function (varIdNode, valueNode, scope) {
